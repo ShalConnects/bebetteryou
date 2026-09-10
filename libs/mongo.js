@@ -1,15 +1,12 @@
 import mongoose from 'mongoose'
+import { mongoUri } from './mongo-uri'
+
+export { mongoUri }
 
 let cached = global.mongoose
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null }
-}
-
-/** Empty when unset or still an Atlas copy-paste placeholder (`<db_password>`). */
-export function mongoUri() {
-  const uri = (process.env.MONGODB_URI || '').trim()
-  return uri && !/<[^>]*>/.test(uri) ? uri : ''
 }
 
 export async function connectDB() {

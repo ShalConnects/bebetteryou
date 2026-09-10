@@ -1,6 +1,8 @@
+/**
+ * @jest-environment node
+ */
 import { hybridPick } from '@/libs/hybrid-pick'
-import { normalizeRelated } from '@/libs/manage-quote'
-import { tagsForPost } from '@/libs/related'
+import { normalizeRelated, tagsForPost } from '@/libs/related'
 
 describe('hybridPick', () => {
   const pool = [

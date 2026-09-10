@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { mongoUri } from './mongo'
+import { mongoUri } from './mongo-uri'
 
 const dataFile = path.join(process.cwd(), 'data/scripture.json')
 

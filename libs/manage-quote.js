@@ -1,4 +1,5 @@
-import { resolveKnownTheme } from '@/libs/tag-lane'
+import { normalizeRelated } from '@/libs/related'
+import { normalizeTheme, themeSet } from '@/libs/tag-lane'
 import { assertQuoteFits, renderQuoteCard } from './quote-card.mjs'
 import { deleteQuoteImage, saveQuoteImage } from './quote-assets'
 import { normalizeAuthor, normalizeQuoteText } from './quote-text'
@@ -9,22 +10,7 @@ function cardFile(n) {
   return `bby${n}.jpg`
 }
 
-function slugs(list) {
-  if (!Array.isArray(list)) return undefined
-  const out = [...new Set(list.map((s) => String(s).trim()).filter(Boolean))]
-  return out.length ? out : undefined
-}
-
-/** Optional hard pins for books/posts; empty clears. */
-export function normalizeRelated(input) {
-  if (input == null || typeof input !== 'object') return null
-  const out = {}
-  const books = slugs(input.books)
-  const posts = slugs(input.posts)
-  if (books) out.books = books
-  if (posts) out.posts = posts
-  return Object.keys(out).length ? out : null
-}
+export { normalizeRelated }
 
 export async function updateQuote(slug, { text, author, tags, theme, related, regenerate = false }) {
   const existing = (await readQuotes()).find((q) => q.slug === slug)
@@ -43,8 +29,8 @@ export async function updateQuote(slug, { text, author, tags, theme, related, re
   }
 
   if (theme !== undefined) {
-    const known = resolveKnownTheme(theme, tagRows)
-    if (known) next.theme = known
+    const resolved = normalizeTheme(theme)
+    if (resolved && themeSet(tagRows).has(resolved)) next.theme = resolved
     else delete next.theme
   }
 

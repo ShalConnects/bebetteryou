@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { tagSeed } from '@/config/quotes'
 import { tagFields } from '@/libs/tag-lane'
-import { mongoUri } from './mongo'
+import { mongoUri } from './mongo-uri'
 
 const dataFile = path.join(process.cwd(), 'data/tags.json')
 
