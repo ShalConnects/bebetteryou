@@ -43,7 +43,13 @@ export default function SurpriseMood({ quotes = [], moods = [] }) {
       {picked ? (
         <div className="mx-auto mt-10 w-full max-w-[18rem] sm:max-w-[22rem] md:mt-0 md:max-w-[26rem]">
           <QuoteCard quote={picked} priority className="w-full" />
-          <TraditionPassage tags={picked.tags} slug={picked.slug} n={picked.n} className="text-left" />
+          <TraditionPassage
+            tags={picked.tags}
+            theme={picked.theme}
+            slug={picked.slug}
+            n={picked.n}
+            className="text-left"
+          />
           <p className="mt-6 text-center">
             <button type="button" className="btn" onClick={() => draw(mood)}>
               Another

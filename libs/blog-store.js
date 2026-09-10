@@ -29,11 +29,32 @@ export function readPosts() {
   return posts
 }
 
+const gridFile = path.join(dir, 'topics.json')
+
 /** pSEO grid: `{ topics, modifiers }` — drives hub filters and batch generation. */
 export function readGrid() {
-  const grid = readJson(path.join(dir, 'topics.json'), null)
+  const grid = readJson(gridFile, null)
   return {
     topics: Array.isArray(grid?.topics) ? grid.topics.filter((t) => t?.id) : [],
     modifiers: Array.isArray(grid?.modifiers) ? grid.modifiers.filter((m) => m?.id) : [],
   }
+}
+
+function writeGrid(grid) {
+  if (process.env.VERCEL) return
+  fs.writeFileSync(gridFile, JSON.stringify(grid, null, 2) + '\n')
+}
+
+/** Remap topic → catalog tag (rename / delete). Returns how many topics changed. */
+export function mapTopicTags(mapper) {
+  const grid = readGrid()
+  let changed = 0
+  const topics = grid.topics.map((t) => {
+    const tag = mapper(t.tag || '')
+    if (tag === t.tag) return t
+    changed += 1
+    return tag ? { ...t, tag } : { id: t.id, label: t.label }
+  })
+  if (changed) writeGrid({ ...grid, topics })
+  return changed
 }

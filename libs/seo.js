@@ -42,7 +42,17 @@ export function buildMetadata({ title, description, image, url } = {}) {
 export async function getSitemapEntries() {
   const base = appConfig.siteUrl.replace(/\/$/, '')
   const blog = appConfig.features.enableBlog
-  const paths = ['', '/quotes', ...(blog ? ['/blog'] : []), '/about', '/shop', '/privacy-policy', '/tos']
+  const books = appConfig.features.enableBooks
+  const paths = [
+    '',
+    '/quotes',
+    ...(blog ? ['/blog'] : []),
+    ...(books ? ['/books'] : []),
+    '/about',
+    '/shop',
+    '/privacy-policy',
+    '/tos',
+  ]
   const staticEntries = paths.map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),

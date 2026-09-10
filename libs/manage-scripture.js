@@ -1,9 +1,15 @@
+import { traditions, traditionIds } from '@/config/traditions'
+import { readTags } from '@/libs/tags-store'
+import { tagForThemeMap, themeSet, themesMap } from '@/libs/tag-lane'
 import { readScripture, persistScripture } from '@/libs/scripture-store'
-import { tagThemes, traditions, traditionIds, themeIds } from '@/config/traditions'
 import { themeEntries, scriptureFor } from '@/libs/scripture-core'
 
-const tagForTheme = Object.fromEntries(Object.entries(tagThemes).map(([tag, theme]) => [theme, tag]))
 const editableTraditions = traditions.filter((t) => t.id !== 'none')
+
+async function lanes() {
+  const tags = await readTags()
+  return { tags, map: themesMap(tags), tagForTheme: tagForThemeMap(tags), themeIds: themeSet(tags) }
+}
 
 function normalizeEntry(raw, prev) {
   const ref = String(raw?.ref ?? '').trim()
@@ -24,7 +30,7 @@ function normalizeEntry(raw, prev) {
   return entry
 }
 
-function entryRow(tradition, theme, entry, index) {
+function entryRow(tradition, theme, entry, index, tagForTheme) {
   const kjv = entry.alt?.kjv
   return {
     tradition,
@@ -41,16 +47,16 @@ function entryRow(tradition, theme, entry, index) {
 }
 
 export async function listScriptureEntries() {
-  const data = await readScripture()
+  const [{ tagForTheme }, data] = await Promise.all([lanes(), readScripture()])
   return Object.entries(data).flatMap(([tradition, themes]) =>
     Object.entries(themes || {}).flatMap(([theme, raw]) =>
-      themeEntries(raw).map((entry, index) => entryRow(tradition, theme, entry, index))
+      themeEntries(raw).map((entry, index) => entryRow(tradition, theme, entry, index, tagForTheme))
     )
   )
 }
 
 export async function scriptureGaps() {
-  const data = await readScripture()
+  const [{ tagForTheme, themeIds }, data] = await Promise.all([lanes(), readScripture()])
   return editableTraditions.flatMap(({ id, label }) =>
     [...themeIds].flatMap((theme) => {
       if (themeEntries(data[id]?.[theme]).length) return []
@@ -59,13 +65,15 @@ export async function scriptureGaps() {
   )
 }
 
-export async function previewScripture({ tradition, slug, tags, n, translationId }) {
-  return scriptureFor(await readScripture(), tradition, tags, slug ?? n, translationId)
+export async function previewScripture({ tradition, slug, tags, n, translationId, theme }) {
+  const { map } = await lanes()
+  return scriptureFor(await readScripture(), tradition, tags, slug ?? n, translationId, theme, map)
 }
 
 export async function upsertScripture(body) {
   const { tradition, theme, ref, text, url, index, kjvRef, kjvText, kjvUrl } = body || {}
   if (!traditionIds.has(tradition) || tradition === 'none') throw new Error('Invalid tradition')
+  const { themeIds } = await lanes()
   if (!themeIds.has(theme)) throw new Error('Invalid theme')
 
   const data = await readScripture()
@@ -82,6 +90,7 @@ export async function upsertScripture(body) {
 }
 
 export async function removeScripture(tradition, theme, index) {
+  const { themeIds } = await lanes()
   if (!traditionIds.has(tradition) || !themeIds.has(theme)) throw new Error('Not found')
   const data = await readScripture()
   const entries = themeEntries(data[tradition]?.[theme])
@@ -96,4 +105,16 @@ export async function removeScripture(tradition, theme, index) {
   }
   await persistScripture(data)
   return data
+}
+
+/** Theme options for admin UI — one row per theme from live catalog. */
+export async function scriptureThemeOptions() {
+  const { tags } = await lanes()
+  const byTheme = new Map()
+  for (const t of tags) {
+    if (t.theme && !byTheme.has(t.theme)) {
+      byTheme.set(t.theme, { tag: t.name, theme: t.theme, label: `${t.name} (${t.theme})` })
+    }
+  }
+  return [...byTheme.values()]
 }

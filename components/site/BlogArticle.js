@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import QuoteCard from '@/components/site/QuoteCard'
+import { RelatedBooks } from '@/components/site/RelatedContent'
+import TraditionPassage from '@/components/site/TraditionPassage'
 import { blogCta } from '@/config/blog'
-import { postHref } from '@/libs/blog-url'
+import { blogHref, postHref } from '@/libs/blog-url'
+import { quoteShowsScripture } from '@/libs/scripture-core'
 import { formatTag, quotesHref } from '@/libs/quotes-url'
 
 function Heading({ children }) {
@@ -13,8 +16,34 @@ function Prose({ children }) {
   return <p className="mt-4 leading-relaxed text-body/85">{children}</p>
 }
 
+function ThemeLinks({ tag, topic }) {
+  if (!tag) return null
+  return (
+    <p className="mt-4 flex flex-wrap gap-5">
+      <Link href={quotesHref({ tag })} className="tag">
+        All {formatTag(tag)} cards
+      </Link>
+      {topic ? (
+        <Link href={blogHref({ topic })} className="tag">
+          More notes
+        </Link>
+      ) : null}
+    </p>
+  )
+}
+
+function Scripture({ tag, slug, heading }) {
+  if (!tag || !quoteShowsScripture([tag])) return null
+  return (
+    <section>
+      <Heading>{heading || 'A related passage'}</Heading>
+      <TraditionPassage tags={[tag]} slug={slug} className="border-0 pt-0" />
+    </section>
+  )
+}
+
 /** Blocks are typed data, so generated rows can never inject markup. */
-function Block({ block, quotes, tag }) {
+function Block({ block, quotes, tag, topic, slug }) {
   const { type, heading, text, items } = block
 
   if (type === 'p') return <Prose>{text}</Prose>
@@ -50,16 +79,12 @@ function Block({ block, quotes, tag }) {
             <QuoteCard key={quote.slug} quote={quote} />
           ))}
         </div>
-        {tag ? (
-          <p className="mt-4">
-            <Link href={quotesHref({ tag })} className="tag">
-              All {formatTag(tag)} cards
-            </Link>
-          </p>
-        ) : null}
+        <ThemeLinks tag={tag} topic={topic} />
       </section>
     )
   }
+
+  if (type === 'scripture') return <Scripture tag={tag} slug={slug} heading={heading} />
 
   if (type === 'faq') {
     return (
@@ -80,7 +105,9 @@ function Block({ block, quotes, tag }) {
   return null
 }
 
-export default function BlogArticle({ post, quotes = [], related = [], tag }) {
+export default function BlogArticle({ post, quotes = [], related = [], books = [], tag }) {
+  const hasScripture = post.blocks?.some((b) => b.type === 'scripture')
+
   return (
     <article className="mx-auto w-full max-w-2xl">
       <header className="mb-2">
@@ -90,8 +117,14 @@ export default function BlogArticle({ post, quotes = [], related = [], tag }) {
       </header>
 
       {post.blocks?.map((block, i) => (
-        <Block key={i} block={block} quotes={quotes} tag={tag} />
+        <Block key={i} block={block} quotes={quotes} tag={tag} topic={post.topic} slug={post.slug} />
       ))}
+
+      {!hasScripture ? <Scripture tag={tag} slug={post.slug} /> : null}
+
+      <div className="mt-12">
+        <RelatedBooks books={books} />
+      </div>
 
       <section className="mt-16 border border-line p-6 md:p-8">
         <h2 className="heading-sm">{blogCta.title}</h2>

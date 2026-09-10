@@ -33,6 +33,7 @@ export function TraditionProvider({ children }) {
   const [showPassages, setShowPassages] = useState(true)
   const [translation, setTranslation] = useState('niv')
   const [scriptureBook, setScriptureBook] = useState(null)
+  const [tagThemesMap, setTagThemesMap] = useState(null)
   const [promptOpen, setPromptOpen] = useState(false)
   const [syncError, setSyncError] = useState(false)
   const [ready, setReady] = useState(false)
@@ -46,7 +47,10 @@ export function TraditionProvider({ children }) {
     setPromptOpen(!skipped && !stored)
     fetch('/api/scripture')
       .then((r) => r.json())
-      .then((d) => setScriptureBook(d.data || null))
+      .then((d) => {
+        setScriptureBook(d.data || null)
+        if (d.themes) setTagThemesMap(d.themes)
+      })
       .catch(() => {})
       .finally(() => setReady(true))
   }, [])
@@ -139,6 +143,7 @@ export function TraditionProvider({ children }) {
         showPassages,
         translation,
         scriptureBook,
+        tagThemesMap,
         ready,
         promptOpen,
         syncError,
@@ -160,12 +165,12 @@ export function useTradition() {
   return ctx
 }
 
-export function useScriptureQuote({ tags, slug, n }) {
-  const { tradition, showPassages, translation, scriptureBook, ready } = useTradition()
+export function useScriptureQuote({ tags, slug, n, theme }) {
+  const { tradition, showPassages, translation, scriptureBook, tagThemesMap, ready } = useTradition()
   return useMemo(() => {
-    if (!ready || !showPassages || !scriptureBook || !quoteShowsScripture(tags)) return null
+    if (!ready || !showPassages || !scriptureBook || !quoteShowsScripture(tags, theme, tagThemesMap)) return null
     if (!tradition || tradition === 'none') return null
     const translationId = translationsFor(tradition).length ? translation : null
-    return scriptureFor(scriptureBook, tradition, tags, slug ?? n, translationId)
-  }, [ready, showPassages, scriptureBook, tradition, translation, tags, slug, n])
+    return scriptureFor(scriptureBook, tradition, tags, slug ?? n, translationId, theme, tagThemesMap)
+  }, [ready, showPassages, scriptureBook, tagThemesMap, tradition, translation, tags, slug, n, theme])
 }

@@ -2,6 +2,7 @@ import scriptureSeed from '@/data/scripture.json'
 import { readScripture } from '@/libs/scripture-store'
 export {
   themesForTags,
+  themesForQuote,
   quoteShowsScripture,
   themeEntries,
   seedFromKey,

@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation'
 import BlogArticle from '@/components/site/BlogArticle'
 import { Page } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
-import { findTopic, getPost, listPosts, postQuotes, relatedPosts } from '@/libs/blog'
+import { getPost, listPosts, postQuotes, postTag, relatedPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
+import { relatedForPost } from '@/libs/related'
 import { buildMetadata, postJsonLd } from '@/libs/seo'
 
 export function generateStaticParams() {
@@ -27,13 +28,20 @@ export default async function PostPage({ params }) {
   const post = getPost(slug)
   if (!post) notFound()
 
-  const tag = post.tag || findTopic(post.topic)?.tag
+  const tag = postTag(post)
   const quotes = await postQuotes(post)
+  const books = appConfig.features.enableBooks ? relatedForPost(post).books : []
   const url = getUrl(postHref(post.slug))
 
   return (
     <Page>
-      <BlogArticle post={post} quotes={quotes} related={relatedPosts(post)} tag={tag} />
+      <BlogArticle
+        post={post}
+        quotes={quotes}
+        related={relatedPosts(post)}
+        books={books}
+        tag={tag}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd(post, url)) }}

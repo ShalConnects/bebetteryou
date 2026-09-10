@@ -5,13 +5,28 @@ import { useState } from 'react'
 const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
 
+const empty = { name: '', moodLabel: '', theme: '', hashtags: '' }
+
 function tagApi(path, init) {
   return fetch(`/api/tags/${encodeURIComponent(path)}`, init)
 }
 
+function usageLine(tag) {
+  const quotes = tag.quotes ?? tag.count ?? 0
+  const posts = tag.posts ?? 0
+  const passages = tag.passages ?? 0
+  return [
+    tag.moodLabel ? `Mood: ${tag.moodLabel}` : 'No mood',
+    tag.theme ? `Theme: ${tag.theme}` : 'No theme',
+    `${quotes} quote${quotes === 1 ? '' : 's'}`,
+    `${posts} post${posts === 1 ? '' : 's'}`,
+    `${passages} passage${passages === 1 ? '' : 's'}`,
+  ].join(' · ')
+}
+
 export default function TagManager({ tags: initial }) {
   const [items, setItems] = useState(initial)
-  const [draft, setDraft] = useState({ name: '', moodLabel: '' })
+  const [draft, setDraft] = useState(empty)
   const [editing, setEditing] = useState(null)
   const [edit, setEdit] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -31,7 +46,7 @@ export default function TagManager({ tags: initial }) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
       setItems(data.tags)
-      setDraft({ name: '', moodLabel: '' })
+      setDraft(empty)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -41,7 +56,12 @@ export default function TagManager({ tags: initial }) {
 
   function startEdit(tag) {
     setEditing(tag.name)
-    setEdit({ name: tag.name, moodLabel: tag.moodLabel || '' })
+    setEdit({
+      name: tag.name,
+      moodLabel: tag.moodLabel || '',
+      theme: tag.theme || '',
+      hashtags: tag.hashtags || '',
+    })
     setError('')
   }
 
@@ -68,10 +88,14 @@ export default function TagManager({ tags: initial }) {
   }
 
   async function remove(tag) {
-    const msg =
-      tag.count > 0
-        ? `Delete "${tag.name}" and remove it from ${tag.count} quote${tag.count === 1 ? '' : 's'}?`
-        : `Delete "${tag.name}"?`
+    const quotes = tag.quotes ?? tag.count ?? 0
+    const posts = tag.posts ?? 0
+    const bits = []
+    if (quotes) bits.push(`${quotes} quote${quotes === 1 ? '' : 's'}`)
+    if (posts) bits.push(`${posts} blog topic link${posts === 1 ? '' : 's'}`)
+    const msg = bits.length
+      ? `Delete "${tag.name}" and clear it from ${bits.join(' and ')}?`
+      : `Delete "${tag.name}"?`
     if (!confirm(msg)) return
     setBusy(true)
     setError('')
@@ -91,27 +115,48 @@ export default function TagManager({ tags: initial }) {
     }
   }
 
+  function fields(value, setValue) {
+    return (
+      <>
+        <input
+          value={value.name}
+          onChange={(e) => setValue({ ...value, name: e.target.value })}
+          placeholder="Motivation"
+          className={inputClass}
+        />
+        <input
+          value={value.moodLabel}
+          onChange={(e) => setValue({ ...value, moodLabel: e.target.value })}
+          placeholder="Need a push"
+          className={inputClass}
+        />
+        <input
+          value={value.theme}
+          onChange={(e) => setValue({ ...value, theme: e.target.value })}
+          placeholder="perseverance"
+          className={inputClass}
+        />
+        <input
+          value={value.hashtags}
+          onChange={(e) => setValue({ ...value, hashtags: e.target.value })}
+          placeholder="#motivation #bebetteryou"
+          className={inputClass}
+        />
+      </>
+    )
+  }
+
   return (
     <div className="space-y-8">
       <form onSubmit={create} className="space-y-2">
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+        <div className="grid gap-3 sm:grid-cols-4">
           <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Name</span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Mood label</span>
-          <span className="hidden sm:block" aria-hidden="true" />
+          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Mood</span>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Theme</span>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Hashtags</span>
         </div>
-        <div className="flex gap-3">
-          <input
-            value={draft.name}
-            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            placeholder="Motivation"
-            className={`${inputClass} min-w-0 flex-1`}
-          />
-          <input
-            value={draft.moodLabel}
-            onChange={(e) => setDraft({ ...draft, moodLabel: e.target.value })}
-            placeholder="Need a push (optional)"
-            className={`${inputClass} min-w-0 flex-1`}
-          />
+        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto]">
+          {fields(draft, setDraft)}
           <button type="submit" disabled={busy || !draft.name.trim()} className="btn flex shrink-0 items-center px-7 py-0 disabled:opacity-50">
             Add tag
           </button>
@@ -124,24 +169,8 @@ export default function TagManager({ tags: initial }) {
         {items.map((tag) => (
           <li key={tag.name} className="px-4 py-4">
             {editing === tag.name ? (
-              <div className="grid gap-4 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end">
-                <label className="block">
-                  <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Name</span>
-                  <input
-                    value={edit.name}
-                    onChange={(e) => setEdit({ ...edit, name: e.target.value })}
-                    className={inputClass}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Mood label</span>
-                  <input
-                    value={edit.moodLabel}
-                    onChange={(e) => setEdit({ ...edit, moodLabel: e.target.value })}
-                    placeholder="Optional"
-                    className={inputClass}
-                  />
-                </label>
+              <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] sm:items-end">
+                {fields(edit, setEdit)}
                 <button type="button" disabled={busy} onClick={saveEdit} className="btn disabled:opacity-50">
                   Save
                 </button>
@@ -161,10 +190,8 @@ export default function TagManager({ tags: initial }) {
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-paper">{tag.name}</p>
-                  <p className="text-sm text-quiet">
-                    {tag.moodLabel ? `Mood: ${tag.moodLabel}` : 'No mood label'} · {tag.count} quote
-                    {tag.count === 1 ? '' : 's'}
-                  </p>
+                  <p className="text-sm text-quiet">{usageLine(tag)}</p>
+                  {tag.hashtags ? <p className="mt-1 text-xs text-quiet/80">{tag.hashtags}</p> : null}
                 </div>
                 <div className="flex gap-2">
                   <button type="button" disabled={busy} onClick={() => startEdit(tag)} className="btn disabled:opacity-50">

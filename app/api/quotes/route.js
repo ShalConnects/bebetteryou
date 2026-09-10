@@ -25,6 +25,7 @@ export async function POST(req) {
       text,
       author: body.author,
       tags: Array.isArray(body.tags) ? body.tags : [],
+      theme: body.theme,
     })
 
     revalidatePath('/quotes')

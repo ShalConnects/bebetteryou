@@ -8,6 +8,11 @@ const QuoteSchema = new mongoose.Schema(
     text: { type: String, required: true },
     author: { type: String, default: '' },
     tags: { type: [String], default: [] },
+    theme: { type: String, default: '' },
+    related: {
+      books: { type: [String], default: undefined },
+      posts: { type: [String], default: undefined },
+    },
   },
   { timestamps: true }
 )

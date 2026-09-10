@@ -1,22 +1,32 @@
 [
   {
     "name": "Motivation",
-    "moodLabel": "Need a push"
+    "moodLabel": "Need a push",
+    "theme": "perseverance",
+    "hashtags": "#motivation #bebetteryou"
   },
   {
     "name": "Mindset",
-    "moodLabel": "Clear my head"
+    "moodLabel": "Clear my head",
+    "theme": "clarity",
+    "hashtags": "#mindset #bebetteryou"
   },
   {
     "name": "Growth",
-    "moodLabel": "Level up"
+    "moodLabel": "Level up",
+    "theme": "growth",
+    "hashtags": "#growth #bebetteryou"
   },
   {
     "name": "Love",
-    "moodLabel": "Soft landing"
+    "moodLabel": "Soft landing",
+    "theme": "love",
+    "hashtags": "#love #bebetteryou"
   },
   {
     "name": "Yourself",
-    "moodLabel": "Tough love"
+    "moodLabel": "Tough love",
+    "theme": "self-worth",
+    "hashtags": "#selfworth #bebetteryou"
   }
 ]

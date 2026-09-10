@@ -7,11 +7,13 @@ import { quoteShowsScripture } from '@/libs/scripture-core'
 import { printHref } from '@/libs/print-link'
 import { isPrintableQuote, quoteAlt, quoteLabel } from '@/libs/quote-text'
 import { shareOrCopy } from '@/libs/share'
+import { useTradition } from './TraditionProvider'
 
 /** Corner labels sitting on the card's bottom edge — passage left, share right. */
 const note = 'inline-flex min-h-10 items-center px-2 text-[10px] uppercase tracking-[0.2em] text-paper drop-shadow'
 
 export default function QuoteCard({ quote, priority, className = '' }) {
+  const { tagThemesMap } = useTradition()
   const href = `/quotes/${quote.slug}`
   const label = quoteLabel(quote)
 
@@ -44,7 +46,7 @@ export default function QuoteCard({ quote, priority, className = '' }) {
             className="object-cover opacity-95 transition-opacity duration-300 group-hover:opacity-100"
           />
           <span className="pointer-events-none absolute inset-0 bg-ink/55 opacity-0 transition-opacity duration-300 md:[@media(hover:hover)]:group-hover:opacity-100" />
-          {quoteShowsScripture(quote.tags) ? (
+          {quoteShowsScripture(quote.tags, quote.theme, tagThemesMap) ? (
             <span className={`pointer-events-none absolute bottom-0 left-0 ${note}`}>+ passage</span>
           ) : null}
         </span>

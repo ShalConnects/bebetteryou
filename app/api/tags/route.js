@@ -5,7 +5,9 @@ import { tagNames } from '@/libs/tags-store'
 import { NextResponse } from 'next/server'
 
 function revalidateTags() {
-  for (const path of ['/', '/quotes', '/dashboard/quotes', '/dashboard/tags']) revalidatePath(path)
+  for (const path of ['/', '/quotes', '/blog', '/dashboard/quotes', '/dashboard/tags', '/dashboard/scripture']) {
+    revalidatePath(path)
+  }
 }
 
 export async function GET() {
@@ -21,7 +23,11 @@ export async function POST(req) {
 
   const body = await req.json().catch(() => null)
   try {
-    await createTag(body?.name, body?.moodLabel)
+    await createTag(body?.name, {
+      moodLabel: body?.moodLabel,
+      theme: body?.theme,
+      hashtags: body?.hashtags,
+    })
     revalidateTags()
     const tags = await listTagsWithUsage()
     return NextResponse.json({ tags, names: tagNames(tags) }, { status: 201 })

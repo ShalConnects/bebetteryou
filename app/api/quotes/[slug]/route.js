@@ -19,6 +19,8 @@ export async function PATCH(req, { params }) {
       text: body?.text,
       author: body?.author,
       tags: body?.tags,
+      theme: body?.theme,
+      related: body?.related,
       regenerate: Boolean(body?.regenerate),
     })
     revalidateQuote(slug)

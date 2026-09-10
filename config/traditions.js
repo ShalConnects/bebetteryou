@@ -1,11 +1,11 @@
-/** Tag → scripture theme (all catalog tags). */
-export const tagThemes = {
-  Motivation: 'perseverance',
-  Mindset: 'clarity',
-  Growth: 'growth',
-  Love: 'love',
-  Yourself: 'self-worth',
-}
+import { tagSeed } from '@/config/quotes'
+import { themesMap, themeSet, normalizeTheme } from '@/libs/tag-lane'
+
+export { normalizeTheme }
+
+/** Seed-derived tag → scripture theme (runtime catalog may add lanes). */
+export const tagThemes = themesMap(tagSeed)
+export const themeIds = themeSet(tagSeed)
 
 export const traditions = [
   { id: 'christianity', label: 'Christianity' },
@@ -20,8 +20,6 @@ export const traditions = [
 ]
 
 export const traditionIds = new Set(traditions.map((t) => t.id))
-
-export const themeIds = new Set(Object.values(tagThemes))
 
 export const translationOptions = {
   christianity: [

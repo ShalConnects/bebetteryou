@@ -1,3 +1,4 @@
+import { resolveKnownTheme } from '@/libs/tag-lane'
 import { assertQuoteFits, renderQuoteCard } from './quote-card.mjs'
 import { deleteQuoteImage, saveQuoteImage } from './quote-assets'
 import { normalizeAuthor, normalizeQuoteText } from './quote-text'
@@ -8,19 +9,49 @@ function cardFile(n) {
   return `bby${n}.jpg`
 }
 
-export async function updateQuote(slug, { text, author, tags, regenerate = false }) {
+function slugs(list) {
+  if (!Array.isArray(list)) return undefined
+  const out = [...new Set(list.map((s) => String(s).trim()).filter(Boolean))]
+  return out.length ? out : undefined
+}
+
+/** Optional hard pins for books/posts; empty clears. */
+export function normalizeRelated(input) {
+  if (input == null || typeof input !== 'object') return null
+  const out = {}
+  const books = slugs(input.books)
+  const posts = slugs(input.posts)
+  if (books) out.books = books
+  if (posts) out.posts = posts
+  return Object.keys(out).length ? out : null
+}
+
+export async function updateQuote(slug, { text, author, tags, theme, related, regenerate = false }) {
   const existing = (await readQuotes()).find((q) => q.slug === slug)
   if (!existing) throw new Error('Quote not found')
 
   const nextText = text !== undefined ? normalizeQuoteText(text) : existing.text || ''
   if (text !== undefined) assertQuoteFits(nextText)
 
-  const catalog = tagNames(await readTags())
+  const tagRows = await readTags()
+  const catalog = tagNames(tagRows)
   const next = {
     ...existing,
     text: nextText,
     author: author !== undefined ? normalizeAuthor(author) : existing.author || '',
     tags: Array.isArray(tags) ? tags.filter((t) => catalog.includes(t)) : existing.tags || [],
+  }
+
+  if (theme !== undefined) {
+    const known = resolveKnownTheme(theme, tagRows)
+    if (known) next.theme = known
+    else delete next.theme
+  }
+
+  if (related !== undefined) {
+    const pins = normalizeRelated(related)
+    if (pins) next.related = pins
+    else delete next.related
   }
 
   if (regenerate) {

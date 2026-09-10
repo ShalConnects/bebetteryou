@@ -1,19 +1,67 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { traditions } from '@/config/traditions'
 import { quoteCard } from '@/config/quote-card'
+import { quoteShowsScripture, scriptureFor } from '@/libs/scripture-core'
 import { clampQuoteInput, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
 import SocialPost from './SocialPost'
 import TagPicker from './TagPicker'
 import { useQuotePreview } from './useQuotePreview'
 
 const { maxChars, maxLines } = quoteCard.quote
+const traditionOptions = traditions.filter((t) => t.id !== 'none')
+const inputClass = 'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
 
-export default function QuoteForm({ nextN, tagOptions = [] }) {
+function ScripturePreview({ tags, theme, seed }) {
+  const [book, setBook] = useState(null)
+  const [map, setMap] = useState(null)
+
+  useEffect(() => {
+    let alive = true
+    fetch('/api/scripture')
+      .then((r) => r.json())
+      .then((d) => {
+        if (!alive) return
+        setBook(d.data || null)
+        setMap(d.themes || null)
+      })
+      .catch(() => {})
+    return () => {
+      alive = false
+    }
+  }, [])
+
+  const rows = useMemo(() => {
+    if (!quoteShowsScripture(tags, theme, map)) return []
+    return traditionOptions.map(({ id, label }) => ({
+      id,
+      label,
+      entry: book ? scriptureFor(book, id, tags, seed, null, theme, map) : null,
+    }))
+  }, [book, map, tags, theme, seed])
+
+  if (!rows.length) return null
+
+  return (
+    <div className="space-y-2 border border-line p-4">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Scripture preview</p>
+      {rows.map(({ id, label, entry }) => (
+        <p key={id} className="text-xs text-quiet">
+          <span className="text-paper">{label}</span>
+          {entry ? ` · ${entry.ref}` : ' · —'}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [] }) {
   const [text, setText] = useState('')
   const [author, setAuthor] = useState('')
   const [tags, setTags] = useState([])
+  const [theme, setTheme] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
   const { preview, previewing, error, setError } = useQuotePreview(text, author)
@@ -28,7 +76,7 @@ export default function QuoteForm({ nextN, tagOptions = [] }) {
       const res = await fetch('/api/quotes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, author, tags }),
+        body: JSON.stringify({ text, author, tags, theme }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -36,6 +84,7 @@ export default function QuoteForm({ nextN, tagOptions = [] }) {
       setText('')
       setAuthor('')
       setTags([])
+      setTheme('')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -51,6 +100,7 @@ export default function QuoteForm({ nextN, tagOptions = [] }) {
   const { chars } = quoteMetrics(text)
   const lines = preview?.lines
   const overLines = lines != null && lines > maxLines
+  const seed = `bby-${cardN}`
 
   return (
     <form
@@ -74,7 +124,7 @@ export default function QuoteForm({ nextN, tagOptions = [] }) {
             value={text}
             onChange={(e) => setText(clampQuoteInput(e.target.value))}
             placeholder={"Line one\nLine two"}
-            className="w-full resize-none border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
+            className={`${inputClass} resize-none`}
           />
         </label>
 
@@ -84,11 +134,29 @@ export default function QuoteForm({ nextN, tagOptions = [] }) {
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Optional"
-            className="w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
+            className={inputClass}
           />
         </label>
 
         <TagPicker options={tagOptions} value={tags} onChange={setTags} />
+
+        {themeOptions.length ? (
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Scripture theme
+            </span>
+            <select value={theme} onChange={(e) => setTheme(e.target.value)} className={inputClass}>
+              <option value="">From tags</option>
+              {themeOptions.map((o) => (
+                <option key={o.theme} value={o.theme}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
+        <ScripturePreview tags={tags} theme={theme || undefined} seed={seed} />
 
         {overLines ? (
           <p className="text-sm text-red-400">{quoteLinesOverflowMessage(lines)}</p>

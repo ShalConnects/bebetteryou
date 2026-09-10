@@ -1,16 +1,22 @@
 import { tagThemes, traditionIds, translationsFor } from '@/config/traditions'
 
-export function themesForTags(tags) {
+export function themesForTags(tags, map) {
+  const lookup = map || tagThemes
   const out = []
   for (const tag of tags || []) {
-    const theme = tagThemes[tag]
+    const theme = lookup[tag]
     if (theme) out.push(theme)
   }
   return out
 }
 
-export function quoteShowsScripture(tags) {
-  return themesForTags(tags).length > 0
+/** Stored quote.theme wins (validated at write); else map from tags. */
+export function themesForQuote(tags, theme, map) {
+  return theme ? [theme] : themesForTags(tags, map)
+}
+
+export function quoteShowsScripture(tags, theme, map) {
+  return themesForQuote(tags, theme, map).length > 0
 }
 
 export function themeEntries(raw) {
@@ -34,14 +40,14 @@ export function resolveTranslation(entry, translationId) {
   return { ref: entry.ref, text: entry.text, url: entry.url ?? null }
 }
 
-/** Pick passage for tradition + tags; rotates by seedKey (quote slug/n). */
-export function scriptureFor(book, tradition, tags, seedKey, translationId) {
+/** Pick passage for tradition + tags/theme; rotates by seedKey (quote slug/n). */
+export function scriptureFor(book, tradition, tags, seedKey, translationId, theme, map) {
   if (!book || !tradition || tradition === 'none' || !traditionIds.has(tradition)) return null
   const themes = book[tradition]
   if (!themes) return null
   const useTranslation = translationsFor(tradition).some((t) => t.id === translationId) ? translationId : null
-  for (const theme of themesForTags(tags)) {
-    const entries = themeEntries(themes[theme])
+  for (const t of themesForQuote(tags, theme, map || tagThemes)) {
+    const entries = themeEntries(themes[t])
     if (entries.length) {
       return resolveTranslation(entries[seedFromKey(seedKey) % entries.length], useTranslation)
     }

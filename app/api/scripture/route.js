@@ -2,6 +2,8 @@ import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { listScriptureEntries, removeScripture, upsertScripture } from '@/libs/manage-scripture'
 import { getScriptureBook } from '@/libs/scripture'
+import { readTags } from '@/libs/tags-store'
+import { themesMap } from '@/libs/tag-lane'
 import { NextResponse } from 'next/server'
 
 function revalidateScripture() {
@@ -10,12 +12,12 @@ function revalidateScripture() {
 
 export async function GET() {
   try {
-    return NextResponse.json({ data: await getScriptureBook() })
+    const [data, tags] = await Promise.all([getScriptureBook(), readTags()])
+    return NextResponse.json({ data, themes: themesMap(tags) })
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 })
   }
 }
-
 export async function POST(req) {
   const auth = await requireAdmin()
   if (auth instanceof NextResponse) return auth

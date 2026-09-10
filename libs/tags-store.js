@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { tagSeed } from '@/config/quotes'
+import { tagFields } from '@/libs/tag-lane'
 import { mongoUri } from './mongo'
 
 const dataFile = path.join(process.cwd(), 'data/tags.json')
@@ -76,9 +77,8 @@ export function findTagIndex(tags, name) {
   return asTags(tags).findIndex((t) => t.name.toLowerCase() === key)
 }
 
-function tagRecord(name, moodLabel = '') {
-  const mood = String(moodLabel ?? '').trim()
-  return { name, ...(mood ? { moodLabel: mood } : {}) }
+function record(name, patch = {}) {
+  return tagFields({ name, moodLabel: patch.moodLabel ?? '', theme: patch.theme ?? '', hashtags: patch.hashtags ?? '' })
 }
 
 /** Local JSON + optional Mongo catalog (remote wins). */
@@ -92,32 +92,41 @@ export async function readTags() {
   return remote ?? tags
 }
 
-export async function addTag(rawName, moodLabel = '') {
+export async function addTag(rawName, patch = {}) {
   const name = normalizeTagName(rawName)
   const tags = await readTags()
   if (findTagIndex(tags, name) >= 0) throw new Error('Tag already exists')
-  const next = [...tags, tagRecord(name, moodLabel)]
+  const next = [...tags, record(name, patch)]
   await persistTags(next)
   return next
 }
 
-export async function updateTag(oldName, { name: rawName, moodLabel } = {}) {
+export async function updateTag(oldName, patch = {}) {
   const tags = await readTags()
   const i = findTagIndex(tags, oldName)
   if (i < 0) throw new Error('Tag not found')
 
   const prev = tags[i]
-  const name = rawName !== undefined ? normalizeTagName(rawName) : prev.name
-  const mood = moodLabel !== undefined ? String(moodLabel).trim() : prev.moodLabel || ''
-
+  const name = patch.name !== undefined ? normalizeTagName(patch.name) : prev.name
   if (name.toLowerCase() !== prev.name.toLowerCase() && findTagIndex(tags, name) >= 0) {
     throw new Error('Tag already exists')
   }
 
   const next = [...tags]
-  next[i] = tagRecord(name, mood)
+  next[i] = record(name, {
+    moodLabel: patch.moodLabel !== undefined ? patch.moodLabel : prev.moodLabel || '',
+    theme: patch.theme !== undefined ? patch.theme : prev.theme || '',
+    hashtags: patch.hashtags !== undefined ? patch.hashtags : prev.hashtags || '',
+  })
   await persistTags(next)
-  return { tags: next, renamed: name !== prev.name, from: prev.name, to: name }
+  return {
+    tags: next,
+    renamed: name !== prev.name,
+    from: prev.name,
+    to: name,
+    themeFrom: prev.theme || '',
+    themeTo: next[i].theme || '',
+  }
 }
 
 export async function removeTag(name) {

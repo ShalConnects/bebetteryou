@@ -10,6 +10,7 @@ export const shop = {
 export const nav = [
   { href: '/quotes', label: 'Quotes' },
   ...(appConfig.features.enableBlog ? [{ href: '/blog', label: 'Blog' }] : []),
+  ...(appConfig.features.enableBooks ? [{ href: '/books', label: 'Books' }] : []),
   { href: '/shop', label: 'Shop', soon: !(appConfig.features.enablePrintShop || shop.url) },
   ...(appConfig.features.enablePricing ? [{ href: '/pricing', label: 'Pricing' }] : []),
 ]

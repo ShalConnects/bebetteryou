@@ -4,11 +4,11 @@ export const homeQuoteCount = 9
 export const heroQuoteCount = 5
 export const quotesPageSize = 24
 
-/** Seed / fallback — persisted catalog may grow via admin. */
+/** Seed / fallback — persisted catalog may grow via admin. Theme links scripture; hashtags feed social. */
 export const tagSeed = [
-  { name: 'Motivation', moodLabel: 'Need a push' },
-  { name: 'Mindset', moodLabel: 'Clear my head' },
-  { name: 'Growth', moodLabel: 'Level up' },
-  { name: 'Love', moodLabel: 'Soft landing' },
-  { name: 'Yourself', moodLabel: 'Tough love' },
+  { name: 'Motivation', moodLabel: 'Need a push', theme: 'perseverance', hashtags: '#motivation #bebetteryou' },
+  { name: 'Mindset', moodLabel: 'Clear my head', theme: 'clarity', hashtags: '#mindset #bebetteryou' },
+  { name: 'Growth', moodLabel: 'Level up', theme: 'growth', hashtags: '#growth #bebetteryou' },
+  { name: 'Love', moodLabel: 'Soft landing', theme: 'love', hashtags: '#love #bebetteryou' },
+  { name: 'Yourself', moodLabel: 'Tough love', theme: 'self-worth', hashtags: '#selfworth #bebetteryou' },
 ]

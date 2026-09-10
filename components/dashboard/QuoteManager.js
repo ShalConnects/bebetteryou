@@ -30,8 +30,22 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
 
   function pick(quote) {
     setSlug(quote.slug)
-    setForm({ text: quote.text || '', author: quote.author || '', tags: quote.tags || [] })
+    setForm({
+      text: quote.text || '',
+      author: quote.author || '',
+      tags: quote.tags || [],
+      theme: quote.theme || '',
+      relatedBooks: (quote.related?.books || []).join(', '),
+      relatedPosts: (quote.related?.posts || []).join(', '),
+    })
     setError('')
+  }
+
+  function parseSlugs(raw) {
+    return String(raw || '')
+      .split(/[\s,]+/)
+      .map((s) => s.trim())
+      .filter(Boolean)
   }
 
   async function save(regenerate) {
@@ -42,11 +56,29 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
       const res = await fetch(`/api/quotes/${slug}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, regenerate }),
+        body: JSON.stringify({
+          text: form.text,
+          author: form.author,
+          tags: form.tags,
+          theme: form.theme,
+          related: {
+            books: parseSlugs(form.relatedBooks),
+            posts: parseSlugs(form.relatedPosts),
+          },
+          regenerate,
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
       setItems((prev) => prev.map((x) => (x.slug === slug ? data : x)))
+      setForm({
+        text: data.text || '',
+        author: data.author || '',
+        tags: data.tags || [],
+        theme: data.theme || '',
+        relatedBooks: (data.related?.books || []).join(', '),
+        relatedPosts: (data.related?.posts || []).join(', '),
+      })
     } catch (err) {
       setError(err.message)
     } finally {
@@ -171,6 +203,42 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
           </label>
 
           <TagPicker options={tagOptions} value={form.tags} onChange={(tags) => setForm({ ...form, tags })} />
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Scripture theme (optional pin)
+            </span>
+            <input
+              value={form.theme}
+              onChange={(e) => setForm({ ...form, theme: e.target.value })}
+              placeholder="e.g. perseverance — blank = from tags"
+              className={inputClass}
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Pin books (slugs)
+            </span>
+            <input
+              value={form.relatedBooks}
+              onChange={(e) => setForm({ ...form, relatedBooks: e.target.value })}
+              placeholder="atomic-habits, cant-hurt-me"
+              className={inputClass}
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Pin posts (slugs)
+            </span>
+            <input
+              value={form.relatedPosts}
+              onChange={(e) => setForm({ ...form, relatedPosts: e.target.value })}
+              placeholder="discipline-for-men"
+              className={inputClass}
+            />
+          </label>
 
           {overLines ? (
             <p className="text-sm text-red-400">{quoteLinesOverflowMessage(lines)}</p>

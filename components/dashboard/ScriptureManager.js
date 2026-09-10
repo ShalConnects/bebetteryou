@@ -9,13 +9,19 @@ const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
 
 const traditionOptions = traditions.filter((t) => t.id !== 'none')
-const themeOptions = Object.entries(tagThemes).map(([tag, theme]) => ({ tag, theme, label: `${tag} (${theme})` }))
+const seedThemeOptions = Object.entries(tagThemes).map(([tag, theme]) => ({ tag, theme, label: `${tag} (${theme})` }))
 
-const emptyDraft = { tradition: 'christianity', theme: 'perseverance', ref: '', text: '', url: '' }
-
-export default function ScriptureManager({ entries: initial, gaps = [], quotes = [] }) {
+export default function ScriptureManager({ entries: initial, gaps = [], quotes = [], themeOptions = seedThemeOptions }) {
+  const emptyDraft = {
+    tradition: 'christianity',
+    theme: themeOptions[0]?.theme || 'perseverance',
+    ref: '',
+    text: '',
+    url: '',
+  }
   const [items, setItems] = useState(initial)
   const [book, setBook] = useState(null)
+  const [themes, setThemes] = useState(tagThemes)
   const [draft, setDraft] = useState(emptyDraft)
   const [previewN, setPreviewN] = useState('')
   const [previewTradition, setPreviewTradition] = useState('christianity')
@@ -28,15 +34,26 @@ export default function ScriptureManager({ entries: initial, gaps = [], quotes =
   useEffect(() => {
     fetch('/api/scripture')
       .then((r) => r.json())
-      .then((d) => setBook(d.data || null))
+      .then((d) => {
+        setBook(d.data || null)
+        if (d.themes) setThemes(d.themes)
+      })
       .catch(() => {})
   }, [items])
 
   const previewQuote = quotes.find((q) => String(q.n) === previewN)
   const previewEntry = useMemo(() => {
     if (!book || !previewQuote) return null
-    return scriptureFor(book, previewTradition, previewQuote.tags, previewQuote.slug, previewTranslation)
-  }, [book, previewQuote, previewTradition, previewTranslation])
+    return scriptureFor(
+      book,
+      previewTradition,
+      previewQuote.tags,
+      previewQuote.slug,
+      previewTranslation,
+      previewQuote.theme,
+      themes
+    )
+  }, [book, previewQuote, previewTradition, previewTranslation, themes])
 
   async function save(body) {
     const res = await fetch('/api/scripture', {

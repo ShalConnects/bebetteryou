@@ -4,6 +4,8 @@ import { getSiteUrl } from '@/libs/site-url'
 import { networkStatus } from '@/config/social'
 import { getQuote } from '@/libs/content'
 import { quoteOneLine } from '@/libs/quote-text'
+import { hashtagsForTags } from '@/libs/tag-lane'
+import { readTags } from '@/libs/tags-store'
 import { postInstagram } from './providers/instagram'
 import { postFacebook } from './providers/facebook'
 import { postLinkedIn } from './providers/linkedin'
@@ -16,13 +18,15 @@ const providers = {
   x: postX,
 }
 
-export function quoteCaption(quote) {
+export async function quoteCaption(quote) {
   const body = quoteOneLine(quote.text) || `Quote #${quote.n}`
   const base = getSiteUrl()
   const credit = quote.author?.trim()
-  return credit
+  const core = credit
     ? `${body}\n\n— ${credit}\n${base}/quotes/${quote.slug}`
     : `${body}\n\n${base}/quotes/${quote.slug}`
+  const tags = hashtagsForTags(quote.tags, await readTags())
+  return tags ? `${core}\n\n${tags}` : core
 }
 
 function absoluteImageUrl(src) {
@@ -39,7 +43,7 @@ export async function postQuote(slug, networkIds) {
   if (!quote) throw new Error('Quote not found')
 
   const status = Object.fromEntries(networkStatus().map((n) => [n.id, n]))
-  const caption = quoteCaption(quote)
+  const caption = await quoteCaption(quote)
   const imageUrl = absoluteImageUrl(quote.src)
   const imageBuffer = await resolveImageBuffer(quote.src)
 

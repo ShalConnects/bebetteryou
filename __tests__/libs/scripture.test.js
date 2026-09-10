@@ -4,6 +4,7 @@ import {
   scriptureShareText,
   quoteShowsScripture,
   themesForTags,
+  themesForQuote,
   themeEntries,
   seedFromKey,
 } from '@/libs/scripture-core'
@@ -27,9 +28,16 @@ describe('scripture-core', () => {
     expect(themesForTags(['Mindset'])).toEqual(['clarity'])
   })
 
+  it('prefers explicit quote theme over tags', () => {
+    expect(themesForQuote(['Motivation'], 'clarity')).toEqual(['clarity'])
+    expect(themesForQuote([], 'perseverance')).toEqual(['perseverance'])
+    expect(scriptureFor(book, 'christianity', ['Motivation'], 'x', null, 'clarity')?.ref).toBe('James 1:5')
+  })
+
   it('shows for all catalog tags', () => {
     expect(quoteShowsScripture(['Motivation'])).toBe(true)
     expect(quoteShowsScripture([])).toBe(false)
+    expect(quoteShowsScripture([], 'perseverance')).toBe(true)
   })
 
   it('returns theme-matched entry', () => {

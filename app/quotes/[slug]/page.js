@@ -1,7 +1,8 @@
 import { getQuote, listQuotes, neighbors } from '@/libs/content'
 import { quoteAlt, quoteLabel, quoteOneLine } from '@/libs/quote-text'
+import { relatedForQuote } from '@/libs/related'
 import { buildMetadata } from '@/libs/seo'
-import { getUrl } from '@/config/app'
+import { appConfig, getUrl } from '@/config/app'
 import QuoteAside from '@/components/site/QuoteAside'
 import QuoteImage from '@/components/site/QuoteImage'
 import { Page } from '@/components/site/ui'
@@ -33,6 +34,9 @@ export default async function QuotePage({ params }) {
     image: getUrl(quote.src),
     fileName: `bby${quote.n}.jpg`,
   }
+  const related = await relatedForQuote(quote)
+  const books = appConfig.features.enableBooks ? related.books : []
+  const posts = appConfig.features.enableBlog ? related.posts : []
 
   return (
     <Page as="article">
@@ -46,7 +50,14 @@ export default async function QuotePage({ params }) {
             className="h-auto w-full"
           />
         </div>
-        <QuoteAside quote={quote} prev={prev} next={next} share={share} />
+        <QuoteAside
+          quote={quote}
+          prev={prev}
+          next={next}
+          share={share}
+          books={books}
+          posts={posts}
+        />
       </div>
     </Page>
   )

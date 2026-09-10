@@ -34,7 +34,7 @@ export async function readQuotes() {
     const { connectDB } = await import('./mongo')
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
-    const remote = asList(await Quote.find().select('slug n src text author tags').lean())
+    const remote = asList(await Quote.find().select('slug n src text author tags theme related').lean())
     if (!remote.length) return local
 
     const map = new Map(local.map((q) => [q.slug, q]))

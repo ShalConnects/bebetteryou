@@ -11,7 +11,9 @@ export default async function AdminTagsPage() {
 
   return (
     <div className="space-y-8">
-      <PageIntro title="Manage tags">Add, edit, or delete tags. Mood labels power Surprise on the site.</PageIntro>
+      <PageIntro title="Manage tags">
+        Content lanes for quotes, scripture, blog, and social. Mood labels power Surprise on the site.
+      </PageIntro>
       <TagManager tags={tags} />
     </div>
   )

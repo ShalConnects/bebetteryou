@@ -4,11 +4,11 @@ import { quoteShowsScripture } from '@/libs/scripture-core'
 import { traditions } from '@/config/traditions'
 import { useScriptureQuote, useTradition } from './TraditionProvider'
 
-export default function TraditionPassage({ tags, slug, n, className = '' }) {
-  const { tradition, showPassages, ready, openPicker } = useTradition()
-  const entry = useScriptureQuote({ tags, slug, n })
+export default function TraditionPassage({ tags, slug, n, theme, className = '' }) {
+  const { tradition, showPassages, ready, openPicker, tagThemesMap } = useTradition()
+  const entry = useScriptureQuote({ tags, slug, n, theme })
 
-  if (!ready || !quoteShowsScripture(tags)) return null
+  if (!ready || !quoteShowsScripture(tags, theme, tagThemesMap)) return null
 
   if (!tradition) {
     return (

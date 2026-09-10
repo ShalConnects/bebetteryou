@@ -71,6 +71,8 @@ export const appConfig = {
   features: {
     // Blog ships with content, so it is on unless explicitly disabled.
     enableBlog: process.env.NEXT_PUBLIC_ENABLE_BLOG !== 'false',
+    // Books catalog (Amazon affiliate); on unless explicitly disabled.
+    enableBooks: process.env.NEXT_PUBLIC_ENABLE_BOOKS !== 'false',
     // First-party analytics: no third party, no cookies, so it is on by default.
     enableAnalytics: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== 'false',
     enableApiDocs: process.env.ENABLE_API_DOCS === 'true',
