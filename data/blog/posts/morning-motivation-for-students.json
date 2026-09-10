@@ -1,0 +1,61 @@
+{
+  "slug": "morning-motivation-for-students",
+  "topic": "morning-motivation",
+  "modifier": "for-students",
+  "title": "Morning Motivation for Students: 7 Ways to Start the Day Awake",
+  "description": "Seven realistic ways for students to build morning motivation — no 5am cold plunge required. Plus quote cards for the days you hit snooze twice.",
+  "excerpt": "No 5am cold plunge. Seven things that actually work when your first lecture is in forty minutes.",
+  "date": "2026-09-08",
+  "status": "published",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "Most morning advice was written by people who don't have a 9am lecture, a shift at six, and a deadline they've been ignoring since Tuesday. You don't need a two-hour sunrise ritual. You need about eleven minutes and one decision made the night before."
+    },
+    {
+      "type": "section",
+      "heading": "Mornings aren't magic — they're just cheap",
+      "text": "The reason mornings matter for students isn't discipline folklore. It's that 7am is the only part of your day nobody else has booked. No group chat, no seminar, no shift. Whatever you put there is the one thing the day can't take back from you. Protect eleven minutes of it and you've already won something before anyone else is awake."
+    },
+    {
+      "type": "section",
+      "heading": "Seven things that actually work",
+      "items": [
+        "Decide tonight, not tomorrow. Motivation at 7am is a coin flip. A decision made at 11pm is a plan.",
+        "Put the alarm across the room. Boring, ancient, still undefeated.",
+        "Open the curtains before you open your phone. Light tells your body the day started; your phone tells it there's an emergency.",
+        "Drink water first. You woke up dehydrated, and dehydration does an excellent impression of tiredness.",
+        "Do the smallest version of the hard thing. Ten minutes of the essay, not the essay. Starting is the whole trick.",
+        "Keep one thing off the list. A morning with six tasks is a morning you'll skip.",
+        "Two minutes of movement. Stairs, pushups, a walk to the kettle and back twice. You're not training, you're switching the lights on."
+      ]
+    },
+    {
+      "type": "quotes",
+      "heading": "Cards for the 7am version of you"
+    },
+    {
+      "type": "section",
+      "heading": "If you only do one thing",
+      "text": "Pick the smallest version of the hard thing and do it before you check your phone. That's it. Not because ten minutes finishes the work, but because you spend the rest of the day as someone who already started — and that person makes different choices at 4pm."
+    },
+    {
+      "type": "faq",
+      "heading": "Common questions",
+      "items": [
+        {
+          "q": "Do I have to wake up at 5am?",
+          "a": "No. The hour is irrelevant. What matters is that some part of your morning belongs to you before it belongs to a timetable. If that's 9:15, fine."
+        },
+        {
+          "q": "What if I'm genuinely not a morning person?",
+          "a": "Then stop trying to become one and shrink the target instead. Eleven minutes of light, water and movement works at any chronotype. The 5am crowd are selling identity, not results."
+        },
+        {
+          "q": "How long until it feels normal?",
+          "a": "Roughly two weeks of imperfect attempts. Missing a day doesn't reset anything — missing a week quietly does, so treat two in a row as the line you don't cross."
+        }
+      ]
+    }
+  ]
+}

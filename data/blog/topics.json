@@ -1,0 +1,21 @@
+{
+  "topics": [
+    { "id": "morning-motivation", "label": "Morning motivation", "tag": "Motivation" },
+    { "id": "discipline", "label": "Discipline", "tag": "Yourself" },
+    { "id": "workout-motivation", "label": "Workout motivation", "tag": "Motivation" },
+    { "id": "motivation-when-stuck", "label": "When you feel stuck", "tag": "Motivation" },
+    { "id": "mindset-shifts", "label": "Mindset shifts", "tag": "Mindset" },
+    { "id": "consistency", "label": "Consistency", "tag": "Growth" },
+    { "id": "confidence", "label": "Confidence", "tag": "Yourself" },
+    { "id": "focus", "label": "Focus", "tag": "Mindset" }
+  ],
+  "modifiers": [
+    { "id": "for-students", "label": "for students" },
+    { "id": "for-men", "label": "for men" },
+    { "id": "for-women", "label": "for women" },
+    { "id": "daily", "label": "daily" },
+    { "id": "short", "label": "short" },
+    { "id": "after-failure", "label": "after failure" },
+    { "id": "at-night", "label": "at night" }
+  ]
+}

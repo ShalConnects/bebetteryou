@@ -1,0 +1,44 @@
+{
+  "slug": "from-blah-to-blaze",
+  "topic": "motivation-when-stuck",
+  "title": "From Blah to Blaze: Spark Motivation When You Feel Stuck",
+  "description": "Stuck, flat, going through the motions? Start smaller than feels respectable, find your inspiration fix, and move your body when the fire dips.",
+  "excerpt": "Start small, find your inspiration fix, and move your body when the fire dips.",
+  "date": "2018-01-23",
+  "status": "published",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "Stuck doesn't usually feel dramatic. It feels like flat. You're not in crisis, you're just going through the motions, and every plan you make gets quietly rescheduled to next week. The way out isn't a bigger plan. It's a smaller one, done today."
+    },
+    {
+      "type": "section",
+      "heading": "Start smaller than feels respectable",
+      "text": "When you're flat, ambition is the enemy. A five-day plan you can't start beats nothing by exactly nothing. So shrink it until it's almost embarrassing: one paragraph, one email, ten minutes, one room. The point isn't the output. It's proving to yourself that you're still someone who moves when they decide to."
+    },
+    {
+      "type": "section",
+      "heading": "Find your inspiration fix",
+      "text": "Everyone has a thing that reliably turns the lights back on — a certain album, a certain film, a walk on a certain route, one friend who talks straight. Most people know what theirs is and use it by accident. Write yours down. When the fire dips, you don't want to be searching for it; you want to reach for it."
+    },
+    {
+      "type": "section",
+      "heading": "Move your body first, think second",
+      "items": [
+        "Ten minutes of walking outside beats an hour of deciding indoors.",
+        "Do something physical before something mental — the order matters more than the intensity.",
+        "Change the room. Stuck is often just the same chair for too long.",
+        "Handle one small piece of the mess. Clear surfaces, clearer head."
+      ]
+    },
+    {
+      "type": "quotes",
+      "heading": "Cards for the flat days"
+    },
+    {
+      "type": "section",
+      "heading": "Then let it be unimpressive",
+      "text": "The first day back is not supposed to feel like a blaze. It feels like a spark you have to cup your hands around. Do the small thing, notice that you did it, and do it again tomorrow. The fire comes from repetition, not from the first match."
+    }
+  ]
+}

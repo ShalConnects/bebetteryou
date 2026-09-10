@@ -1,0 +1,251 @@
+{
+  "christianity": {
+    "perseverance": [
+      {
+        "ref": "Philippians 4:13",
+        "text": "I can do all things through him who strengthens me.",
+        "url": "https://www.biblegateway.com/passage/?search=Philippians+4:13&version=NIV",
+        "alt": {
+          "kjv": {
+            "ref": "Philippians 4:13",
+            "text": "I can do all things through Christ which strengtheneth me.",
+            "url": "https://www.biblegateway.com/passage/?search=Philippians+4:13&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Isaiah 40:31",
+        "text": "But they who wait for the Lord shall renew their strength; they shall mount up with wings like eagles.",
+        "url": "https://www.biblegateway.com/passage/?search=Isaiah+40:31&version=NIV"
+      }
+    ],
+    "clarity": {
+      "ref": "James 1:5",
+      "text": "If any of you lacks wisdom, let him ask God, who gives generously to all without reproach.",
+      "url": "https://www.biblegateway.com/passage/?search=James+1:5&version=NIV"
+    },
+    "growth": {
+      "ref": "2 Peter 3:18",
+      "text": "Grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
+      "url": "https://www.biblegateway.com/passage/?search=2+Peter+3:18&version=NIV"
+    },
+    "love": {
+      "ref": "1 Corinthians 13:4",
+      "text": "Love is patient and kind; love does not envy or boast.",
+      "url": "https://www.biblegateway.com/passage/?search=1+Corinthians+13:4&version=NIV"
+    },
+    "self-worth": {
+      "ref": "Psalm 139:14",
+      "text": "I praise you, for I am fearfully and wonderfully made.",
+      "url": "https://www.biblegateway.com/passage/?search=Psalm+139:14&version=NIV"
+    }
+  },
+  "islam": {
+    "perseverance": {
+      "ref": "Quran 94:5–6",
+      "text": "Indeed, with hardship comes ease. Indeed, with hardship comes ease.",
+      "url": "https://quran.com/94"
+    },
+    "clarity": {
+      "ref": "Quran 20:114",
+      "text": "My Lord, increase me in knowledge.",
+      "url": "https://quran.com/20/114"
+    },
+    "growth": {
+      "ref": "Quran 13:11",
+      "text": "Indeed, Allah will not change the condition of a people until they change what is in themselves.",
+      "url": "https://quran.com/13/11"
+    },
+    "love": {
+      "ref": "Quran 49:10",
+      "text": "The believers are but brothers, so make settlement between your brothers.",
+      "url": "https://quran.com/49/10"
+    },
+    "self-worth": {
+      "ref": "Quran 95:4",
+      "text": "We have certainly created man in the best of stature.",
+      "url": "https://quran.com/95/4"
+    }
+  },
+  "judaism": {
+    "perseverance": {
+      "ref": "Psalms 27:14",
+      "text": "Wait for the Lord; be strong, and let your heart take courage.",
+      "url": "https://www.sefaria.org/Psalms.27.14"
+    },
+    "clarity": {
+      "ref": "Proverbs 3:5–6",
+      "text": "Trust in the Lord with all your heart, and do not lean on your own understanding.",
+      "url": "https://www.sefaria.org/Proverbs.3.5"
+    },
+    "growth": {
+      "ref": "Micah 6:8",
+      "text": "What does the Lord require of you? To do justice, love kindness, and walk humbly.",
+      "url": "https://www.sefaria.org/Micah.6.8"
+    },
+    "love": {
+      "ref": "Leviticus 19:18",
+      "text": "You shall love your neighbor as yourself.",
+      "url": "https://www.sefaria.org/Leviticus.19.18"
+    },
+    "self-worth": {
+      "ref": "Psalms 8:5",
+      "text": "You have made them a little lower than the heavenly beings and crowned them with glory and honor.",
+      "url": "https://www.sefaria.org/Psalms.8.5"
+    }
+  },
+  "hinduism": {
+    "perseverance": {
+      "ref": "Bhagavad Gita 2:47",
+      "text": "You have a right to perform your duty, but not to the fruits of action.",
+      "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/47"
+    },
+    "clarity": {
+      "ref": "Bhagavad Gita 6:5",
+      "text": "Elevate yourself through the power of your mind, and do not degrade yourself.",
+      "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/5"
+    },
+    "growth": {
+      "ref": "Bhagavad Gita 6:35",
+      "text": "Through practice and detachment, the mind can be restrained.",
+      "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/35"
+    },
+    "love": {
+      "ref": "Bhagavad Gita 12:13",
+      "text": "One who is not envious but is a kind friend to all beings is dear to Me.",
+      "url": "https://www.holy-bhagavad-gita.org/chapter/12/verse/13"
+    },
+    "self-worth": {
+      "ref": "Upanishad teaching",
+      "text": "You are what your deep, driving desire is. As your desire is, so is your will.",
+      "url": "https://www.wisdomlib.org/hinduism/book/chandogya-upanishad"
+    }
+  },
+  "buddhism": {
+    "perseverance": {
+      "ref": "Dhammapada 183",
+      "text": "To cease from evil, to do good, and to purify the mind — this is the teaching of the awakened ones.",
+      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
+    },
+    "clarity": {
+      "ref": "Dhammapada 36",
+      "text": "Let one find joy in vigilance; the wise guard the mind.",
+      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
+    },
+    "growth": {
+      "ref": "Dhammapada 276",
+      "text": "You yourselves must strive; the Buddhas only point the way.",
+      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
+    },
+    "love": {
+      "ref": "Metta Sutta",
+      "text": "May all beings be happy and secure; may their hearts be wholesome.",
+      "url": "https://www.accesstoinsight.org/tipitaka/kn/snp/snp.1.08.than.html"
+    },
+    "self-worth": {
+      "ref": "Dhammapada 104",
+      "text": "Greater in battle than the man who conquers a thousand times a thousand is the one who conquers himself.",
+      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
+    }
+  },
+  "sikhism": {
+    "perseverance": {
+      "ref": "Guru Granth Sahib",
+      "text": "With your own hands carve your destiny.",
+      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
+    },
+    "clarity": {
+      "ref": "Guru Granth Sahib",
+      "text": "Where there is truth, there is righteousness; where there is righteousness, there is divine bliss.",
+      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
+    },
+    "growth": {
+      "ref": "Guru Granth Sahib",
+      "text": "As one learns, so one teaches; as one sows, so one reaps.",
+      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
+    },
+    "love": {
+      "ref": "Guru Granth Sahib",
+      "text": "No one is my enemy, and no one is a stranger. I get along with everyone.",
+      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
+    },
+    "self-worth": {
+      "ref": "Guru Granth Sahib",
+      "text": "Recognize the divine light within all; do not consider anyone inferior.",
+      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
+    }
+  },
+  "secular": {
+    "perseverance": {
+      "ref": "Marcus Aurelius, Meditations",
+      "text": "You have power over your mind — not outside events. Realize this, and you will find strength.",
+      "url": "https://en.wikisource.org/wiki/Meditations_of_Marcus_Aurelius"
+    },
+    "clarity": [
+      {
+        "ref": "Seneca",
+        "text": "We suffer more often in imagination than in reality.",
+        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius"
+      },
+      {
+        "ref": "A",
+        "text": "First",
+        "url": null
+      },
+      {
+        "ref": "B",
+        "text": "Second",
+        "url": null
+      }
+    ],
+    "growth": {
+      "ref": "Epictetus",
+      "text": "No great thing is created suddenly.",
+      "url": "https://en.wikisource.org/wiki/Epictetus"
+    },
+    "love": {
+      "ref": "Audre Lorde",
+      "text": "It is not our differences that divide us. It is our inability to recognize and celebrate those differences.",
+      "url": null
+    },
+    "self-worth": [
+      {
+        "ref": "Carl Sagan",
+        "text": "For small creatures such as we, the vastness is bearable only through love.",
+        "url": null
+      },
+      {
+        "ref": "A",
+        "text": "First",
+        "url": null
+      }
+    ]
+  },
+  "spiritual": {
+    "perseverance": {
+      "ref": "Universal reflection",
+      "text": "The light you seek is already within you — keep walking toward it.",
+      "url": null
+    },
+    "clarity": {
+      "ref": "Universal reflection",
+      "text": "Still the mind, and the path ahead becomes clearer.",
+      "url": null
+    },
+    "growth": {
+      "ref": "Universal reflection",
+      "text": "Every step forward, however small, reshapes who you become.",
+      "url": null
+    },
+    "love": {
+      "ref": "Universal reflection",
+      "text": "Where compassion grows, the heart finds its true strength.",
+      "url": null
+    },
+    "self-worth": {
+      "ref": "Universal reflection",
+      "text": "You are already whole — your journey is to remember that.",
+      "url": null
+    }
+  }
+}
