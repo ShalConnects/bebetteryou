@@ -53,8 +53,8 @@ export default function SocialPost({ slug }) {
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Post to social</p>
       {ready.length === 0 ? (
         <p className="text-sm text-quiet">
-          Add API keys in <code className="text-body">.env.local</code> (see env.example). LinkedIn works locally;
-          Instagram needs a public <code className="text-body">SITE_URL</code>.
+          Add API keys in <code className="text-body">.env.local</code> (see env.example). Instagram needs a public{' '}
+          <code className="text-body">SITE_URL</code>. YouTube Shorts: Connect below, then Post.
         </p>
       ) : null}
       <div className="flex flex-wrap gap-4">
@@ -75,6 +75,14 @@ export default function SocialPost({ slug }) {
           </label>
         ))}
       </div>
+      {networks.some((n) => n.id === 'youtube' && n.connectable) ? (
+        <p className="text-sm">
+          <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
+            Connect YouTube
+          </a>{' '}
+          <span className="text-quiet">to post Shorts from this site.</span>
+        </p>
+      ) : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {results ? (
         <ul className="space-y-1 text-sm">

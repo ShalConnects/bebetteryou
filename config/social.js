@@ -22,6 +22,11 @@ export const postNetworks = [
     label: 'X',
     env: ['X_API_KEY', 'X_API_SECRET', 'X_ACCESS_TOKEN', 'X_ACCESS_SECRET'],
   },
+  {
+    id: 'youtube',
+    label: 'YouTube Shorts',
+    env: ['YOUTUBE_CLIENT_ID', 'YOUTUBE_CLIENT_SECRET', 'YOUTUBE_REFRESH_TOKEN'],
+  },
 ]
 
 export function networkStatus() {

@@ -11,7 +11,7 @@ import { readQuotes } from '@/libs/quotes-store'
 import { ActionLink, DashPanel, Stat } from '@/components/dashboard/ui'
 import { PageIntro } from '@/components/site/ui'
 
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions)
   const isAdmin = isAdminSession(session)
   const name = session?.user?.name
@@ -30,6 +30,13 @@ export default async function Dashboard() {
   if (isAdmin) {
     const { stats, social } = await adminOverview(await readQuotes())
     const readySocial = social.filter((n) => n.ready).length
+    const yt = (await searchParams)?.youtube
+    const ytNote =
+      yt === 'connected'
+        ? 'YouTube connected. You can post Shorts from this dashboard.'
+        : yt
+          ? 'YouTube connect failed. Add the callback URL in Google Cloud and try Connect again.'
+          : ''
 
     return (
       <div className="space-y-8">
@@ -64,11 +71,20 @@ export default async function Dashboard() {
         </div>
 
         <DashPanel title="Social">
+          {ytNote ? <p className="mb-4 text-sm text-paper">{ytNote}</p> : null}
           <ul className="space-y-2">
-            {social.map(({ id, label, ready }) => (
+            {social.map(({ id, label, ready, connectable }) => (
               <li key={id} className="flex items-center justify-between text-sm">
                 <span className="text-body">{label}</span>
-                <span className={ready ? 'text-paper' : 'text-quiet'}>{ready ? 'Ready' : 'Not configured'}</span>
+                {ready ? (
+                  <span className="text-paper">Ready</span>
+                ) : connectable ? (
+                  <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
+                    Connect
+                  </a>
+                ) : (
+                  <span className="text-quiet">Not configured</span>
+                )}
               </li>
             ))}
           </ul>

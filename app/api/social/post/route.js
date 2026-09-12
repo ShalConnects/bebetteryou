@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/libs/auth-helpers'
-import { networkStatus } from '@/config/social'
-import { postQuote } from '@/libs/social'
+import { postQuote, readyNetworks } from '@/libs/social'
+
+/** Encode + YouTube upload can exceed the default serverless window. */
+export const maxDuration = 60
 
 export async function GET() {
   const auth = await requireAdmin()
   if (auth instanceof NextResponse) return auth
-  return NextResponse.json({ networks: networkStatus() })
+  return NextResponse.json({ networks: await readyNetworks() })
 }
 
 export async function POST(req) {

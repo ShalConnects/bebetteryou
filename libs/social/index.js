@@ -2,6 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import { getSiteUrl } from '@/libs/site-url'
 import { networkStatus } from '@/config/social'
+import { youtubeClient } from '@/libs/social/youtube-oauth'
+import { readYoutubeRefreshToken } from '@/libs/social/youtube-store'
 import { readQuotes } from '@/libs/quotes-store'
 import { quoteOneLine } from '@/libs/quote-text'
 import { hashtagsForTags } from '@/libs/tag-lane'
@@ -10,12 +12,30 @@ import { postInstagram } from './providers/instagram'
 import { postFacebook } from './providers/facebook'
 import { postLinkedIn } from './providers/linkedin'
 import { postX } from './providers/x'
+import { postYouTube } from './providers/youtube'
 
 const providers = {
   instagram: postInstagram,
   facebook: postFacebook,
   linkedin: postLinkedIn,
   x: postX,
+  youtube: postYouTube,
+}
+
+/** Env keys plus a YouTube refresh token saved from Connect on the dashboard. */
+export async function readyNetworks() {
+  const { clientId, clientSecret } = youtubeClient()
+  const youtubeReady = Boolean(
+    clientId && clientSecret && (process.env.YOUTUBE_REFRESH_TOKEN || (await readYoutubeRefreshToken()))
+  )
+  return networkStatus().map((n) => {
+    if (n.id !== 'youtube') return { ...n, connectable: false }
+    return {
+      ...n,
+      ready: youtubeReady,
+      connectable: Boolean(clientId && clientSecret) && !youtubeReady,
+    }
+  })
 }
 
 export async function quoteCaption(quote) {
@@ -42,16 +62,15 @@ export async function postQuote(slug, networkIds) {
   const quote = (await readQuotes()).find((q) => q.slug === slug)
   if (!quote) throw new Error('Quote not found')
 
-  const status = Object.fromEntries(networkStatus().map((n) => [n.id, n]))
+  const statusList = await readyNetworks()
+  const status = Object.fromEntries(statusList.map((n) => [n.id, n]))
   const caption = await quoteCaption(quote)
   const imageUrl = absoluteImageUrl(quote.src)
   const imageBuffer = await resolveImageBuffer(quote.src)
 
   const targets = networkIds?.length
     ? networkIds
-    : networkStatus()
-        .filter((n) => n.ready)
-        .map((n) => n.id)
+    : statusList.filter((n) => n.ready).map((n) => n.id)
 
   return Promise.all(
     targets.map(async (id) => {

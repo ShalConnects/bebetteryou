@@ -1,4 +1,4 @@
-import { networkStatus } from '@/config/social'
+import { readyNetworks } from '@/libs/social'
 import { nextQuoteN } from './quotes-store'
 import { readTags, tagNames } from './tags-store'
 
@@ -13,5 +13,5 @@ export async function quoteStats(quotes) {
 }
 
 export async function adminOverview(quotes) {
-  return { stats: await quoteStats(quotes), social: networkStatus() }
+  return { stats: await quoteStats(quotes), social: await readyNetworks() }
 }

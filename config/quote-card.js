@@ -44,6 +44,15 @@ export const quoteCard = {
   },
 }
 
+/** Vertical still used to encode a YouTube Short from the quote JPEG. */
+export const quoteShort = {
+  width: 1080,
+  height: 1920,
+  seconds: 8,
+  fps: 30,
+  bg: quoteCard.bg,
+}
+
 /** next/image sizes — tuned to grid / hero scatter / detail layouts. */
 export const quoteImageSizes = {
   grid: '(max-width:399px) 100vw, (max-width:768px) 50vw, 33vw',

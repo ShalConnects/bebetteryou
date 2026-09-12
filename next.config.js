@@ -20,18 +20,19 @@ function siteImageHosts() {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   staticPageGenerationTimeout: 180,
-  serverExternalPackages: ['@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc'],
+  serverExternalPackages: ['@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc', 'ffmpeg-static'],
   // Quote + print renderers need fonts (and card layers) in the serverless bundle
   outputFileTracingIncludes: {
     '/api/quotes/**': ['./assets/**/*', './public/brand/**/*'],
     '/api/print/**': ['./assets/fonts/**/*'],
+    '/api/social/**': ['./node_modules/ffmpeg-static/**/*'],
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [
         ...(Array.isArray(config.externals) ? config.externals : config.externals ? [config.externals] : []),
         ({ request }, callback) => {
-          if (request === '@napi-rs/canvas' || request?.startsWith('@napi-rs/canvas-')) {
+          if (request === '@napi-rs/canvas' || request?.startsWith('@napi-rs/canvas-') || request === 'ffmpeg-static') {
             return callback(null, `commonjs ${request}`)
           }
           callback()
