@@ -5,13 +5,14 @@ import { appConfig, getUrl } from '@/config/app'
 import { getPost, listPosts, postQuotes, postTag, relatedPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
 import { relatedForPost } from '@/libs/related'
-import { buildMetadata, postJsonLd } from '@/libs/seo'
+import { buildMetadata, noIndex, postJsonLd } from '@/libs/seo'
 
 export function generateStaticParams() {
   return listPosts().map(({ slug }) => ({ slug }))
 }
 
 export async function generateMetadata({ params }) {
+  if (!appConfig.features.enableBlog) return noIndex
   const { slug } = await params
   const post = getPost(slug)
   if (!post) return buildMetadata({ title: 'Post' })

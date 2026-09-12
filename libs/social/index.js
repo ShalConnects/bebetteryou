@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { getSiteUrl } from '@/libs/site-url'
 import { networkStatus } from '@/config/social'
-import { getQuote } from '@/libs/content'
+import { readQuotes } from '@/libs/quotes-store'
 import { quoteOneLine } from '@/libs/quote-text'
 import { hashtagsForTags } from '@/libs/tag-lane'
 import { readTags } from '@/libs/tags-store'
@@ -39,7 +39,7 @@ function localImagePath(src) {
 
 /** Post a saved quote to selected networks. Returns [{ id, ok, error? }]. */
 export async function postQuote(slug, networkIds) {
-  const quote = await getQuote(slug)
+  const quote = (await readQuotes()).find((q) => q.slug === slug)
   if (!quote) throw new Error('Quote not found')
 
   const status = Object.fromEntries(networkStatus().map((n) => [n.id, n]))

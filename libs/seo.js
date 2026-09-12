@@ -38,6 +38,8 @@ export function buildMetadata({ title, description, image, url } = {}) {
   }
 }
 
+export const noIndex = { robots: { index: false, follow: false } }
+
 /** Static + generated routes for App Router sitemap.js */
 export async function getSitemapEntries() {
   const base = appConfig.siteUrl.replace(/\/$/, '')

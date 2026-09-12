@@ -47,6 +47,16 @@ export function tagForThemeMap(tags) {
   return Object.fromEntries(Object.entries(themesMap(tags)).map(([tag, theme]) => [theme, tag]))
 }
 
+/** Rename or drop one catalog name (`to` empty → remove). */
+export function retargetName(from, to) {
+  return (name) => (name === from ? to : name)
+}
+
+export function retargetNames(from, to) {
+  const one = retargetName(from, to)
+  return (names) => [...new Set((names || []).map(one).filter(Boolean))]
+}
+
 /** Deduped hashtag string from quote tags + catalog lanes. */
 export function hashtagsForTags(quoteTags, catalog) {
   const byName = Object.fromEntries((catalog || []).map((t) => [t.name, t]))

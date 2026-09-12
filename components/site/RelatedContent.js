@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { affiliateDisclosure, bookUrl } from '@/config/books'
+import { affiliateDisclosure, bookRel, bookUrl } from '@/config/books'
 import { booksHref } from '@/libs/books-url'
 import { postHref } from '@/libs/blog-url'
 
@@ -17,7 +17,7 @@ export function RelatedBooks({ books }) {
               <a
                 href={href}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel={bookRel}
                 className="text-body/85 transition-colors hover:text-paper"
               >
                 <span className="text-paper">{book.title}</span>
@@ -28,7 +28,7 @@ export function RelatedBooks({ books }) {
           )
         })}
       </ul>
-      <p className="mt-4 text-xs text-quiet/70">{affiliateDisclosure}</p>
+      {affiliateDisclosure ? <p className="mt-4 text-xs text-quiet/70">{affiliateDisclosure}</p> : null}
       <p className="mt-2">
         <Link href={booksHref()} className="tag">
           All books

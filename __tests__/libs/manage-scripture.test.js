@@ -1,6 +1,22 @@
+/**
+ * @jest-environment node
+ */
+jest.mock('@/libs/scripture-store')
+
 import { upsertScripture, removeScripture } from '@/libs/manage-scripture'
 import { themeEntries } from '@/libs/scripture-core'
-import { readLocalScripture } from '@/libs/scripture-store'
+import { persistScripture, readLocalScripture, readScripture } from '@/libs/scripture-store'
+
+let catalog
+
+beforeEach(() => {
+  catalog = { secular: { 'self-worth': [{ ref: 'Sagan', text: 'Love' }] } }
+  readScripture.mockImplementation(async () => catalog)
+  persistScripture.mockImplementation(async (next) => {
+    catalog = next
+  })
+  readLocalScripture.mockImplementation(() => catalog)
+})
 
 describe('manage-scripture validation', () => {
   it('rejects invalid tradition', async () => {
@@ -22,11 +38,28 @@ describe('manage-scripture validation', () => {
   })
 
   it('appends and removes by index', async () => {
-    const before = themeEntries(readLocalScripture().secular?.['self-worth']).length
     await upsertScripture({ tradition: 'secular', theme: 'self-worth', ref: 'A', text: 'First' })
     await upsertScripture({ tradition: 'secular', theme: 'self-worth', ref: 'B', text: 'Second' })
-    expect(themeEntries(readLocalScripture().secular?.['self-worth'])).toHaveLength(before + 2)
-    await removeScripture('secular', 'self-worth', before + 1)
-    await removeScripture('secular', 'self-worth', before)
+    expect(themeEntries(readLocalScripture().secular['self-worth'])).toHaveLength(3)
+    await removeScripture('secular', 'self-worth', 2)
+    await removeScripture('secular', 'self-worth', 1)
+    expect(themeEntries(readLocalScripture().secular['self-worth']).map((e) => e.ref)).toEqual(['Sagan'])
+  })
+
+  it('clears kjv when kjvText is sent empty', async () => {
+    catalog = {
+      christianity: {
+        perseverance: [{ ref: 'R', text: 'T', alt: { kjv: { ref: 'R', text: 'K', url: null } } }],
+      },
+    }
+    await upsertScripture({
+      tradition: 'christianity',
+      theme: 'perseverance',
+      index: 0,
+      ref: 'R',
+      text: 'T',
+      kjvText: '',
+    })
+    expect(themeEntries(catalog.christianity.perseverance)[0].alt).toBeUndefined()
   })
 })

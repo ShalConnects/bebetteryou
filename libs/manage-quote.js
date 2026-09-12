@@ -1,6 +1,6 @@
 import { normalizeRelated } from '@/libs/related'
 import { normalizeTheme, themeSet } from '@/libs/tag-lane'
-import { assertQuoteFits, renderQuoteCard } from './quote-card.mjs'
+import { assertQuoteFits, cardRevision, renderQuoteCard } from './quote-card.mjs'
 import { deleteQuoteImage, saveQuoteImage } from './quote-assets'
 import { normalizeAuthor, normalizeQuoteText } from './quote-text'
 import { appendQuote, readQuotes, removeQuote } from './quotes-store'
@@ -47,6 +47,7 @@ export async function updateQuote(slug, { text, author, tags, theme, related, re
       cardFile(existing.n),
       await renderQuoteCard({ n: existing.n, text: next.text, author: next.author })
     )
+    next.rev = cardRevision
   }
 
   await appendQuote(next)

@@ -26,7 +26,7 @@ function normalizeEntry(raw, prev) {
         url: String(raw?.kjvUrl ?? '').trim() || null,
       },
     }
-  } else if (prev?.alt) entry.alt = prev.alt
+  } else if (prev?.alt && !('kjvText' in (raw || {}))) entry.alt = prev.alt
   return entry
 }
 

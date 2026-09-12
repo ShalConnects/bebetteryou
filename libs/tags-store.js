@@ -133,8 +133,8 @@ export async function removeTag(name) {
   const tags = await readTags()
   const i = findTagIndex(tags, name)
   if (i < 0) throw new Error('Tag not found')
-  const removed = tags[i].name
+  const row = tags[i]
   const next = tags.filter((_, j) => j !== i)
   await persistTags(next)
-  return { tags: next, removed }
+  return { tags: next, removed: row.name, theme: row.theme || '' }
 }

@@ -1,14 +1,7 @@
-import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/libs/auth-helpers'
-import { deleteTag, editTag, listTagsWithUsage } from '@/libs/manage-tag'
+import { deleteTag, editTag, listTagsWithUsage, revalidateTags } from '@/libs/manage-tag'
 import { tagNames } from '@/libs/tags-store'
 import { NextResponse } from 'next/server'
-
-function revalidateTags() {
-  for (const path of ['/', '/quotes', '/blog', '/dashboard/quotes', '/dashboard/tags', '/dashboard/scripture']) {
-    revalidatePath(path)
-  }
-}
 
 export async function PATCH(req, { params }) {
   const auth = await requireAdmin()

@@ -2,10 +2,10 @@ import { createCanvas, loadImage } from '@napi-rs/canvas'
 import path from 'path'
 import { brand } from '../config/site.js'
 import { getSiteLabel } from '../libs/site-url.js'
-import { quoteCard } from '../config/quote-card.js'
+import { cardRevision, quoteCard } from '../config/quote-card.js'
 import { capitalizeFirstWord, measureContext, registerFonts, wrapLines } from './canvas-text.mjs'
 
-export { quoteCard }
+export { cardRevision, quoteCard }
 
 /** `process.cwd()` — `import.meta.url` is not a valid file URL on Vercel. */
 const root = process.cwd()

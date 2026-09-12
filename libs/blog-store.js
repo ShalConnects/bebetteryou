@@ -45,13 +45,40 @@ function writeGrid(grid) {
   fs.writeFileSync(gridFile, JSON.stringify(grid, null, 2) + '\n')
 }
 
+function writeJson(file, data) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2) + '\n')
+}
+
+/** Remap `post.tag` on each post file (rename / delete). */
+export function mapPostTags(mapper) {
+  if (process.env.VERCEL) return 0
+  const files = fs.existsSync(postsDir) ? fs.readdirSync(postsDir) : []
+  let changed = 0
+  for (const f of files) {
+    if (!f.endsWith('.json')) continue
+    const file = path.join(postsDir, f)
+    const post = readJson(file, null)
+    if (!post?.slug) continue
+    const prev = post.tag || ''
+    const tag = mapper(prev)
+    if (tag === prev) continue
+    if (tag) post.tag = tag
+    else delete post.tag
+    writeJson(file, post)
+    changed += 1
+  }
+  if (changed) cache = null
+  return changed
+}
+
 /** Remap topic → catalog tag (rename / delete). Returns how many topics changed. */
 export function mapTopicTags(mapper) {
   const grid = readGrid()
   let changed = 0
   const topics = grid.topics.map((t) => {
-    const tag = mapper(t.tag || '')
-    if (tag === t.tag) return t
+    const prev = t.tag || ''
+    const tag = mapper(prev)
+    if (tag === prev) return t
     changed += 1
     return tag ? { ...t, tag } : { id: t.id, label: t.label }
   })

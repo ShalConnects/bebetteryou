@@ -29,10 +29,12 @@ export const socials = [
   { id: 'youtube', href: 'https://www.youtube.com/@BeBetterYou_Motivational', label: 'YouTube' },
 ]
 
+const mark = '/brand/fav.png'
+
 export const brand = {
   logo: '/brand/logo.png',
-  mark: '/brand/fav.png',
-  favicon: '/brand/fav.png',
+  mark,
+  favicon: mark,
   // Literal, not appConfig.name — APP_NAME is server-only and would hydrate mismatched.
   name: 'BeBetterYou',
   // The mark already draws the "Be".

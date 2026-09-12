@@ -37,7 +37,7 @@ export function postTopics() {
   return readGrid().topics.filter((t) => used.has(t.id))
 }
 
-/** Same topic, then shared tag, then modifier — always fills `count`. */
+/** Same topic, then shared tag, then modifier — skip unrelated. */
 export function relatedPosts(post, count = relatedCount) {
   const tag = postTag(post)
   const score = (p) =>
@@ -45,7 +45,7 @@ export function relatedPosts(post, count = relatedCount) {
     (tag && postTag(p) === tag ? 1 : 0) +
     (p.modifier && p.modifier === post.modifier ? 1 : 0)
   return listPosts()
-    .filter((p) => p.slug !== post.slug)
+    .filter((p) => p.slug !== post.slug && score(p) > 0)
     .sort((a, b) => score(b) - score(a) || byNewest(a, b))
     .slice(0, count)
 }

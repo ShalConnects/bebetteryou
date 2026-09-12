@@ -14,12 +14,14 @@ function tagApi(path, init) {
 function usageLine(tag) {
   const quotes = tag.quotes ?? tag.count ?? 0
   const posts = tag.posts ?? 0
+  const books = tag.books ?? 0
   const passages = tag.passages ?? 0
   return [
     tag.moodLabel ? `Mood: ${tag.moodLabel}` : 'No mood',
     tag.theme ? `Theme: ${tag.theme}` : 'No theme',
     `${quotes} quote${quotes === 1 ? '' : 's'}`,
     `${posts} post${posts === 1 ? '' : 's'}`,
+    `${books} book${books === 1 ? '' : 's'}`,
     `${passages} passage${passages === 1 ? '' : 's'}`,
   ].join(' · ')
 }
@@ -90,9 +92,13 @@ export default function TagManager({ tags: initial }) {
   async function remove(tag) {
     const quotes = tag.quotes ?? tag.count ?? 0
     const posts = tag.posts ?? 0
+    const books = tag.books ?? 0
+    const passages = tag.passages ?? 0
     const bits = []
     if (quotes) bits.push(`${quotes} quote${quotes === 1 ? '' : 's'}`)
-    if (posts) bits.push(`${posts} blog topic link${posts === 1 ? '' : 's'}`)
+    if (posts) bits.push(`${posts} post${posts === 1 ? '' : 's'}`)
+    if (books) bits.push(`${books} book${books === 1 ? '' : 's'}`)
+    if (passages) bits.push(`${passages} passage${passages === 1 ? '' : 's'}`)
     const msg = bits.length
       ? `Delete "${tag.name}" and clear it from ${bits.join(' and ')}?`
       : `Delete "${tag.name}"?`

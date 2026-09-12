@@ -1,6 +1,7 @@
 import { Iceberg, Jost } from 'next/font/google'
 import './globals.css'
 import LayoutClient from '@/components/LayoutClient'
+import { brand } from '@/config/site'
 import { buildMetadata } from '@/libs/seo'
 import '@/libs/env-validation'
 
@@ -19,7 +20,7 @@ const iceberg = Iceberg({
 
 export const metadata = {
   ...buildMetadata(),
-  icons: { icon: '/brand/fav.png' },
+  icons: { icon: brand.favicon },
 }
 
 export default function RootLayout({ children }) {

@@ -1,5 +1,5 @@
 import { resolveKnownTheme } from '@/libs/tag-lane'
-import { renderQuoteCard } from './quote-card.mjs'
+import { cardRevision, renderQuoteCard } from './quote-card.mjs'
 import { saveQuoteImage } from './quote-assets'
 import { normalizeAuthor } from './quote-text'
 import { appendQuote, nextQuoteN, readQuotes } from './quotes-store'
@@ -24,6 +24,7 @@ export async function createQuote({ text, author = '', tags = [], theme = '' }) 
     text,
     author: credit,
     tags: tags.filter((t) => catalog.includes(t)),
+    rev: cardRevision,
     ...(known ? { theme: known } : {}),
   }
   await appendQuote(quote)

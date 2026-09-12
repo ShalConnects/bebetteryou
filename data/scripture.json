@@ -3,7 +3,7 @@
     "perseverance": [
       {
         "ref": "Philippians 4:13",
-        "text": "I can do all things through him who strengthens me.",
+        "text": "I can do all this through him who gives me strength.",
         "url": "https://www.biblegateway.com/passage/?search=Philippians+4:13&version=NIV",
         "alt": {
           "kjv": {
@@ -15,28 +15,28 @@
       },
       {
         "ref": "Isaiah 40:31",
-        "text": "But they who wait for the Lord shall renew their strength; they shall mount up with wings like eagles.",
+        "text": "Those who hope in the Lord will renew their strength. They will soar on wings like eagles.",
         "url": "https://www.biblegateway.com/passage/?search=Isaiah+40:31&version=NIV"
       }
     ],
     "clarity": {
       "ref": "James 1:5",
-      "text": "If any of you lacks wisdom, let him ask God, who gives generously to all without reproach.",
+      "text": "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault.",
       "url": "https://www.biblegateway.com/passage/?search=James+1:5&version=NIV"
     },
     "growth": {
       "ref": "2 Peter 3:18",
-      "text": "Grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
+      "text": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
       "url": "https://www.biblegateway.com/passage/?search=2+Peter+3:18&version=NIV"
     },
     "love": {
       "ref": "1 Corinthians 13:4",
-      "text": "Love is patient and kind; love does not envy or boast.",
+      "text": "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
       "url": "https://www.biblegateway.com/passage/?search=1+Corinthians+13:4&version=NIV"
     },
     "self-worth": {
       "ref": "Psalm 139:14",
-      "text": "I praise you, for I am fearfully and wonderfully made.",
+      "text": "I praise you because I am fearfully and wonderfully made.",
       "url": "https://www.biblegateway.com/passage/?search=Psalm+139:14&version=NIV"
     }
   },
@@ -181,23 +181,11 @@
       "text": "You have power over your mind — not outside events. Realize this, and you will find strength.",
       "url": "https://en.wikisource.org/wiki/Meditations_of_Marcus_Aurelius"
     },
-    "clarity": [
-      {
-        "ref": "Seneca",
-        "text": "We suffer more often in imagination than in reality.",
-        "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius"
-      },
-      {
-        "ref": "A",
-        "text": "First",
-        "url": null
-      },
-      {
-        "ref": "B",
-        "text": "Second",
-        "url": null
-      }
-    ],
+    "clarity": {
+      "ref": "Seneca",
+      "text": "We suffer more often in imagination than in reality.",
+      "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius"
+    },
     "growth": {
       "ref": "Epictetus",
       "text": "No great thing is created suddenly.",
@@ -208,18 +196,11 @@
       "text": "It is not our differences that divide us. It is our inability to recognize and celebrate those differences.",
       "url": null
     },
-    "self-worth": [
-      {
-        "ref": "Carl Sagan",
-        "text": "For small creatures such as we, the vastness is bearable only through love.",
-        "url": null
-      },
-      {
-        "ref": "A",
-        "text": "First",
-        "url": null
-      }
-    ]
+    "self-worth": {
+      "ref": "Carl Sagan",
+      "text": "For small creatures such as we, the vastness is bearable only through love.",
+      "url": null
+    }
   },
   "spiritual": {
     "perseverance": {

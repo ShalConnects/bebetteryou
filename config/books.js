@@ -3,11 +3,12 @@ export const booksPageSize = 24
 export const booksIntro =
   'Motivation reads we recommend — linked with Amazon affiliate tags when configured.'
 
-/** Shown wherever a book affiliate link appears. */
-export const affiliateDisclosure =
-  'As an Amazon Associate, BeBetterYou earns from qualifying purchases.'
-
+/** Shown on affiliate links — empty when the associate tag is unset. */
 export const amazonTag = process.env.NEXT_PUBLIC_AMAZON_ASSOCIATE_TAG || ''
+export const affiliateDisclosure = amazonTag
+  ? 'As an Amazon Associate, BeBetterYou earns from qualifying purchases.'
+  : ''
+export const bookRel = amazonTag ? 'noopener noreferrer sponsored' : 'noopener noreferrer'
 
 /** Build an Amazon product URL; attaches the associate tag when set. */
 export function bookUrl({ asin, url } = {}) {

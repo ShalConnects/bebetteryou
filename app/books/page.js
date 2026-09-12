@@ -2,15 +2,16 @@ import { notFound } from 'next/navigation'
 import FilterMenu from '@/components/site/FilterMenu'
 import { Page, PageIntro, Pager } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
-import { affiliateDisclosure, booksIntro, bookUrl } from '@/config/books'
+import { affiliateDisclosure, bookRel, booksIntro, bookUrl } from '@/config/books'
 import { bookTags, pageBooks } from '@/libs/books'
 import { booksHref } from '@/libs/books-url'
 import { param } from '@/libs/content'
 import { pageRange } from '@/libs/paging'
 import { formatTag } from '@/libs/quotes-url'
-import { buildMetadata } from '@/libs/seo'
+import { buildMetadata, noIndex } from '@/libs/seo'
 
 export async function generateMetadata({ searchParams }) {
+  if (!appConfig.features.enableBooks) return noIndex
   const sp = await searchParams
   const tag = param(sp?.tag)
   const { page, total, pageSize } = pageBooks(tag, param(sp?.page))
@@ -40,7 +41,7 @@ function BookList({ books }) {
               <a
                 href={href}
                 target="_blank"
-                rel="noopener noreferrer sponsored"
+                rel={bookRel}
                 className="group block"
               >
                 <h2 className="text-lg text-paper transition-opacity group-hover:opacity-70">
@@ -91,7 +92,7 @@ export default async function BooksPage({ searchParams }) {
         {booksIntro}
       </PageIntro>
       <BookList books={items} />
-      <p className="mt-10 text-center text-xs text-quiet">{affiliateDisclosure}</p>
+      {affiliateDisclosure ? <p className="mt-10 text-center text-xs text-quiet">{affiliateDisclosure}</p> : null}
       <Pager
         page={page}
         pages={pages}

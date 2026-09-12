@@ -7,9 +7,10 @@ import { findTopic, pagePosts, postTopics } from '@/libs/blog'
 import { blogHref, blogListTitle } from '@/libs/blog-url'
 import { param } from '@/libs/content'
 import { pageRange } from '@/libs/paging'
-import { buildMetadata } from '@/libs/seo'
+import { buildMetadata, noIndex } from '@/libs/seo'
 
 export async function generateMetadata({ searchParams }) {
+  if (!appConfig.features.enableBlog) return noIndex
   const sp = await searchParams
   const topic = param(sp?.topic)
   const label = findTopic(topic)?.label
