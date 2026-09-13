@@ -9,13 +9,16 @@ import { isPrintableQuote, quoteAlt, quoteLabel } from '@/libs/quote-text'
 import { shareOrCopy } from '@/libs/share'
 import { useTradition } from './TraditionProvider'
 
-/** Corner labels sitting on the card's bottom edge — passage left, share right. */
-const note = 'inline-flex min-h-10 items-center px-2 text-[10px] uppercase tracking-[0.2em] text-paper drop-shadow'
+/** Card chrome — 10px mobile / 11px md+. */
+const note =
+  'inline-flex min-h-10 items-center px-1.5 text-[10px] uppercase tracking-[0.15em] text-paper drop-shadow md:px-2 md:text-[11px] md:tracking-[0.2em]'
 
 export default function QuoteCard({ quote, priority, className = '' }) {
   const { tagThemesMap } = useTradition()
   const href = `/quotes/${quote.slug}`
   const label = quoteLabel(quote)
+  const showPassage = quoteShowsScripture(quote.tags, quote.theme, tagThemesMap)
+  const canPrint = appConfig.features.enablePrintShop && isPrintableQuote(quote)
 
   async function onShare(e) {
     e.preventDefault()
@@ -45,27 +48,30 @@ export default function QuoteCard({ quote, priority, className = '' }) {
             priority={priority}
             className="object-cover opacity-95 transition-opacity duration-300 group-hover:opacity-100"
           />
-          <span className="pointer-events-none absolute inset-0 bg-ink/55 opacity-0 transition-opacity duration-300 md:[@media(hover:hover)]:group-hover:opacity-100" />
-          {quoteShowsScripture(quote.tags, quote.theme, tagThemesMap) ? (
-            <span className={`pointer-events-none absolute bottom-0 left-0 ${note}`}>+ passage</span>
-          ) : null}
+          <span className="pointer-events-none absolute inset-0 bg-ink/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         </span>
       </Link>
-      <div className="pointer-events-none absolute bottom-0 right-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-300 md:[@media(hover:hover)]:inset-0 md:[@media(hover:hover)]:opacity-0 md:[@media(hover:hover)]:group-hover:opacity-100">
-        {/* Only offerable when the words exist as text; most cards are scans. */}
-        {appConfig.features.enablePrintShop && isPrintableQuote(quote) ? (
-          <Link href={printHref(quote.slug)} className={`pointer-events-auto ${note}`}>
-            Print
-          </Link>
-        ) : null}
+
+      {showPassage ? (
+        <span className={`quote-card-passage pointer-events-none absolute bottom-0 left-0 z-10 ${note}`}>
+          + passage
+        </span>
+      ) : null}
+
+      <div className="pointer-events-none absolute bottom-0 right-0 z-10 flex items-center">
         <button
           type="button"
           onClick={onShare}
-          className={`pointer-events-auto ${note}`}
+          className={`quote-card-share pointer-events-auto ${note}`}
           aria-label={`Share quote #${quote.n}`}
         >
           Share
         </button>
+        {canPrint ? (
+          <Link href={printHref(quote.slug)} className={`quote-card-print pointer-events-auto ${note}`}>
+            Print
+          </Link>
+        ) : null}
       </div>
     </div>
   )

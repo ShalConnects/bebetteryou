@@ -18,7 +18,12 @@ export default async function NewQuotePage() {
   return (
     <div className="space-y-8">
       <PageIntro title="New quote">Generate a card and publish it.</PageIntro>
-      <QuoteForm nextN={nextQuoteN(quotes)} tagOptions={tagNames(tags)} themeOptions={themeOptions} />
+      <QuoteForm
+        nextN={nextQuoteN(quotes)}
+        tagOptions={tagNames(tags)}
+        themeOptions={themeOptions}
+        catalog={quotes.filter((q) => q.text).map(({ n, slug, text }) => ({ n, slug, text }))}
+      />
     </div>
   )
 }

@@ -799,6 +799,27 @@ describe('formatting and order numbers', () => {
     process.env.MONGODB_URI = orig
   })
 
+  it('keeps a real password that contains angle brackets', () => {
+    const orig = process.env.MONGODB_URI
+    process.env.MONGODB_URI = 'mongodb+srv://u:ab<cd>ef@cluster0.mongodb.net/db'
+    expect(mongoUri()).toBe('mongodb+srv://u:ab%3Ccd%3Eef@cluster0.mongodb.net/db')
+    process.env.MONGODB_URI = orig
+  })
+
+  it('strips Atlas template brackets around a real password', () => {
+    const orig = process.env.MONGODB_URI
+    process.env.MONGODB_URI = 'mongodb+srv://u:<secret>@cluster0.mongodb.net/db'
+    expect(mongoUri()).toBe('mongodb+srv://u:secret@cluster0.mongodb.net/db')
+    process.env.MONGODB_URI = orig
+  })
+
+  it('uses be-better-you when the Atlas URI has no database name', () => {
+    const orig = process.env.MONGODB_URI
+    process.env.MONGODB_URI = 'mongodb+srv://u:pass@cluster0.mongodb.net/?appName=Cluster0'
+    expect(mongoUri()).toBe('mongodb+srv://u:pass@cluster0.mongodb.net/be-better-you?appName=Cluster0')
+    process.env.MONGODB_URI = orig
+  })
+
   it('can store print orders locally when Mongo is not usable', () => {
     const origUri = process.env.MONGODB_URI
     const origVercel = process.env.VERCEL

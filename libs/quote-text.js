@@ -53,6 +53,23 @@ export function normalizeQuoteText(raw) {
   return text
 }
 
+/** Stable key for duplicate checks — trim, one line, lower, collapse space. */
+export function quoteFingerprint(text) {
+  return quoteOneLine(text)
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/\s+/g, ' ')
+}
+
+/** First catalog hit with the same fingerprint, or null. */
+export function findDuplicateQuote(quotes, text) {
+  const fp = quoteFingerprint(text)
+  if (!fp) return null
+  const list = Array.isArray(quotes) ? quotes : []
+  return list.find((q) => q?.text && quoteFingerprint(q.text) === fp) || null
+}
+
 /** Empty allowed — omit attribution on the card. */
 export function normalizeAuthor(raw) {
   return String(raw ?? '').trim()

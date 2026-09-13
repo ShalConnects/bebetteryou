@@ -20,4 +20,17 @@ describe('overlayQuote', () => {
     const merged = overlayQuote({ slug: 'bby-9', n: 9, text: 'Old' }, { slug: 'bby-9', n: 9, text: 'Old' })
     expect(merged.rev).toBeUndefined()
   })
+
+  it('drops Mongo document fields so quote cards can render on the client', () => {
+    const merged = overlayQuote(undefined, {
+      _id: { buffer: Buffer.from('1') },
+      slug: 'bby-221',
+      n: 221,
+      text: 'New',
+      createdAt: new Date(),
+    })
+    expect(merged._id).toBeUndefined()
+    expect(merged.createdAt).toBeUndefined()
+    expect(merged.slug).toBe('bby-221')
+  })
 })

@@ -81,6 +81,8 @@ export const shareTargetLabels = {
   linkedin: 'LinkedIn',
   pinterest: 'Pinterest',
   whatsapp: 'WhatsApp',
+  threads: 'Threads',
+  bluesky: 'Bluesky',
 }
 
 export const analyticsRanges = [

@@ -4,7 +4,7 @@ import { relatedForQuote } from '@/libs/related'
 import { buildMetadata } from '@/libs/seo'
 import { appConfig, getUrl } from '@/config/app'
 import QuoteAside from '@/components/site/QuoteAside'
-import QuoteImage from '@/components/site/QuoteImage'
+import QuoteDetailMedia from '@/components/site/QuoteDetailMedia'
 import { Page } from '@/components/site/ui'
 import { notFound } from 'next/navigation'
 
@@ -41,15 +41,7 @@ export default async function QuotePage({ params }) {
   return (
     <Page as="article">
       <div className="quote-detail-grid">
-        <div className="quote-detail-media">
-          <QuoteImage
-            src={quote.src}
-            alt={quoteAlt(quote)}
-            priority
-            variant="detail"
-            className="h-auto w-full"
-          />
-        </div>
+        <QuoteDetailMedia quote={quote} share={share} alt={quoteAlt(quote)} priority />
         <QuoteAside
           quote={quote}
           prev={prev}

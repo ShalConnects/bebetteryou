@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { cardRevision } from '@/config/quote-card'
 import { mongoUri } from './mongo-uri'
+import { logError } from './logger'
 
 const dataFile = path.join(process.cwd(), 'data/quotes.json')
 
@@ -33,6 +34,10 @@ export function overlayQuote(local, remote) {
   const next = { ...local, ...remote }
   next.rev = remote.rev ?? local?.rev
   if (next.rev == null && !local) next.rev = cardRevision
+  delete next._id
+  delete next.__v
+  delete next.createdAt
+  delete next.updatedAt
   return next
 }
 
@@ -53,7 +58,8 @@ export async function readQuotes() {
       if (q?.slug) map.set(q.slug, overlayQuote(map.get(q.slug), q))
     }
     return sortByN([...map.values()])
-  } catch {
+  } catch (error) {
+    logError('Quotes Mongo overlay failed; using data/quotes.json', error)
     return sortByN(local)
   }
 }

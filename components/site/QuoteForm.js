@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { traditions } from '@/config/traditions'
 import { quoteCard } from '@/config/quote-card'
 import { quoteShowsScripture, scriptureFor } from '@/libs/scripture-core'
-import { clampQuoteInput, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
+import { clampQuoteInput, findDuplicateQuote, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
 import SocialPost from './SocialPost'
 import TagPicker from './TagPicker'
 import { useQuotePreview } from './useQuotePreview'
@@ -57,7 +57,7 @@ function ScripturePreview({ tags, theme, seed }) {
   )
 }
 
-export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [] }) {
+export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], catalog = [] }) {
   const [text, setText] = useState('')
   const [author, setAuthor] = useState('')
   const [tags, setTags] = useState([])
@@ -65,6 +65,7 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [] })
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
   const { preview, previewing, error, setError } = useQuotePreview(text, author)
+  const duplicate = useMemo(() => findDuplicateQuote(catalog, text), [catalog, text])
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -160,6 +161,15 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [] })
 
         {overLines ? (
           <p className="text-sm text-red-400">{quoteLinesOverflowMessage(lines)}</p>
+        ) : null}
+        {duplicate ? (
+          <p className="text-sm text-amber-300">
+            Already{' '}
+            <Link href={`/quotes/${duplicate.slug}`} className="underline">
+              #{duplicate.n}
+            </Link>
+            — you can still save.
+          </p>
         ) : null}
         {error ? <p className="text-sm text-red-400">{error}</p> : null}
         {result ? (

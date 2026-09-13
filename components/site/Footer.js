@@ -10,7 +10,7 @@ export default function Footer() {
     <footer className="border-t border-line pb-[env(safe-area-inset-bottom)]">
       <div className="inset-x-page">
         <div className="shell-inner flex flex-col items-center gap-4 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="flex flex-col items-center gap-4 md:flex-row">
         <div className="flex items-center gap-1">
           {socials.map(({ id, href, label }) => (
             <a

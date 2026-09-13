@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import ScrollLink from '@/components/site/ScrollLink'
+import BookCard from '@/components/site/BookCard'
 import QuoteCard from '@/components/site/QuoteCard'
 import { pageRange, pageWindow } from '@/libs/paging'
 import { postHref } from '@/libs/blog-url'
@@ -117,6 +118,17 @@ export function QuoteGrid({ items, priorityCount = 0 }) {
     <div className="grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
       {items.map((quote, i) => (
         <QuoteCard key={quote.slug} quote={quote} priority={i < priorityCount} />
+      ))}
+    </div>
+  )
+}
+
+export function BookGrid({ items }) {
+  if (!items.length) return <p className="text-center text-quiet">No books yet.</p>
+  return (
+    <div className="grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
+      {items.map((book) => (
+        <BookCard key={book.slug} book={book} />
       ))}
     </div>
   )

@@ -9,6 +9,8 @@ export function shareTargets({ url, text, media }) {
     { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}` },
     { id: 'pinterest', label: 'Pinterest', href: `https://pinterest.com/pin/create/button/?url=${enc(url)}&media=${enc(media)}&description=${enc(text || '')}` },
     { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${enc(t)}` },
+    { id: 'threads', label: 'Threads', href: `https://www.threads.net/intent/post?text=${enc(t)}` },
+    { id: 'bluesky', label: 'Bluesky', href: `https://bsky.app/intent/compose?text=${enc(t)}` },
   ]
 }
 

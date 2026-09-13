@@ -7,7 +7,16 @@ import { sample } from '@/libs/sample'
 
 export default async function Home() {
   const all = await listQuotes()
-  const pool = all.map(({ slug, n, src, tags }) => ({ slug, n, src, tags }))
+  /** Keep `text` so QuoteCard can offer Print (isPrintableQuote). */
+  const pool = all.map(({ slug, n, src, tags, text, author, theme }) => ({
+    slug,
+    n,
+    src,
+    tags,
+    text,
+    author,
+    theme,
+  }))
   const quotes = sample(pool, homeQuoteCount)
   const moods = await listMoodIntents()
 

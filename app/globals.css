@@ -295,6 +295,25 @@
   @apply absolute bottom-2 left-1/2 z-40 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-full border border-line bg-ink/90 text-quiet transition-colors hover:border-accent/40 hover:text-accent lg:bottom-auto lg:left-auto lg:right-1 lg:top-1/2 lg:translate-x-0 lg:-translate-y-1/2;
 }
 
+/* Quote cards: passage left; Share + Print right (Print always on, far right). */
+.quote-card-passage,
+.quote-card-share {
+  @apply opacity-0 transition-opacity duration-300;
+}
+
+.quote-card-share {
+  @apply absolute bottom-0 right-full;
+}
+
+.quote-card-print {
+  @apply opacity-100;
+}
+
+.group:hover .quote-card-passage,
+.group:hover .quote-card-share {
+  @apply opacity-100;
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .hero-scatter:hover .hero-scatter-card:not(:hover):not(:focus-visible) {
     opacity: 0.45;
