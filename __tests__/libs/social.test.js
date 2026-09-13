@@ -17,6 +17,7 @@ import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { letterboxRect } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
+import { alreadyPosted, defaultSelected, mergePostRecord } from '@/libs/social/post-log'
 
 describe('social', () => {
   it('builds quote caption with link', async () => {
@@ -129,4 +130,28 @@ describe('social', () => {
     expect(mp4.slice(4, 8).toString()).toBe('ftyp')
     expect(mp4.length).toBeGreaterThan(10_000)
   }, 30_000)
+
+  it('leaves already-posted networks unchecked', () => {
+    const networks = [
+      { id: 'instagram', ready: true },
+      { id: 'bluesky', ready: true },
+      { id: 'threads', ready: false },
+    ]
+    const posts = { instagram: { ok: true, url: 'https://instagram.com/p/1' } }
+    expect(defaultSelected(networks, posts)).toEqual(['bluesky'])
+    expect(alreadyPosted(['instagram', 'bluesky'], posts)).toEqual(['instagram'])
+  })
+
+  it('keeps the last success URL when a later post fails', () => {
+    const prev = mergePostRecord(null, {
+      slug: 'bby-1',
+      id: 'bluesky',
+      ok: true,
+      url: 'https://bsky.app/profile/x/post/1',
+    })
+    const failed = mergePostRecord(prev, { slug: 'bby-1', id: 'bluesky', ok: false, error: 'timeout' })
+    expect(failed.ok).toBe(false)
+    expect(failed.error).toBe('timeout')
+    expect(failed.url).toBe('https://bsky.app/profile/x/post/1')
+  })
 })

@@ -43,6 +43,9 @@ yarn-error.log*
 # YouTube OAuth refresh token when Mongo is not usable
 /data/youtube-auth.json
 
+# local social post log when Mongo is not usable
+/data/social-posts.json
+
 # vercel
 .vercel
 

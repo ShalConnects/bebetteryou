@@ -16,6 +16,7 @@ import { postYouTube } from './providers/youtube'
 import { postPinterest } from './providers/pinterest'
 import { postThreads } from './providers/threads'
 import { postBluesky } from './providers/bluesky'
+import { recordPost } from './post-store'
 
 const providers = {
   instagram: postInstagram,
@@ -87,7 +88,7 @@ export async function postQuote(slug, networkIds) {
       if (!post) return { id, label: meta.label, ok: false, error: 'Not implemented' }
       try {
         const posted = await post({ caption, imageUrl, imageBuffer, quote })
-        return {
+        const result = {
           id,
           label: meta.label,
           ok: true,
@@ -95,8 +96,12 @@ export async function postQuote(slug, networkIds) {
           privacy: posted?.privacy || null,
           channel: posted?.channel || null,
         }
+        await recordPost(slug, result)
+        return result
       } catch (err) {
-        return { id, label: meta.label, ok: false, error: err.message || 'Failed' }
+        const result = { id, label: meta.label, ok: false, error: err.message || 'Failed' }
+        await recordPost(slug, result)
+        return result
       }
     })
   )
