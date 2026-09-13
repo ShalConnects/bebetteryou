@@ -12,7 +12,9 @@
     "render:cards": "node scripts/render-cards.mjs",
     "check:env": "node scripts/check-env.mjs",
     "hash:admin": "node scripts/hash-admin-password.mjs",
-    "youtube:auth": "node scripts/youtube-auth.mjs"
+    "youtube:auth": "node scripts/youtube-auth.mjs",
+    "pinterest:boards": "node scripts/pinterest-boards.mjs",
+    "threads:me": "node scripts/threads-me.mjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.8",

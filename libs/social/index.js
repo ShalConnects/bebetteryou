@@ -13,6 +13,8 @@ import { postFacebook } from './providers/facebook'
 import { postLinkedIn } from './providers/linkedin'
 import { postX } from './providers/x'
 import { postYouTube } from './providers/youtube'
+import { postPinterest } from './providers/pinterest'
+import { postThreads } from './providers/threads'
 
 const providers = {
   instagram: postInstagram,
@@ -20,6 +22,8 @@ const providers = {
   linkedin: postLinkedIn,
   x: postX,
   youtube: postYouTube,
+  pinterest: postPinterest,
+  threads: postThreads,
 }
 
 /** Env keys plus a YouTube refresh token saved from Connect on the dashboard. */
@@ -80,8 +84,15 @@ export async function postQuote(slug, networkIds) {
       const post = providers[id]
       if (!post) return { id, label: meta.label, ok: false, error: 'Not implemented' }
       try {
-        await post({ caption, imageUrl, imageBuffer, quote })
-        return { id, label: meta.label, ok: true }
+        const posted = await post({ caption, imageUrl, imageBuffer, quote })
+        return {
+          id,
+          label: meta.label,
+          ok: true,
+          url: posted?.url || null,
+          privacy: posted?.privacy || null,
+          channel: posted?.channel || null,
+        }
       } catch (err) {
         return { id, label: meta.label, ok: false, error: err.message || 'Failed' }
       }

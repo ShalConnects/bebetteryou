@@ -53,8 +53,8 @@ export default function SocialPost({ slug }) {
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Post to social</p>
       {ready.length === 0 ? (
         <p className="text-sm text-quiet">
-          Add API keys in <code className="text-body">.env.local</code> (see env.example). Instagram needs a public{' '}
-          <code className="text-body">SITE_URL</code>. YouTube Shorts: Connect below, then Post.
+          Add API keys in <code className="text-body">.env.local</code> (see env.example). Instagram and Threads
+          need a public <code className="text-body">SITE_URL</code>. YouTube Shorts: Connect below, then Post.
         </p>
       ) : null}
       <div className="flex flex-wrap gap-4">
@@ -88,7 +88,24 @@ export default function SocialPost({ slug }) {
         <ul className="space-y-1 text-sm">
           {results.map((r) => (
             <li key={r.id} className={r.ok ? 'text-body' : 'text-red-400'}>
-              {r.label || r.id}: {r.ok ? 'Posted' : r.error}
+              {r.label || r.id}:{' '}
+              {r.ok ? (
+                <>
+                  Posted
+                  {r.privacy ? ` (${r.privacy})` : ''}
+                  {r.channel ? ` on ${r.channel}` : ''}
+                  {r.url ? (
+                    <>
+                      {' '}
+                      <a href={r.url} target="_blank" rel="noreferrer" className="text-paper underline-offset-2 hover:underline">
+                        Open
+                      </a>
+                    </>
+                  ) : null}
+                </>
+              ) : (
+                r.error
+              )}
             </li>
           ))}
         </ul>

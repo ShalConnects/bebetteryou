@@ -23,6 +23,7 @@ export const legal = [
 
 export const socials = [
   { id: 'instagram', href: 'https://www.instagram.com/be__better__you/', label: 'Instagram' },
+  { id: 'threads', href: 'https://www.threads.net/@be__better__you', label: 'Threads' },
   { id: 'linkedin', href: 'https://www.linkedin.com/company/be-better-you', label: 'LinkedIn' },
   { id: 'x', href: 'https://x.com/BeBetterYou3', label: 'X' },
   { id: 'pinterest', href: 'https://www.pinterest.com/bebetteryoumotivational/', label: 'Pinterest' },

@@ -6,6 +6,11 @@ export const postNetworks = [
     env: ['META_ACCESS_TOKEN', 'INSTAGRAM_BUSINESS_ACCOUNT_ID'],
   },
   {
+    id: 'threads',
+    label: 'Threads',
+    env: ['THREADS_ACCESS_TOKEN', 'THREADS_USER_ID'],
+  },
+  {
     id: 'facebook',
     label: 'Facebook',
     env: ['FACEBOOK_PAGE_ACCESS_TOKEN', 'FACEBOOK_PAGE_ID'],
@@ -26,6 +31,11 @@ export const postNetworks = [
     id: 'youtube',
     label: 'YouTube Shorts',
     env: ['YOUTUBE_CLIENT_ID', 'YOUTUBE_CLIENT_SECRET', 'YOUTUBE_REFRESH_TOKEN'],
+  },
+  {
+    id: 'pinterest',
+    label: 'Pinterest',
+    env: ['PINTEREST_ACCESS_TOKEN', 'PINTEREST_BOARD_ID'],
   },
 ]
 

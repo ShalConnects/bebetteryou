@@ -12,6 +12,8 @@ jest.mock('@/libs/social/youtube-store', () => ({
 import { oauth1Header, hasXKeys } from '@/libs/social/oauth'
 import { quoteCaption } from '@/libs/social'
 import { hasYoutubeKeys, youtubeTitle } from '@/libs/social/providers/youtube'
+import { clipPinText, hasPinterestKeys, pinterestTitle } from '@/libs/social/providers/pinterest'
+import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
 import { letterboxRect } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
 
@@ -48,6 +50,26 @@ describe('social', () => {
   it('detects missing YouTube keys', () => {
     expect(hasYoutubeKeys({ clientId: 'id', clientSecret: 'secret', refreshToken: '' })).toBe(false)
     expect(hasYoutubeKeys({ clientId: 'id', clientSecret: 'secret', refreshToken: 'rt' })).toBe(true)
+  })
+
+  it('detects missing Pinterest keys', () => {
+    expect(hasPinterestKeys({ token: 't', boardId: '' })).toBe(false)
+    expect(hasPinterestKeys({ token: 't', boardId: '123' })).toBe(true)
+  })
+
+  it('detects missing Threads keys', () => {
+    expect(hasThreadsKeys({ token: 't', userId: '' })).toBe(false)
+    expect(hasThreadsKeys({ token: 't', userId: '123' })).toBe(true)
+  })
+
+  it('clips Threads captions to 500 chars', () => {
+    expect(clipThreadsText('Keep going.')).toBe('Keep going.')
+    expect(clipThreadsText('x'.repeat(520)).length).toBe(500)
+  })
+
+  it('clips Pinterest title to 100 chars', () => {
+    expect(pinterestTitle({ n: 3, text: 'Keep going.' })).toBe('Keep going.')
+    expect(clipPinText('x'.repeat(120), 100).length).toBe(100)
   })
 
   it('builds a Shorts title under 100 chars', () => {

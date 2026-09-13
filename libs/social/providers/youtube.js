@@ -103,5 +103,19 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
   if (!put.ok || !posted.id) {
     throw new Error(posted.error?.message || `YouTube upload failed (${put.status})`)
   }
-  return posted
+
+  const watch = `https://www.youtube.com/watch?v=${posted.id}`
+  const meta = await fetch(
+    `https://www.googleapis.com/youtube/v3/videos?part=snippet,status&id=${encodeURIComponent(posted.id)}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+    .then((res) => res.json())
+    .catch(() => ({}))
+  const item = meta.items?.[0]
+  return {
+    id: posted.id,
+    url: watch,
+    privacy: item?.status?.privacyStatus || youtubePrivacy(),
+    channel: item?.snippet?.channelTitle || '',
+  }
 }
