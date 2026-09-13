@@ -15,6 +15,7 @@ import { postX } from './providers/x'
 import { postYouTube } from './providers/youtube'
 import { postPinterest } from './providers/pinterest'
 import { postThreads } from './providers/threads'
+import { postBluesky } from './providers/bluesky'
 
 const providers = {
   instagram: postInstagram,
@@ -24,6 +25,7 @@ const providers = {
   youtube: postYouTube,
   pinterest: postPinterest,
   threads: postThreads,
+  bluesky: postBluesky,
 }
 
 /** Env keys plus a YouTube refresh token saved from Connect on the dashboard. */

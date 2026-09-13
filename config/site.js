@@ -28,6 +28,7 @@ export const socials = [
   { id: 'x', href: 'https://x.com/BeBetterYou3', label: 'X' },
   { id: 'pinterest', href: 'https://www.pinterest.com/bebetteryoumotivational/', label: 'Pinterest' },
   { id: 'youtube', href: 'https://www.youtube.com/@BeBetterYou_Motivational', label: 'YouTube' },
+  { id: 'bluesky', href: 'https://bsky.app/profile/bebetteryou.bsky.social', label: 'Bluesky' },
 ]
 
 const mark = '/brand/fav.png'

@@ -14,6 +14,7 @@ import { quoteCaption } from '@/libs/social'
 import { hasYoutubeKeys, youtubeTitle } from '@/libs/social/providers/youtube'
 import { clipPinText, hasPinterestKeys, pinterestTitle } from '@/libs/social/providers/pinterest'
 import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
+import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { letterboxRect } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
 
@@ -65,6 +66,25 @@ describe('social', () => {
   it('clips Threads captions to 500 chars', () => {
     expect(clipThreadsText('Keep going.')).toBe('Keep going.')
     expect(clipThreadsText('x'.repeat(520)).length).toBe(500)
+  })
+
+  it('detects missing Bluesky keys', () => {
+    expect(hasBlueskyKeys({ handle: 'a.bsky.social', password: '' })).toBe(false)
+    expect(hasBlueskyKeys({ handle: 'a.bsky.social', password: 'xxxx-xxxx' })).toBe(true)
+  })
+
+  it('keeps Bluesky captions under 300 graphemes with a clickable link', () => {
+    const text = blueskyCaption(
+      { n: 1, slug: 'bby-1', text: 'Keep going.', author: 'Author' },
+      'https://www.bebetteryou.online'
+    )
+    expect(text).toContain('Keep going.')
+    expect(text).toContain('https://www.bebetteryou.online/quotes/bby-1')
+    expect([...new Intl.Segmenter('en', { granularity: 'grapheme' }).segment(text)].length).toBeLessThanOrEqual(
+      300
+    )
+    expect(clipBlueskyText('x'.repeat(320)).length).toBe(300)
+    expect(linkFacets(text)[0].features[0].uri).toBe('https://www.bebetteryou.online/quotes/bby-1')
   })
 
   it('clips Pinterest title to 100 chars', () => {

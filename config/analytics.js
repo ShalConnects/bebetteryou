@@ -47,6 +47,7 @@ export const referrerRules = [
   { channel: 'social', source: 'WhatsApp', hosts: ['whatsapp.com', 'wa.me'] },
   { channel: 'social', source: 'Telegram', hosts: ['telegram.', 't.me'] },
   { channel: 'social', source: 'Threads', hosts: ['threads.net', 'threads.com'] },
+  { channel: 'social', source: 'Bluesky', hosts: ['bsky.app', 'bsky.social'] },
   { channel: 'social', source: 'Tumblr', hosts: ['tumblr.com'] },
   { channel: 'social', source: 'Quora', hosts: ['quora.com'] },
 

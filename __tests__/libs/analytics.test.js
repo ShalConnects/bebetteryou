@@ -34,6 +34,7 @@ describe('matchReferrer', () => {
   it('files known social hosts under social', () => {
     expect(matchReferrer('t.co')).toMatchObject({ channel: 'social', source: 'X' })
     expect(matchReferrer('pinterest.ca')).toMatchObject({ channel: 'social', source: 'Pinterest' })
+    expect(matchReferrer('bsky.app')).toMatchObject({ channel: 'social', source: 'Bluesky' })
   })
 
   it('files AI assistants ahead of search, even on a google domain', () => {

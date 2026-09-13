@@ -37,6 +37,11 @@ export const postNetworks = [
     label: 'Pinterest',
     env: ['PINTEREST_ACCESS_TOKEN', 'PINTEREST_BOARD_ID'],
   },
+  {
+    id: 'bluesky',
+    label: 'Bluesky',
+    env: ['BLUESKY_HANDLE', 'BLUESKY_APP_PASSWORD'],
+  },
 ]
 
 export function networkStatus() {
