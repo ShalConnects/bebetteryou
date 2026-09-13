@@ -64,9 +64,13 @@ export default function QuoteShareRail({
     }
   }
 
-  function onDownload() {
-    saveImage(image, fileName)
-    trackDownload(slug)
+  async function onDownload() {
+    try {
+      await saveImage(image, fileName)
+      trackDownload(slug)
+    } catch {
+      flash('Could not save')
+    }
   }
 
   const wrap =

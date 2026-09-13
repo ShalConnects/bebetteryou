@@ -26,7 +26,22 @@ export async function shareOrCopy({ title, text, url }) {
 
 export function saveImage(src, fileName = 'quote.jpg') {
   const a = document.createElement('a')
-  a.href = src
   a.download = fileName
+  /** Cross-origin (e.g. Vercel Blob) ignores `download` on a direct href — fetch first. */
+  if (/^https?:\/\//i.test(src) && typeof location !== 'undefined' && !src.startsWith(location.origin)) {
+    return fetch(src)
+      .then((res) => {
+        if (!res.ok) throw new Error('Could not download')
+        return res.blob()
+      })
+      .then((blob) => {
+        const url = URL.createObjectURL(blob)
+        a.href = url
+        a.click()
+        URL.revokeObjectURL(url)
+      })
+  }
+  a.href = src
   a.click()
+  return Promise.resolve()
 }

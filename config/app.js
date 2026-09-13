@@ -4,6 +4,8 @@
  * Update these values when using this boilerplate for a new project
  */
 
+import { getSiteUrl } from '@/libs/site-url'
+
 const name = process.env.APP_NAME || 'BeBetterYou'
 
 export const appConfig = {
@@ -98,12 +100,12 @@ export function getAppDescription() {
 
 /**
  * Get full URL for a path (server-oriented; quote cards use @/libs/site-url in dev).
+ * Absolute http(s) URLs pass through (e.g. Vercel Blob quote images).
  */
 export function getUrl(path = '') {
-  const raw = process.env['SITE_URL'] || process.env['NEXTAUTH_URL'] || 'http://localhost:3000'
-  const baseUrl = raw.replace(/\/$/, '')
+  if (/^https?:\/\//i.test(path)) return path
   const cleanPath = path.startsWith('/') ? path : `/${path}`
-  return `${baseUrl}${cleanPath}`
+  return `${getSiteUrl()}${cleanPath}`
 }
 
 export default appConfig
