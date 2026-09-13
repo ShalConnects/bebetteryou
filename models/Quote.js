@@ -9,6 +9,8 @@ const QuoteSchema = new mongoose.Schema(
     author: { type: String, default: '' },
     tags: { type: [String], default: [] },
     theme: { type: String, default: '' },
+    /** Public pages only list the current cardRevision. */
+    rev: { type: Number },
     related: {
       books: { type: [String], default: undefined },
       posts: { type: [String], default: undefined },

@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { mongoUri } from './mongo'
+import { cardRevision } from '@/config/quote-card'
+import { mongoUri } from './mongo-uri'
 
 const dataFile = path.join(process.cwd(), 'data/quotes.json')
 
@@ -25,6 +26,16 @@ function sortByN(quotes) {
   return [...asList(quotes)].sort((a, b) => b.n - a.n)
 }
 
+/** Mongo wins by slug, but keep a local `rev` when Atlas never stored one.
+ *  Mongo-only cards (created on Vercel) default to the current card revision. */
+export function overlayQuote(local, remote) {
+  if (!remote) return local
+  const next = { ...local, ...remote }
+  next.rev = remote.rev ?? local?.rev
+  if (next.rev == null && !local) next.rev = cardRevision
+  return next
+}
+
 /** Local JSON + optional Mongo overlays (remote wins by slug). */
 export async function readQuotes() {
   const local = readLocal()
@@ -34,12 +45,12 @@ export async function readQuotes() {
     const { connectDB } = await import('./mongo')
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
-    const remote = asList(await Quote.find().select('slug n src text author tags theme related').lean())
+    const remote = asList(await Quote.find().select('slug n src text author tags theme related rev').lean())
     if (!remote.length) return local
 
     const map = new Map(local.map((q) => [q.slug, q]))
     for (const q of remote) {
-      if (q?.slug) map.set(q.slug, q)
+      if (q?.slug) map.set(q.slug, overlayQuote(map.get(q.slug), q))
     }
     return sortByN([...map.values()])
   } catch {
