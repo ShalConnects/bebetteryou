@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import CatalogFilters from '@/components/site/CatalogFilters'
+import ShopQuoteThumb from '@/components/site/ShopQuoteThumb'
 import { Page, PageIntro, Pager } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
 import { quoteCard } from '@/config/quote-card'
@@ -69,19 +70,22 @@ export default async function Shop({ searchParams }) {
         {items.length ? (
           <ul className="divide-y divide-line">
             {items.map((quote) => (
-              <li key={quote.slug} className="flex items-end justify-between gap-6 py-8 first:pt-0 last:pb-0">
-                <span className="min-w-0">
-                  <p className="whitespace-pre-line text-lg text-paper">{quote.text}</p>
-                  {creditForAuthor(quote.author).id === 'on' ? (
-                    <p className="mt-2 text-sm text-quiet">{quote.author}</p>
-                  ) : null}
+              <li key={quote.slug} className="flex items-center justify-between gap-4 py-8 first:pt-0 last:pb-0 sm:gap-6">
+                <span className="flex min-w-0 items-center gap-4">
+                  <ShopQuoteThumb quote={quote} />
+                  <span className="min-w-0">
+                    <p className="whitespace-pre-line text-lg text-paper">{quote.text}</p>
+                    {creditForAuthor(quote.author).id === 'on' ? (
+                      <p className="mt-2 text-sm text-quiet">{quote.author}</p>
+                    ) : null}
+                  </span>
                 </span>
                 <span className="flex shrink-0 flex-wrap justify-end gap-4">
                   {publicPrintProducts.map((product) => (
                     <Link
                       key={product.id}
                       href={printHref(quote.slug, { productId: product.id })}
-                      className="tag"
+                      className="tag font-semibold"
                     >
                       {product.name}
                     </Link>
@@ -123,7 +127,7 @@ export default async function Shop({ searchParams }) {
           </label>
           <span className="flex flex-wrap gap-4">
             {publicPrintProducts.map((product) => (
-              <button key={product.id} type="submit" name="product" value={product.id} className="tag">
+              <button key={product.id} type="submit" name="product" value={product.id} className="tag font-semibold">
                 {product.name}
               </button>
             ))}

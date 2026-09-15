@@ -21,6 +21,14 @@ export const legal = [
   { href: '/tos', label: 'Terms' },
 ]
 
+/** Other products from the same maker (footer). */
+export const makerProducts = [
+  { name: 'BadgeMilestone', href: 'https://www.badgemilestone.app/' },
+  { name: 'Balanze', href: 'https://balanze.cash/' },
+  { name: 'Screen Time', href: 'https://play.google.com/store/apps/details?id=com.screentime.overlay' },
+  { name: 'Dynamic Variations', href: 'https://wordpress.org/plugins/dynamic-variation-images/' },
+]
+
 export const socials = [
   { id: 'instagram', href: 'https://www.instagram.com/be__better__you/', label: 'Instagram' },
   { id: 'threads', href: 'https://www.threads.net/@be__better__you', label: 'Threads' },
@@ -49,8 +57,8 @@ export const copy = {
   aboutTeaser:
     'Daily quote cards for the days you need a push. Built for people who want to be better than yesterday.',
   aboutLead: 'Hey you — yeah, you.',
-  newsletterTitle: 'A weekly push.',
-  newsletterSub: 'One quote in your inbox. Nothing else.',
+  newsletterTitle: 'Stay in the loop.',
+  newsletterSub: 'Quote cards when we post — plus blog and book notes if you want them.',
   surpriseTitle: 'How do you feel?',
   surpriseSub: 'Pick a mood. We’ll deal one card.',
 }

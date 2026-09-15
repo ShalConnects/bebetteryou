@@ -58,4 +58,5 @@ export const quoteImageSizes = {
   grid: '(max-width:399px) 100vw, (max-width:768px) 50vw, 33vw',
   hero: '(max-width:640px) 136px, (max-width:1024px) 176px, 232px',
   detail: '(max-width:576px) 75vw, 384px',
+  shop: '80px',
 }
