@@ -11,11 +11,20 @@ function getResend() {
   return client
 }
 
+/** Prefer "BeBetterYou <noreply@…>" when FROM_EMAIL is a bare address. */
+export function resolveFromEmail() {
+  const raw = (appConfig.fromEmail || '').trim()
+  if (!raw) return 'BeBetterYou <noreply@example.com>'
+  if (/<[^>]+@[^>]+>/.test(raw)) return raw
+  if (raw.includes('@')) return `BeBetterYou <${raw}>`
+  return raw
+}
+
 export const sendEmail = async ({ to, subject, html, text }) => {
   const resend = getResend()
   if (!resend) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('[email dev]', { to, subject, text })
+      console.log('[email dev]', { to, subject, text, from: resolveFromEmail() })
       return { id: 'dev' }
     }
     throw new Error('RESEND_API_KEY is not configured')
@@ -23,7 +32,7 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
   try {
     const payload = {
-      from: appConfig.fromEmail,
+      from: resolveFromEmail(),
       to,
       subject,
       html,

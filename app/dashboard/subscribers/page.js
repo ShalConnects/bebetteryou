@@ -1,4 +1,5 @@
 import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
+import TestWelcomeMail from '@/components/dashboard/TestWelcomeMail'
 import { PageIntro } from '@/components/site/ui'
 import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
@@ -19,6 +20,10 @@ export default async function AdminSubscribersPage() {
   await requireAdminPage()
 
   const subscribers = await listNewsletterSubscribers()
+  const activeEmails = subscribers
+    .filter((row) => !row.unsubscribedAt)
+    .map((row) => row.email)
+    .filter(Boolean)
   const posts = listPosts()
     .slice()
     .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
@@ -31,8 +36,13 @@ export default async function AdminSubscribersPage() {
   return (
     <div className="space-y-10">
       <PageIntro title="Subscribers">
-        Newsletter list, preferences, and one-click notify for blog or book drops.
+        Newsletter list, test welcome, and notify for blog or book drops.
       </PageIntro>
+
+      <section className="space-y-4">
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Test welcome email</h2>
+        <TestWelcomeMail emails={activeEmails} />
+      </section>
 
       <section className="space-y-4">
         <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — blog</h2>

@@ -36,6 +36,10 @@ export const newsletterNotifySchema = z.object({
   slug: z.string().trim().min(1).max(200),
 })
 
+export const newsletterTestWelcomeSchema = z.object({
+  email: emailField,
+})
+
 export const createLeadSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
   email: emailField,

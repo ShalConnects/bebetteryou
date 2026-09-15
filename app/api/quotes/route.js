@@ -6,9 +6,9 @@ import { notifyQuoteSubscribers } from '@/libs/newsletter'
 import { normalizeQuoteText } from '@/libs/quote-text'
 import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { revalidatePath } from 'next/cache'
-import { after, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-/** Fan-out to subscribers can take a while after the card is saved. */
+/** Fan-out to subscribers after the card is saved. */
 export const maxDuration = 60
 
 export async function GET() {
@@ -37,14 +37,14 @@ export async function POST(req) {
     revalidatePath(`/quotes/${quote.slug}`)
     revalidatePath('/')
 
-    // Keep the serverless invocation alive until Resend fan-out finishes.
-    after(() =>
-      notifyQuoteSubscribers(quote).catch((error) => {
-        logError('Quote subscriber notify failed', error, { slug: quote.slug })
-      })
-    )
+    let mail = { sent: 0, total: 0 }
+    try {
+      mail = await notifyQuoteSubscribers(quote)
+    } catch (error) {
+      logError('Quote subscriber notify failed', error, { slug: quote.slug })
+    }
 
-    return NextResponse.json(quote, { status: 201 })
+    return NextResponse.json({ ...quote, mail }, { status: 201 })
   } catch (err) {
     const bad =
       err.message === 'text required' ||

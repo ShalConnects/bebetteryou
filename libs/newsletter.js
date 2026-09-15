@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import { logError } from '@/libs/logger'
 import { connectDB } from '@/libs/mongo'
 import Lead from '@/models/Lead'
+import { pickNewsletterExtras } from '@/libs/newsletter-picks'
 import { sendEmail } from '@/libs/resend'
 import {
   DEFAULT_NEWSLETTER_PREFS,
@@ -55,6 +56,12 @@ export async function findByUnsubscribeToken(token) {
   return Lead.findOne({ source: 'newsletter', unsubscribeToken: token })
 }
 
+export async function findNewsletterByEmail(email) {
+  if (!email) return null
+  await connectDB()
+  return Lead.findOne({ source: 'newsletter', email: String(email).toLowerCase().trim() })
+}
+
 export async function applyNewsletterManage({ token, prefs, unsubscribe }) {
   const lead = await findByUnsubscribeToken(token)
   if (!lead) return null
@@ -95,13 +102,27 @@ async function sendSoft(to, payload) {
 export async function sendWelcomeIfNeeded(lead) {
   if (lead.welcomeSentAt) return false
   const prefs = normalizePrefs(lead.prefs)
-  const payload = buildWelcomeEmail({ token: lead.unsubscribeToken, prefs })
+  const extras = await pickNewsletterExtras()
+  const payload = buildWelcomeEmail({ token: lead.unsubscribeToken, prefs, extras })
   const ok = await sendSoft(lead.email, payload)
   if (ok) {
     lead.welcomeSentAt = new Date()
     await lead.save()
   }
   return ok
+}
+
+/** Admin test — sends welcome with fresh picks; does not change welcomeSentAt. */
+export async function sendTestWelcome(email) {
+  const lead = await findNewsletterByEmail(email)
+  if (!lead?.unsubscribeToken) return { ok: false, error: 'Subscriber not found' }
+  if (lead.unsubscribedAt) return { ok: false, error: 'Subscriber is unsubscribed' }
+
+  const prefs = normalizePrefs(lead.prefs)
+  const extras = await pickNewsletterExtras()
+  const payload = buildWelcomeEmail({ token: lead.unsubscribeToken, prefs, extras })
+  const ok = await sendSoft(lead.email, payload)
+  return ok ? { ok: true } : { ok: false, error: 'Send failed' }
 }
 
 async function fanOut(prefKey, build) {
@@ -115,15 +136,20 @@ async function fanOut(prefKey, build) {
 }
 
 export async function notifyQuoteSubscribers(quote) {
-  return fanOut('quotes', (row) => buildQuoteEmail({ quote, token: row.unsubscribeToken }))
+  const extras = await pickNewsletterExtras({ excludeQuoteSlug: quote.slug })
+  return fanOut('quotes', (row) =>
+    buildQuoteEmail({ quote, token: row.unsubscribeToken, extras })
+  )
 }
 
 export async function notifyBlogSubscribers(post) {
-  return fanOut('blog', (row) => buildBlogEmail({ post, token: row.unsubscribeToken }))
+  const extras = await pickNewsletterExtras({ excludePostSlug: post.slug })
+  return fanOut('blog', (row) => buildBlogEmail({ post, token: row.unsubscribeToken, extras }))
 }
 
 export async function notifyBookSubscribers(book) {
-  return fanOut('books', (row) => buildBookEmail({ book, token: row.unsubscribeToken }))
+  const extras = await pickNewsletterExtras({ excludeBookSlug: book.slug })
+  return fanOut('books', (row) => buildBookEmail({ book, token: row.unsubscribeToken, extras }))
 }
 
 export async function listNewsletterSubscribers() {

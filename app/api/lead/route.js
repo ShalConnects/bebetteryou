@@ -17,7 +17,6 @@ import {
 } from '@/libs/newsletter'
 import { logError } from '@/libs/logger'
 import { sendLeadNotification } from '@/libs/resend'
-import { appConfig } from '@/config/app'
 
 /**
  * @swagger
@@ -59,18 +58,6 @@ async function handlePost(request) {
         await sendWelcomeIfNeeded(lead)
       } catch (error) {
         logError('Newsletter welcome failed', error, { email: lead.email })
-      }
-      if (created && appConfig.adminEmail) {
-        try {
-          await sendLeadNotification({
-            name: 'Newsletter',
-            email: lead.email,
-            message: `Subscribed (quotes/blog/books: ${lead.prefs?.quotes}/${lead.prefs?.blog}/${lead.prefs?.books})`,
-            createdAt: lead.createdAt || new Date(),
-          })
-        } catch (error) {
-          logError('Newsletter admin notify failed', error)
-        }
       }
       return NextResponse.json({ success: true, created })
     }
