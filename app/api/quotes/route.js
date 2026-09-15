@@ -1,10 +1,15 @@
 import { requireAdmin } from '@/libs/auth-helpers'
 import { assertQuoteFits } from '@/libs/quote-card.mjs'
 import { createQuote } from '@/libs/create-quote'
+import { logError } from '@/libs/logger'
+import { notifyQuoteSubscribers } from '@/libs/newsletter'
 import { normalizeQuoteText } from '@/libs/quote-text'
 import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { revalidatePath } from 'next/cache'
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
+
+/** Fan-out to subscribers can take a while after the card is saved. */
+export const maxDuration = 60
 
 export async function GET() {
   const auth = await requireAdmin()
@@ -31,6 +36,13 @@ export async function POST(req) {
     revalidatePath('/quotes')
     revalidatePath(`/quotes/${quote.slug}`)
     revalidatePath('/')
+
+    // Keep the serverless invocation alive until Resend fan-out finishes.
+    after(() =>
+      notifyQuoteSubscribers(quote).catch((error) => {
+        logError('Quote subscriber notify failed', error, { slug: quote.slug })
+      })
+    )
 
     return NextResponse.json(quote, { status: 201 })
   } catch (err) {

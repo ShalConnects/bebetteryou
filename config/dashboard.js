@@ -7,6 +7,7 @@ export const adminNav = [
   { href: '/dashboard/tags', label: 'Tags', match: (p) => p.startsWith('/dashboard/tags') },
   { href: '/dashboard/scripture', label: 'Scripture', match: (p) => p.startsWith('/dashboard/scripture') },
   { href: '/dashboard/print-orders', label: 'Print orders', match: (p) => p.startsWith('/dashboard/print-orders') },
+  { href: '/dashboard/subscribers', label: 'Subscribers', match: (p) => p.startsWith('/dashboard/subscribers') },
 ]
 
 export function filterQuotes(quotes, { q = '', tag = '' } = {}) {

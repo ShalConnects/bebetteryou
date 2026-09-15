@@ -4,9 +4,18 @@ import { useRef, useState } from 'react'
 import SurpriseMood from '@/components/site/SurpriseMood'
 import { copy } from '@/config/site'
 
+const DEFAULT_PREFS = { quotes: true, blog: true, books: true }
+
+const PREF_OPTIONS = [
+  { id: 'quotes', label: 'Quote cards when we post' },
+  { id: 'blog', label: 'New blog posts' },
+  { id: 'books', label: 'New book picks' },
+]
+
 export default function NewsletterForm({ quotes, moods = [] }) {
   const dialogRef = useRef(null)
   const [email, setEmail] = useState('')
+  const [prefs, setPrefs] = useState(DEFAULT_PREFS)
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
@@ -25,7 +34,7 @@ export default function NewsletterForm({ quotes, moods = [] }) {
       const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, prefs }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -42,6 +51,10 @@ export default function NewsletterForm({ quotes, moods = [] }) {
     if (e.target === e.currentTarget) e.currentTarget.close()
   }
 
+  function togglePref(id) {
+    setPrefs((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
   return (
     <>
       {done ? (
@@ -50,7 +63,7 @@ export default function NewsletterForm({ quotes, moods = [] }) {
           {surprise}
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="mt-8 space-y-3">
+        <form onSubmit={onSubmit} className="mt-8 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row">
             <input
               type="email"
@@ -66,6 +79,23 @@ export default function NewsletterForm({ quotes, moods = [] }) {
             </button>
             {surprise}
           </div>
+          <fieldset className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <legend className="sr-only">Email preferences</legend>
+            {PREF_OPTIONS.map(({ id, label }) => (
+              <label
+                key={id}
+                className="inline-flex cursor-pointer items-center gap-2 text-sm text-quiet"
+              >
+                <input
+                  type="checkbox"
+                  checked={prefs[id]}
+                  onChange={() => togglePref(id)}
+                  className="size-4 shrink-0 accent-accent"
+                />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
           {error ? <p className="text-sm text-red-400">{error}</p> : null}
         </form>
       )}

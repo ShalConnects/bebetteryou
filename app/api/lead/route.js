@@ -4,44 +4,31 @@ import Lead from '@/models/Lead'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { handleApiError } from '@/libs/api'
 import { rateLimit, rateLimitPresets } from '@/libs/rate-limit'
-import { createLeadSchema, emailOnlySchema, validateSchema } from '@/libs/validation-schemas'
+import {
+  createLeadSchema,
+  newsletterSignupSchema,
+  validateSchema,
+} from '@/libs/validation-schemas'
 import { withApiLogging } from '@/libs/api-middleware'
+import {
+  listNewsletterSubscribers,
+  sendWelcomeIfNeeded,
+  upsertNewsletterSubscriber,
+} from '@/libs/newsletter'
+import { logError } from '@/libs/logger'
+import { sendLeadNotification } from '@/libs/resend'
+import { appConfig } from '@/config/app'
 
 /**
  * @swagger
  * /api/lead:
  *   post:
- *     summary: Create a lead or newsletter signup (email-only)
+ *     summary: Create a lead or newsletter signup (email + optional prefs)
  *     tags: [Leads]
  *     security: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             oneOf:
- *               - type: object
- *                 required: [email]
- *                 properties:
- *                   email: { type: string, format: email }
- *               - type: object
- *                 required: [name, email, message]
- *                 properties:
- *                   name: { type: string, minLength: 1, maxLength: 100 }
- *                   email: { type: string, format: email }
- *                   message: { type: string, minLength: 1, maxLength: 5000 }
- *     responses:
- *       200: { description: Lead created or newsletter signup recorded }
- *       400: { description: Validation error }
- *       429: { description: Rate limit exceeded }
  *   get:
- *     summary: List leads (admin only)
+ *     summary: List leads or newsletter subscribers (admin only)
  *     tags: [Leads]
- *     security: [{ bearerAuth: [] }]
- *     responses:
- *       200: { description: List of leads }
- *       401: { description: Unauthorized }
- *       403: { description: Forbidden }
  */
 async function handlePost(request) {
   try {
@@ -55,7 +42,7 @@ async function handlePost(request) {
     await connectDB()
     const body = await request.json()
     const newsletter = body?.name == null && body?.message == null
-    const validation = validateSchema(newsletter ? emailOnlySchema : createLeadSchema, body)
+    const validation = validateSchema(newsletter ? newsletterSignupSchema : createLeadSchema, body)
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.message, details: validation.error.details },
@@ -64,18 +51,39 @@ async function handlePost(request) {
     }
 
     if (newsletter) {
-      await Lead.findOneAndUpdate(
-        { email: validation.data.email, source: 'newsletter' },
-        { $setOnInsert: { email: validation.data.email, source: 'newsletter' } },
-        { upsert: true }
-      )
-    } else {
-      const { name, email, message } = validation.data
-      await Lead.create({ name, email, message })
+      const { lead, created } = await upsertNewsletterSubscriber({
+        email: validation.data.email,
+        prefs: validation.data.prefs,
+      })
+      try {
+        await sendWelcomeIfNeeded(lead)
+      } catch (error) {
+        logError('Newsletter welcome failed', error, { email: lead.email })
+      }
+      if (created && appConfig.adminEmail) {
+        try {
+          await sendLeadNotification({
+            name: 'Newsletter',
+            email: lead.email,
+            message: `Subscribed (quotes/blog/books: ${lead.prefs?.quotes}/${lead.prefs?.blog}/${lead.prefs?.books})`,
+            createdAt: lead.createdAt || new Date(),
+          })
+        } catch (error) {
+          logError('Newsletter admin notify failed', error)
+        }
+      }
+      return NextResponse.json({ success: true, created })
+    }
+
+    const { name, email, message } = validation.data
+    const lead = await Lead.create({ name, email, message })
+    try {
+      await sendLeadNotification(lead)
+    } catch (error) {
+      logError('Lead notification failed', error)
     }
     return NextResponse.json({ success: true })
   } catch (error) {
-    // Concurrent newsletter signup — treat as success
     if (error?.code === 11000) return NextResponse.json({ success: true })
     const errorResponse = handleApiError(error)
     if (errorResponse) return errorResponse
@@ -85,10 +93,18 @@ async function handlePost(request) {
 
 export const POST = withApiLogging(handlePost)
 
-async function handleGet() {
+async function handleGet(request) {
   try {
     const authResult = await requireAdmin()
     if (authResult instanceof NextResponse) return authResult
+
+    const url = new URL(request.url)
+    const source = url.searchParams.get('source')
+
+    if (source === 'newsletter') {
+      const subscribers = await listNewsletterSubscribers()
+      return NextResponse.json({ subscribers })
+    }
 
     await connectDB()
     const leads = await Lead.find().sort({ createdAt: -1 })

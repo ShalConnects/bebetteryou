@@ -2,6 +2,7 @@ import {
   createLeadSchema,
   createCheckoutSessionSchema,
   emailOnlySchema,
+  newsletterSignupSchema,
   registerSchema,
   magicLinkSchema,
   validateSchema,
@@ -66,6 +67,17 @@ describe('Validation Schemas', () => {
 
     it('should reject missing email', () => {
       expect(validateSchema(emailOnlySchema, {}).success).toBe(false)
+    })
+  })
+
+  describe('newsletterSignupSchema', () => {
+    it('accepts email with defaultable prefs', () => {
+      const result = validateSchema(newsletterSignupSchema, {
+        email: 'you@example.com',
+        prefs: { quotes: true, blog: false, books: true },
+      })
+      expect(result.success).toBe(true)
+      expect(result.data.prefs.blog).toBe(false)
     })
   })
 

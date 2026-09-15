@@ -32,6 +32,25 @@ export default function Footer() {
             <p className="text-xs text-quiet">
               © {year} {brand.name}
             </p>
+            <nav className="flex items-center gap-1" aria-label="About and legal">
+              {legal.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="inline-flex min-h-10 items-center px-2 text-xs text-quiet transition-colors hover:text-paper"
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <div className="inset-x-page">
+        <div className="shell-inner flex flex-col items-center gap-2 py-4 text-center">
+          <div className="inline-flex flex-col items-center gap-2">
+            <span className="h-px w-full bg-line" aria-hidden />
             <p className="inline-flex items-center gap-1.5 text-xs text-quiet">
               Made with
               <svg
@@ -53,28 +72,11 @@ export default function Footer() {
                 ShalConnects
               </a>
             </p>
-            <nav className="flex items-center gap-1" aria-label="About and legal">
-              {legal.map(({ href, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="inline-flex min-h-10 items-center px-2 text-xs text-quiet transition-colors hover:text-paper"
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      {makerProducts.length ? (
-        <div className="inset-x-page">
-          <div className="shell-inner flex flex-col items-center gap-2 py-4 text-center">
-            <div className="inline-flex flex-col items-center gap-2">
-              <span className="h-px w-full bg-line" aria-hidden />
+            {makerProducts.length ? (
               <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">More from this maker</p>
-            </div>
+            ) : null}
+          </div>
+          {makerProducts.length ? (
             <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
               {makerProducts.map(({ name, href }) => (
                 <li key={href}>
@@ -82,16 +84,16 @@ export default function Footer() {
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-quiet transition-colors hover:text-paper"
+                    className="inline-flex min-h-10 items-center text-xs text-quiet transition-colors hover:text-paper"
                   >
                     {name}
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          ) : null}
         </div>
-      ) : null}
+      </div>
     </footer>
   )
 }

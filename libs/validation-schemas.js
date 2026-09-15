@@ -13,6 +13,29 @@ const emailField = z
 
 export const emailOnlySchema = z.object({ email: emailField })
 
+/** Newsletter prefs — defaults match site signup (quotes on post, blog, books). */
+export const newsletterPrefsSchema = z.object({
+  quotes: z.boolean().default(true),
+  blog: z.boolean().default(true),
+  books: z.boolean().default(true),
+})
+
+export const newsletterSignupSchema = z.object({
+  email: emailField,
+  prefs: newsletterPrefsSchema.optional(),
+})
+
+export const newsletterManageSchema = z.object({
+  token: z.string().trim().min(16).max(128),
+  prefs: newsletterPrefsSchema.optional(),
+  unsubscribe: z.boolean().optional(),
+})
+
+export const newsletterNotifySchema = z.object({
+  type: z.enum(['blog', 'book']),
+  slug: z.string().trim().min(1).max(200),
+})
+
 export const createLeadSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
   email: emailField,

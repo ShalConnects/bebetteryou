@@ -22,13 +22,15 @@ export const sendEmail = async ({ to, subject, html, text }) => {
   }
 
   try {
-    const { data, error } = await resend.emails.send({
+    const payload = {
       from: appConfig.fromEmail,
       to,
       subject,
       html,
-      text,
-    })
+    }
+    if (text) payload.text = text
+
+    const { data, error } = await resend.emails.send(payload)
 
     if (error) {
       logError('Resend error', error)

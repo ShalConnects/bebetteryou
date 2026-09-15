@@ -5,7 +5,7 @@ import { normalizeAuthor } from './quote-text'
 import { appendQuote, nextQuoteN, readQuotes } from './quotes-store'
 import { readTags, tagNames } from './tags-store'
 
-/** Render card + persist image & catalog. */
+/** Render card + persist image & catalog. Caller schedules subscriber mail. */
 export async function createQuote({ text, author = '', tags = [], theme = '' }) {
   const quotes = await readQuotes()
   const n = nextQuoteN(quotes)
