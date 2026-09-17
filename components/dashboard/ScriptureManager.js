@@ -158,7 +158,7 @@ export default function ScriptureManager({ entries: initial, gaps = [], quotes =
             <select
               value={previewTradition}
               onChange={(e) => setPreviewTradition(e.target.value)}
-              className={inputClass}
+              className="dash-select"
             >
               {traditionOptions.map((t) => (
                 <option key={t.id} value={t.id}>{t.label}</option>
@@ -171,7 +171,7 @@ export default function ScriptureManager({ entries: initial, gaps = [], quotes =
               <select
                 value={previewTranslation}
                 onChange={(e) => setPreviewTranslation(e.target.value)}
-                className={inputClass}
+                className="dash-select"
               >
                 {translationsFor(previewTradition).map((t) => (
                   <option key={t.id} value={t.id}>{t.label}</option>
@@ -201,7 +201,7 @@ export default function ScriptureManager({ entries: initial, gaps = [], quotes =
             <select
               value={draft.tradition}
               onChange={(e) => setDraft({ ...draft, tradition: e.target.value })}
-              className={inputClass}
+              className="dash-select"
             >
               {traditionOptions.map((t) => (
                 <option key={t.id} value={t.id}>{t.label}</option>
@@ -213,7 +213,7 @@ export default function ScriptureManager({ entries: initial, gaps = [], quotes =
             <select
               value={draft.theme}
               onChange={(e) => setDraft({ ...draft, theme: e.target.value })}
-              className={inputClass}
+              className="dash-select"
             >
               {themeOptions.map((o) => (
                 <option key={o.theme} value={o.theme}>{o.label}</option>

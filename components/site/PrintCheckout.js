@@ -38,7 +38,6 @@ export default function PrintCheckout({ quote, product, swatch, placement, blank
   const [price, setPrice] = useState(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
-  const [placed, setPlaced] = useState(null)
 
   const { design, busy: rendering } = usePrintDesign({
     slug: quote.slug,
@@ -62,15 +61,6 @@ export default function PrintCheckout({ quote, product, swatch, placement, blank
     const { ok, data } = await postJson('/api/print/quote', order)
     if (ok) setPrice(data)
     else setError(data.error || 'Could not price this order.')
-    setBusy('')
-  }
-
-  async function onPlace() {
-    setBusy('checkout')
-    setError('')
-    const { ok, data } = await postJson('/api/print/checkout', order)
-    if (ok && data.orderNumber) setPlaced(data)
-    else setError(data.error || data.message || 'Checkout failed.')
     setBusy('')
   }
 
@@ -138,23 +128,13 @@ export default function PrintCheckout({ quote, product, swatch, placement, blank
                 Shipping and tax are not connected yet, so this total is the item only.
               </p>
             ) : null}
-            <button
-              type="button"
-              onClick={onPlace}
-              disabled={Boolean(busy)}
-              className="btn mt-2 disabled:opacity-50"
-            >
-              {busy === 'checkout' ? '…' : 'Continue to checkout'}
-            </button>
+            <p className="mt-2 text-quiet">
+              Payment service is pending. You can review the total; checkout opens once payment is
+              connected.
+            </p>
           </div>
         ) : null}
 
-        {placed ? (
-          <p className="text-sm text-body">
-            {placed.message || 'Your order is saved.'} Reference{' '}
-            <span className="text-paper">{placed.orderNumber}</span>.
-          </p>
-        ) : null}
         {error ? <p className="text-sm text-red-400">{error}</p> : null}
       </form>
     </div>

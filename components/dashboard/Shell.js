@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { brand } from '@/config/site'
 import BrandLogo from '@/components/site/BrandLogo'
 import DashboardNav from './Nav'
+import LogoutButton from './LogoutButton'
 
 export default function DashboardShell({ isAdmin, children }) {
   return (
@@ -11,9 +12,12 @@ export default function DashboardShell({ isAdmin, children }) {
           <Link href="/" aria-label={brand.name}>
             <BrandLogo />
           </Link>
-          <Link href="/" className="nav-link">
-            View site
-          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="/" className="nav-link">
+              View site
+            </Link>
+            <LogoutButton />
+          </div>
         </div>
       </header>
       <div className="inset-x-page flex min-h-0 flex-1 flex-col py-8">

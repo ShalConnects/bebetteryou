@@ -2,10 +2,8 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
-import { sendTestNewsletter } from '@/libs/newsletter'
-import { newsletterTestEmailSchema, validateSchema } from '@/libs/validation-schemas'
-
-export const maxDuration = 60
+import { unsubscribeNewsletterSubscriber } from '@/libs/newsletter'
+import { newsletterDeleteSchema, validateSchema } from '@/libs/validation-schemas'
 
 async function handlePost(request) {
   try {
@@ -13,7 +11,7 @@ async function handlePost(request) {
     if (auth instanceof NextResponse) return auth
 
     const body = await request.json().catch(() => null)
-    const validation = validateSchema(newsletterTestEmailSchema, body)
+    const validation = validateSchema(newsletterDeleteSchema, body)
     if (!validation.success) {
       return NextResponse.json(
         { error: validation.error.message, details: validation.error.details },
@@ -21,15 +19,19 @@ async function handlePost(request) {
       )
     }
 
-    const result = await sendTestNewsletter(validation.data)
+    const result = await unsubscribeNewsletterSubscriber(validation.data.email)
     if (!result.ok) {
-      return NextResponse.json({ error: result.error || 'Send failed' }, { status: 400 })
+      return NextResponse.json({ error: 'Subscriber not found' }, { status: 404 })
     }
-    return NextResponse.json({ success: true, type: result.type })
+    return NextResponse.json({
+      success: true,
+      unsubscribed: true,
+      prefs: result.lead.prefs,
+    })
   } catch (error) {
     const errorResponse = handleApiError(error)
     if (errorResponse) return errorResponse
-    return NextResponse.json({ error: 'Failed to send test email' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to unsubscribe' }, { status: 500 })
   }
 }
 

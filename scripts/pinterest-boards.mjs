@@ -33,7 +33,13 @@ if (!token) {
   process.exit(1)
 }
 
-const res = await fetch('https://api.pinterest.com/v5/boards?page_size=50', {
+const sandbox = process.env.PINTEREST_SANDBOX
+const apiBase =
+  sandbox === '1' || sandbox === 'true'
+    ? 'https://api-sandbox.pinterest.com'
+    : 'https://api.pinterest.com'
+
+const res = await fetch(`${apiBase}/v5/boards?page_size=50`, {
   headers: { Authorization: `Bearer ${token}` },
 })
 const data = await res.json()

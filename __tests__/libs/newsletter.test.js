@@ -29,7 +29,7 @@ describe('newsletter', () => {
       const html = discoveryHtml({})
       expect(html).toContain('/shop')
       expect(html).toContain('Shop tees &amp; mugs')
-      expect(html).not.toContain('Quote cards')
+      expect(html).not.toContain('More cards')
       expect(html).not.toContain('From the blog')
       expect(html).not.toContain('Book pick')
     })
@@ -41,7 +41,7 @@ describe('newsletter', () => {
           { n: 2, slug: 'bby-2', src: '/q2.jpg' },
         ],
       })
-      expect(html).toContain('Quote cards')
+      expect(html).toContain('More cards')
       expect(html).toContain('/quotes/bby-1')
       expect(html).toContain('/quotes/bby-2')
     })
@@ -67,10 +67,13 @@ describe('newsletter', () => {
       expect(mail.html).toContain('/brand/fav.png')
       expect(mail.html).toContain('subscribed at BeBetterYou')
       expect(mail.html).toContain('/shop')
+      expect(mail.html).toContain('fonts.googleapis.com')
+      expect(mail.html).toContain('Jost')
+      expect(mail.html).toContain('Iceberg')
       expect(mail.html).toContain('/unsubscribe?t=')
     })
 
-    it('builds a quote email with card image and discovery', () => {
+    it('builds a quote email with centered 65% card image and discovery', () => {
       const mail = buildQuoteEmail({
         token,
         extras,
@@ -84,7 +87,9 @@ describe('newsletter', () => {
       })
       expect(mail.subject).toContain('#221')
       expect(mail.html).toContain('bby221.jpg')
+      expect(mail.html).toContain('width:65%')
       expect(mail.html).toContain('/quotes/bby-221')
+      expect(mail.html).toContain('More cards')
       expect(mail.html).toContain('/shop')
     })
 
@@ -96,15 +101,19 @@ describe('newsletter', () => {
           slug: 'from-blah-to-blaze',
           title: 'From Blah to Blaze',
           excerpt: 'Start small.',
+          description: 'A longer SEO description.',
+          blocks: [{ type: 'p', text: 'Opening paragraph about getting unstuck today.' }],
         },
       })
       expect(blog.html).toContain('Start small.')
+      expect(blog.html).toContain('A longer SEO description.')
+      expect(blog.html).toContain('Opening paragraph about getting unstuck')
       expect(blog.html).toContain('Read the post')
       expect(blog.html).toContain('/shop')
       expect(blog.html).toContain('subscribed at BeBetterYou')
     })
 
-    it('builds book email with blurb before CTA then discovery', () => {
+    it('builds book email with blurb and longer description before CTA', () => {
       const book = buildBookEmail({
         token,
         extras: { quotes: [], posts: [], book: null },
@@ -114,12 +123,16 @@ describe('newsletter', () => {
           author: 'James Clear',
           asin: '0735211299',
           blurb: 'Tiny changes.',
+          description: 'Systems over goals — a longer pitch for the inbox.',
         },
       })
       expect(book.subject).toContain('Atomic Habits')
       expect(book.html).toContain('James Clear')
       expect(book.html).toContain('Tiny changes.')
+      expect(book.html).toContain('Systems over goals')
       expect(book.html).toContain('View book')
+      expect(book.html).toContain('/books')
+      expect(book.html).not.toContain('amazon.com')
       expect(book.html).toContain('/shop')
     })
   })

@@ -3,6 +3,7 @@ import {
   createCheckoutSessionSchema,
   emailOnlySchema,
   newsletterSignupSchema,
+  newsletterTestEmailSchema,
   registerSchema,
   magicLinkSchema,
   validateSchema,
@@ -78,6 +79,24 @@ describe('Validation Schemas', () => {
       })
       expect(result.success).toBe(true)
       expect(result.data.prefs.blog).toBe(false)
+    })
+  })
+
+  describe('newsletterTestEmailSchema', () => {
+    it('accepts welcome without slug', () => {
+      const result = validateSchema(newsletterTestEmailSchema, {
+        email: 'you@example.com',
+        type: 'welcome',
+      })
+      expect(result.success).toBe(true)
+    })
+
+    it('requires slug for quote', () => {
+      const result = validateSchema(newsletterTestEmailSchema, {
+        email: 'you@example.com',
+        type: 'quote',
+      })
+      expect(result.success).toBe(false)
     })
   })
 

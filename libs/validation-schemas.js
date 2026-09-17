@@ -32,11 +32,32 @@ export const newsletterManageSchema = z.object({
 })
 
 export const newsletterNotifySchema = z.object({
-  type: z.enum(['blog', 'book']),
+  type: z.enum(['blog', 'book', 'quote']),
   slug: z.string().trim().min(1).max(200),
 })
 
 export const newsletterTestWelcomeSchema = z.object({
+  email: emailField,
+})
+
+/** Admin: send any template to one subscriber. */
+export const newsletterTestEmailSchema = z
+  .object({
+    email: emailField,
+    type: z.enum(['welcome', 'quote', 'blog', 'book']),
+    slug: z.string().trim().min(1).max(200).optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type !== 'welcome' && !data.slug) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Slug is required for quote, blog, and book tests',
+        path: ['slug'],
+      })
+    }
+  })
+
+export const newsletterDeleteSchema = z.object({
   email: emailField,
 })
 

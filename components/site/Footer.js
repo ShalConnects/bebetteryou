@@ -3,8 +3,35 @@ import { brand, legal, makerProducts, socials } from '@/config/site'
 import SocialIcon from './SocialIcon'
 import TraditionLink from './TraditionLink'
 
+function MadeWithLove() {
+  return (
+    <p className="inline-flex items-center gap-1.5 text-xs text-quiet">
+      Made with
+      <svg
+        viewBox="0 0 24 24"
+        width="12"
+        height="12"
+        aria-hidden
+        className="shrink-0 fill-accent text-accent"
+      >
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+      </svg>
+      by{' '}
+      <a
+        href="https://shalconnects.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-quiet transition-colors hover:text-paper"
+      >
+        ShalConnects
+      </a>
+    </p>
+  )
+}
+
 export default function Footer() {
   const year = new Date().getFullYear()
+  const hasMaker = makerProducts.length > 0
 
   return (
     <footer className="border-t border-line pb-[env(safe-area-inset-bottom)]">
@@ -47,50 +74,28 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="inset-x-page">
-        <div className="shell-inner flex flex-col items-center gap-2 py-4 text-center">
-          <div className="inline-flex flex-col items-center gap-2">
-            <span className="h-px w-full bg-line" aria-hidden />
-            <p className="inline-flex items-center gap-1.5 text-xs text-quiet">
-              Made with
-              <svg
-                viewBox="0 0 24 24"
-                width="12"
-                height="12"
-                aria-hidden
-                className="shrink-0 fill-accent text-accent"
-              >
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-              </svg>
-              by{' '}
-              <a
-                href="https://shalconnects.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-quiet transition-colors hover:text-paper"
-              >
-                ShalConnects
-              </a>
-            </p>
-            {makerProducts.length ? (
-              <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">More from this maker</p>
-            ) : null}
-          </div>
-          {makerProducts.length ? (
-            <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+      <div className="inset-x-page border-t border-line">
+        <div
+          className={`shell-inner flex flex-col items-center gap-3 py-4 text-center md:flex-row md:items-center md:gap-6 md:text-left ${
+            hasMaker ? 'md:justify-between' : 'md:justify-start'
+          }`}
+        >
+          <MadeWithLove />
+          {hasMaker ? (
+            <p className="flex min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-quiet md:justify-end">
+              <span className="text-[11px] uppercase tracking-[0.2em]">More from this maker:</span>
               {makerProducts.map(({ name, href }) => (
-                <li key={href}>
-                  <a
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-10 items-center text-xs text-quiet transition-colors hover:text-paper"
-                  >
-                    {name}
-                  </a>
-                </li>
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex min-h-10 items-center transition-colors hover:text-paper"
+                >
+                  {name}
+                </a>
               ))}
-            </ul>
+            </p>
           ) : null}
         </div>
       </div>

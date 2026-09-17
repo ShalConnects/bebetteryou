@@ -4,7 +4,7 @@
  * Update these values when using this boilerplate for a new project
  */
 
-import { getSiteUrl } from '@/libs/site-url'
+import { getSiteUrl } from '../libs/site-url.js'
 
 const name = process.env.APP_NAME || 'BeBetterYou'
 

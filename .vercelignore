@@ -4,3 +4,12 @@ coverage
 .git
 *.mp4
 *.zip
+
+# Not needed at runtime on Vercel (saves upload + deploy storage)
+__tests__
+scripts
+HANDOFF.md
+*.test.js
+
+# Print files are Blob-backed on Vercel (see libs/asset-store.js)
+public/print

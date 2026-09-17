@@ -4,10 +4,15 @@ import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { getPost } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
-import { notifyBlogSubscribers, notifyBookSubscribers } from '@/libs/newsletter'
+import {
+  notifyBlogSubscribers,
+  notifyBookSubscribers,
+  notifyQuoteSubscribers,
+} from '@/libs/newsletter'
+import { readQuotes } from '@/libs/quotes-store'
 import { newsletterNotifySchema, validateSchema } from '@/libs/validation-schemas'
 
-/** Sequential Resend fan-out for blog/book drops. */
+/** Sequential Resend fan-out for quote/blog/book drops. */
 export const maxDuration = 60
 
 async function handlePost(request) {
@@ -33,9 +38,16 @@ async function handlePost(request) {
       return NextResponse.json({ success: true, ...result })
     }
 
-    const book = readBooks().find((b) => b.slug === slug)
-    if (!book) return NextResponse.json({ error: 'Book not found' }, { status: 404 })
-    const result = await notifyBookSubscribers(book)
+    if (type === 'book') {
+      const book = readBooks().find((b) => b.slug === slug)
+      if (!book) return NextResponse.json({ error: 'Book not found' }, { status: 404 })
+      const result = await notifyBookSubscribers(book)
+      return NextResponse.json({ success: true, ...result })
+    }
+
+    const quote = (await readQuotes()).find((q) => q.slug === slug)
+    if (!quote?.src) return NextResponse.json({ error: 'Quote not found' }, { status: 404 })
+    const result = await notifyQuoteSubscribers(quote)
     return NextResponse.json({ success: true, ...result })
   } catch (error) {
     const errorResponse = handleApiError(error)

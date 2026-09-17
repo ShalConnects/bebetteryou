@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import FilterMenu from '@/components/site/FilterMenu'
-import { BookGrid, Page, PageIntro, Pager } from '@/components/site/ui'
+import { BookList, Page, PageIntro, Pager } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
 import { affiliateDisclosure, booksIntro } from '@/config/books'
 import { bookTags, pageBooks } from '@/libs/books'
@@ -55,7 +55,7 @@ export default async function BooksPage({ searchParams }) {
       >
         {booksIntro}
       </PageIntro>
-      <BookGrid items={books} />
+      <BookList items={books} />
       {affiliateDisclosure ? <p className="mt-10 text-center text-xs text-quiet">{affiliateDisclosure}</p> : null}
       <Pager
         page={page}

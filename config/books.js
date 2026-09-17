@@ -17,3 +17,10 @@ export function bookUrl({ asin, url } = {}) {
   const base = `https://www.amazon.com/dp/${asin}`
   return amazonTag ? `${base}?tag=${encodeURIComponent(amazonTag)}` : base
 }
+
+/** Local cover under /public/books, or an explicit cover path/URL on the row. */
+export function bookCover({ cover, slug } = {}) {
+  if (cover) return cover
+  if (slug) return `/books/${slug}.jpg`
+  return ''
+}

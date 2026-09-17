@@ -55,12 +55,19 @@ export function formatPrintShipTo(customer) {
   return [customer.address1, customer.address2, formatPrintLocality(customer), customer.zip].filter(Boolean).join(' · ')
 }
 
-/** Prefer the site path so localhost can serve the same file Printful was given. */
+/**
+ * Prefer the site path so localhost can preview files Printful was given as
+ * absolute SITE_URL urls. Vercel Blob urls also use a `/print/…` path, but that
+ * file is not on the Next host — keep those absolute or the dashboard 404s.
+ */
 export function printPreviewSrc(url) {
   if (!url) return ''
+  if (url.startsWith('/')) return url
   try {
-    const { pathname } = new URL(url, 'http://local')
-    return pathname.startsWith('/print/') ? pathname : url
+    const { pathname, hostname } = new URL(url)
+    if (!pathname.startsWith('/print/')) return url
+    if (hostname.endsWith('blob.vercel-storage.com')) return url
+    return pathname
   } catch {
     return url
   }

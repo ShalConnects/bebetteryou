@@ -39,8 +39,10 @@ export default function NotifySubscribers({ type, options }) {
         <select
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
-          className="min-w-0 flex-1 border border-line bg-ink px-3 py-2 text-sm text-paper outline-none focus:border-paper/40"
-          aria-label={type === 'blog' ? 'Blog post' : 'Book'}
+          className="dash-select min-w-0 flex-1 py-2.5 text-sm leading-tight"
+          aria-label={
+            type === 'blog' ? 'Blog post' : type === 'book' ? 'Book' : 'Quote'
+          }
         >
           {options.map((row) => (
             <option key={row.slug} value={row.slug}>

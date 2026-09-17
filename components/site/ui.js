@@ -123,14 +123,16 @@ export function QuoteGrid({ items, priorityCount = 0 }) {
   )
 }
 
-export function BookGrid({ items }) {
+export function BookList({ items }) {
   if (!items.length) return <p className="text-center text-quiet">No books yet.</p>
   return (
-    <div className="grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
+    <ul className="divide-y divide-line">
       {items.map((book) => (
-        <BookCard key={book.slug} book={book} />
+        <li key={book.slug} className="py-8 first:pt-0 last:pb-0">
+          <BookCard book={book} />
+        </li>
       ))}
-    </div>
+    </ul>
   )
 }
 

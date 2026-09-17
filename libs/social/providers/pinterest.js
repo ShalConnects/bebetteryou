@@ -1,7 +1,12 @@
 import { getSiteUrl } from '@/libs/site-url'
 import { quoteAlt, quoteOneLine } from '@/libs/quote-text'
 
-const PINS = 'https://api.pinterest.com/v5/pins'
+export function pinterestApiBase() {
+  const sandbox = process.env.PINTEREST_SANDBOX
+  return sandbox === '1' || sandbox === 'true'
+    ? 'https://api-sandbox.pinterest.com'
+    : 'https://api.pinterest.com'
+}
 
 export function pinterestKeys() {
   return {
@@ -32,7 +37,7 @@ export async function postPinterest({ caption, imageBuffer, quote }) {
 
   const slug = quote?.slug
   const link = slug ? `${getSiteUrl()}/quotes/${slug}` : getSiteUrl()
-  const res = await fetch(PINS, {
+  const res = await fetch(`${pinterestApiBase()}/v5/pins`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,

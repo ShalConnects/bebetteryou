@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import { Iceberg, Jost } from 'next/font/google'
 import './globals.css'
 import LayoutClient from '@/components/LayoutClient'
@@ -28,6 +29,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${jost.variable} ${iceberg.variable}`}>
       <body className="font-sans">
         <LayoutClient>{children}</LayoutClient>
+        <Analytics />
       </body>
     </html>
   )

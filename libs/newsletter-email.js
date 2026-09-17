@@ -1,6 +1,5 @@
 import { appConfig, getUrl } from '@/config/app'
 import { brand } from '@/config/site'
-import { bookUrl } from '@/config/books'
 import { postHref } from '@/libs/blog-url'
 import { booksHref } from '@/libs/books-url'
 
@@ -36,7 +35,7 @@ function cta(href, label) {
 }
 
 function sectionLabel(text) {
-  return `<p style="margin:28px 0 12px;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(text)}</p>`
+  return `<p style="margin:28px 0 12px;font-family:'Iceberg','Jost',system-ui,sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(text)}</p>`
 }
 
 /** Email-safe 2×2 quote card grid; renders only real cards. */
@@ -61,7 +60,7 @@ function quoteGridHtml(quotes = []) {
   }
 
   return `
-    ${sectionLabel('Quote cards')}
+    ${sectionLabel('More cards')}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       ${rows.join('')}
     </table>
@@ -89,7 +88,8 @@ function postsListHtml(posts = []) {
 
 function bookPickHtml(book) {
   if (!book?.slug || !book?.title) return ''
-  const href = bookUrl(book) || getUrl(booksHref())
+  // Site URL only — Amazon in-email trips “link ≠ sending domain” spam checks.
+  const href = getUrl(booksHref())
   return `
     ${sectionLabel('Book pick')}
     <p style="margin:0 0 4px;font-size:16px;color:#e9fdf0;">${escapeHtml(book.title)}</p>
@@ -119,13 +119,16 @@ function emailShell({ title, bodyHtml, token }) {
   const manage = token ? manageUrl(token) : getUrl('/')
   const home = getUrl('/')
   const chip = getUrl(brand.mark)
+  const fontBody = `'Jost', system-ui, -apple-system, sans-serif`
+  const fontDisplay = `'Iceberg', 'Jost', system-ui, sans-serif`
   return `
-    <div style="font-family:Georgia,serif;max-width:560px;margin:0 auto;background:#0a140e;color:#c6e8d2;padding:32px 24px;">
+    <link href="https://fonts.googleapis.com/css2?family=Iceberg&family=Jost:wght@400;500&display=swap" rel="stylesheet" />
+    <div style="font-family:${fontBody};max-width:560px;margin:0 auto;background:#0a140e;color:#c6e8d2;padding:32px 24px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;">
         <tr>
           <td style="vertical-align:middle;">
-            <p style="margin:0;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(brand.name)}</p>
-            <h1 style="margin:8px 0 0;font-size:22px;color:#e9fdf0;font-weight:normal;">${escapeHtml(title)}</h1>
+            <p style="margin:0;font-family:${fontDisplay};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(brand.name)}</p>
+            <h1 style="margin:8px 0 0;font-family:${fontDisplay};font-size:22px;color:#e9fdf0;font-weight:normal;">${escapeHtml(title)}</h1>
           </td>
           <td style="vertical-align:middle;text-align:right;width:48px;">
             <a href="${home}" style="display:inline-block;">
@@ -169,12 +172,20 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
   const imageUrl = quote.src ? getUrl(quote.src) : ''
   const author = quote.author ? ` — ${quote.author}` : ''
   const img = imageUrl
-    ? `<a href="${pageUrl}" style="display:block;margin:0 0 20px;"><img src="${escapeHtml(imageUrl)}" alt="Quote card #${quote.n}" width="520" style="width:100%;max-width:520px;height:auto;border:1px solid rgba(168,255,200,0.25);" /></a>`
+    ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;">
+        <tr>
+          <td align="center" style="text-align:center;">
+            <a href="${pageUrl}" style="display:inline-block;width:65%;max-width:365px;text-decoration:none;">
+              <img src="${escapeHtml(imageUrl)}" alt="Quote card #${quote.n}" width="365" style="width:100%;max-width:365px;height:auto;border:1px solid rgba(168,255,200,0.25);display:block;" />
+            </a>
+          </td>
+        </tr>
+      </table>`
     : ''
   const bodyHtml = `
     ${img}
-    <p style="margin:0 0 12px;font-size:18px;line-height:1.55;color:#e9fdf0;">“${escapeHtml(quote.text)}”${escapeHtml(author)}</p>
-    <p style="margin:0 0 8px;">${cta(pageUrl, `Open card #${quote.n}`)}</p>
+    <p style="margin:0 0 12px;font-size:18px;line-height:1.55;color:#e9fdf0;text-align:center;">“${escapeHtml(quote.text)}”${escapeHtml(author)}</p>
+    <p style="margin:0 0 8px;text-align:center;">${cta(pageUrl, `Open card #${quote.n}`)}</p>
     ${discoveryHtml(extras)}
   `
   return {
@@ -184,35 +195,86 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
   }
 }
 
+/** First narrative paragraph from blog blocks, if any. */
+export function firstBlogParagraph(post, maxLen = 420) {
+  const blocks = Array.isArray(post?.blocks) ? post.blocks : []
+  for (const block of blocks) {
+    const text = typeof block?.text === 'string' ? block.text.trim() : ''
+    if (!text) continue
+    if (text.length <= maxLen) return text
+    const cut = text.slice(0, maxLen)
+    const at = cut.lastIndexOf(' ')
+    return `${(at > 80 ? cut.slice(0, at) : cut).trim()}…`
+  }
+  return ''
+}
+
+/** Richer pre-CTA copy: excerpt, description, then opening paragraph — no dupes. */
+export function blogSummaryParagraphs(post) {
+  const parts = []
+  const push = (value) => {
+    const text = String(value || '').trim()
+    if (!text) return
+    if (parts.some((p) => p === text || p.includes(text) || text.includes(p))) return
+    parts.push(text)
+  }
+  push(post?.excerpt)
+  push(post?.description)
+  push(firstBlogParagraph(post))
+  return parts
+}
+
+export function bookSummaryParagraphs(book) {
+  const parts = []
+  const push = (value) => {
+    const text = String(value || '').trim()
+    if (!text) return
+    if (parts.some((p) => p === text)) return
+    parts.push(text)
+  }
+  push(book?.blurb)
+  push(book?.description)
+  return parts
+}
+
+function paragraphsHtml(parts) {
+  return parts
+    .map(
+      (p, i) =>
+        `<p style="margin:0 0 ${i === parts.length - 1 ? 20 : 12}px;line-height:1.55;">${escapeHtml(p)}</p>`
+    )
+    .join('')
+}
+
 export function buildBlogEmail({ post, token, extras = {} }) {
   const pageUrl = getUrl(postHref(post.slug))
-  const summary = post.excerpt || post.description || ''
+  const parts = blogSummaryParagraphs(post)
   const bodyHtml = `
     <p style="margin:0 0 12px;font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(post.title)}</p>
-    ${summary ? `<p style="margin:0 0 20px;line-height:1.55;">${escapeHtml(summary)}</p>` : ''}
+    ${paragraphsHtml(parts)}
     <p style="margin:0 0 8px;">${cta(pageUrl, 'Read the post')}</p>
     ${discoveryHtml(extras)}
   `
   return {
     subject: `${post.title} — ${brand.name}`,
     html: emailShell({ title: 'New on the blog', bodyHtml, token }),
-    text: `${post.title}\n${summary}\n${pageUrl}\n\nManage: ${manageUrl(token)}`,
+    text: `${post.title}\n\n${parts.join('\n\n')}\n\n${pageUrl}\n\nManage: ${manageUrl(token)}`,
   }
 }
 
 export function buildBookEmail({ book, token, extras = {} }) {
   const catalogUrl = getUrl(booksHref())
-  const buyUrl = bookUrl(book) || catalogUrl
+  const parts = bookSummaryParagraphs(book)
   const bodyHtml = `
     <p style="margin:0 0 8px;font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(book.title)}</p>
     <p style="margin:0 0 12px;color:#7a9e86;">${escapeHtml(book.author || '')}</p>
-    ${book.blurb ? `<p style="margin:0 0 20px;line-height:1.55;">${escapeHtml(book.blurb)}</p>` : ''}
-    <p style="margin:0 0 8px;">${cta(buyUrl, 'View book')}</p>
+    ${paragraphsHtml(parts)}
+    <p style="margin:0 0 8px;">${cta(catalogUrl, 'View book')}</p>
     ${discoveryHtml(extras)}
   `
   return {
     subject: `Book pick: ${book.title} — ${brand.name}`,
     html: emailShell({ title: 'New book pick', bodyHtml, token }),
-    text: `${book.title}${book.author ? ` — ${book.author}` : ''}\n${book.blurb || ''}\n${buyUrl}\n\nManage: ${manageUrl(token)}`,
+    text: `${book.title}${book.author ? ` — ${book.author}` : ''}\n\n${parts.join('\n\n')}\n\n${catalogUrl}\n\nManage: ${manageUrl(token)}`,
   }
 }

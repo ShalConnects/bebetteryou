@@ -6,8 +6,9 @@
  * via `scripts/printful-probe.mjs`. Sizes use Printful's own labels so no
  * translation layer is needed between what the user picks and what we order.
  *
- * TODO(printful): `retail` is still guesswork — reset it from actual base cost
- * plus shipping plus the margin you want.
+ * `retail` is product only (shipping/tax come from Printful at quote time).
+ * Set from Printful base (2026-09): tee ≈ $11.92–$13.92, mug ≈ $6.07–$9.13,
+ * then roughly 2× the dearest size, rounded to a clean dollar.
  */
 
 /** Retail prices are in cents to keep money integer-only end to end. */
@@ -25,7 +26,7 @@ export const printProducts = [
     id: 'tee',
     name: 'T-shirt',
     blurb: 'Unisex cotton tee, DTG print.',
-    retail: 2800,
+    retail: 2800, // ~2× 2XL base ($13.92)
     /**
      * 12x16in at 300dpi, Printful's max DTG area for this blank. Front and back
      * print areas differ only in size, not shape — 1010x1346 and 1031x1375, both
@@ -67,7 +68,7 @@ export const printProducts = [
     id: 'mug',
     name: 'Mug',
     blurb: 'Glossy ceramic mug, wrap print.',
-    retail: 1600,
+    retail: 1900, // ~2× black 15 oz base ($9.13)
     print: { width: 2700, height: 1050 },
     /**
      * The 15 oz wrap is a different shape: Printful's print area is 671x261 on

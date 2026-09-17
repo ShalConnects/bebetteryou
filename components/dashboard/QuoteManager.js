@@ -8,6 +8,7 @@ import { clampQuoteInput, quoteLinesOverflowMessage, quoteMetrics } from '@/libs
 import { useQuotePreview } from '@/components/site/useQuotePreview'
 import TagPicker from '@/components/site/TagPicker'
 import SocialPost from '@/components/site/SocialPost'
+import EmailQuoteList from '@/components/dashboard/EmailQuoteList'
 
 const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
@@ -263,6 +264,7 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
           </div>
 
           {slug ? <SocialPost slug={slug} /> : null}
+          {slug ? <EmailQuoteList slug={slug} /> : null}
         </div>
       ) : (
         <p className="text-sm text-quiet">Select a quote to edit.</p>

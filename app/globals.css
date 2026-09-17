@@ -110,6 +110,20 @@
       transition-colors hover:bg-accent hover:text-accent-ink;
   }
 
+  /* Native selects: hide OS chevron, match field chrome, quiet caret. */
+  .dash-select {
+    @apply w-full appearance-none border border-line bg-ink py-3 pl-4 pr-10 text-paper outline-none
+      focus:border-paper/40;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237A9E86' stroke-width='1.5' stroke-linecap='square'/%3E%3C/svg%3E");
+    background-position: right 0.875rem center;
+    background-repeat: no-repeat;
+    background-size: 0.75rem 0.5rem;
+  }
+
+  .dash-select option {
+    @apply bg-ink text-paper;
+  }
+
   .nav-link {
     @apply py-2 text-[11px] uppercase tracking-[0.2em] text-quiet transition-colors hover:text-accent;
   }

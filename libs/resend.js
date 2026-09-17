@@ -11,20 +11,46 @@ function getResend() {
   return client
 }
 
-/** Prefer "BeBetterYou <noreply@…>" when FROM_EMAIL is a bare address. */
+/** Prefer "BeBetterYou <hello@…>" — avoid noreply (hurts inbox trust). */
 export function resolveFromEmail() {
-  const raw = (appConfig.fromEmail || '').trim()
-  if (!raw) return 'BeBetterYou <noreply@example.com>'
-  if (/<[^>]+@[^>]+>/.test(raw)) return raw
-  if (raw.includes('@')) return `BeBetterYou <${raw}>`
+  const raw = (process.env.FROM_EMAIL || appConfig.fromEmail || '').trim()
+  const fallback = 'BeBetterYou <hello@bebetteryou.online>'
+  if (!raw) return fallback
+
+  const named = raw.match(/^(.*)<\s*([^>]+@[^>]+)\s*>\s*$/)
+  if (named) {
+    const display = (named[1].trim() || 'BeBetterYou').replace(/^["']|["']$/g, '') || 'BeBetterYou'
+    const addr = named[2].trim().replace(/^noreply@/i, 'hello@')
+    return `${display} <${addr}>`
+  }
+
+  if (raw.includes('@')) {
+    const addr = raw.replace(/^noreply@/i, 'hello@')
+    return `BeBetterYou <${addr}>`
+  }
   return raw
 }
 
-export const sendEmail = async ({ to, subject, html, text }) => {
+/** Replies go to SUPPORT_EMAIL / ADMIN_EMAIL (e.g. Gmail) when set. */
+export function resolveReplyTo() {
+  const reply = (
+    process.env.SUPPORT_EMAIL ||
+    process.env.ADMIN_EMAIL ||
+    appConfig.supportEmail ||
+    appConfig.adminEmail ||
+    ''
+  ).trim()
+  if (!reply || !reply.includes('@')) return null
+  return reply
+}
+
+export const sendEmail = async ({ to, subject, html, text, replyTo } = {}) => {
   const resend = getResend()
+  const from = resolveFromEmail()
+  const reply = replyTo || resolveReplyTo()
   if (!resend) {
     if (process.env.NODE_ENV === 'development') {
-      console.log('[email dev]', { to, subject, text, from: resolveFromEmail() })
+      console.log('[email dev]', { to, subject, text, from, replyTo: reply })
       return { id: 'dev' }
     }
     throw new Error('RESEND_API_KEY is not configured')
@@ -32,12 +58,13 @@ export const sendEmail = async ({ to, subject, html, text }) => {
 
   try {
     const payload = {
-      from: resolveFromEmail(),
+      from,
       to,
       subject,
       html,
     }
     if (text) payload.text = text
+    if (reply) payload.reply_to = reply
 
     const { data, error } = await resend.emails.send(payload)
 

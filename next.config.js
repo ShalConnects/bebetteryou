@@ -17,15 +17,33 @@ function siteImageHosts() {
   }
 }
 
+/** Files quote/print renderers need (fonts + card layers + brand mark). */
+const renderAssets = [
+  './assets/fonts/**/*',
+  './assets/quote-card/**/*',
+  './public/brand/**/*',
+]
+
+/** Static media — CDN only; keep out of every serverless bundle. */
+const staticMedia = [
+  './public/quotes/**/*',
+  './public/books/**/*',
+  './public/print/**/*',
+  './public/print-products/**/*',
+]
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   staticPageGenerationTimeout: 180,
   serverExternalPackages: ['@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc', 'ffmpeg-static'],
-  // Quote + print renderers need fonts (and card layers) in the serverless bundle
   outputFileTracingIncludes: {
-    '/api/quotes/**': ['./assets/**/*', './public/brand/**/*'],
+    '/api/quotes/**': renderAssets,
     '/api/print/**': ['./assets/fonts/**/*'],
-    '/api/social/**': ['./node_modules/ffmpeg-static/**/*'],
+    // YouTube Short encode only — not oauth connect/callback.
+    '/api/social/post': ['./node_modules/ffmpeg-static/**/*'],
+  },
+  outputFileTracingExcludes: {
+    '/**': staticMedia,
   },
   webpack: (config, { isServer }) => {
     if (isServer) {

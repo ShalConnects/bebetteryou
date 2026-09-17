@@ -91,7 +91,7 @@ describe('print product catalog', () => {
 
   it('multiplies cents without float drift', () => {
     expect(lineSubtotal(2800, 3)).toBe(8400)
-    expect(lineSubtotal(1600, 1)).toBe(1600)
+    expect(lineSubtotal(1900, 1)).toBe(1900)
   })
 
   it('gives every colour a bundled blank and a catalog id to upgrade from', () => {
@@ -684,11 +684,11 @@ describe('printful payload', () => {
   it('omits external_id and files for a cost estimate', () => {
     const payload = printfulOrderPayload({
       customer,
-      items: [{ variantId: 42, quantity: 1, retailPrice: 1600 }],
+      items: [{ variantId: 42, quantity: 1, retailPrice: 1900 }],
     })
     expect(payload.external_id).toBeUndefined()
     expect(payload.items[0].files).toEqual([])
-    expect(payload.items[0].retail_price).toBe('16.00')
+    expect(payload.items[0].retail_price).toBe('19.00')
   })
 })
 
@@ -745,6 +745,11 @@ describe('formatting and order numbers', () => {
     expect(printPreviewSrc('https://www.bebetteryou.online/print/tee-white-abc.png')).toBe(
       '/print/tee-white-abc.png'
     )
+    expect(
+      printPreviewSrc(
+        'https://zbe8xvmedvndw8gm.public.blob.vercel-storage.com/print/tee-white-abc.png'
+      )
+    ).toBe('https://zbe8xvmedvndw8gm.public.blob.vercel-storage.com/print/tee-white-abc.png')
     expect(presentPrintOrder({
       orderNumber: 'BBY-1',
       quoteSlug: 'bby-1',

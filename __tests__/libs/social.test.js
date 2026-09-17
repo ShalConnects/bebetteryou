@@ -12,7 +12,12 @@ jest.mock('@/libs/social/youtube-store', () => ({
 import { oauth1Header, hasXKeys } from '@/libs/social/oauth'
 import { quoteCaption } from '@/libs/social'
 import { hasYoutubeKeys, youtubeTitle } from '@/libs/social/providers/youtube'
-import { clipPinText, hasPinterestKeys, pinterestTitle } from '@/libs/social/providers/pinterest'
+import {
+  clipPinText,
+  hasPinterestKeys,
+  pinterestApiBase,
+  pinterestTitle,
+} from '@/libs/social/providers/pinterest'
 import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { letterboxRect } from '@/libs/social/quote-short'
@@ -86,6 +91,13 @@ describe('social', () => {
     )
     expect(clipBlueskyText('x'.repeat(320)).length).toBe(300)
     expect(linkFacets(text)[0].features[0].uri).toBe('https://www.bebetteryou.online/quotes/bby-1')
+  })
+
+  it('uses sandbox API when PINTEREST_SANDBOX is set', () => {
+    process.env.PINTEREST_SANDBOX = 'true'
+    expect(pinterestApiBase()).toBe('https://api-sandbox.pinterest.com')
+    delete process.env.PINTEREST_SANDBOX
+    expect(pinterestApiBase()).toBe('https://api.pinterest.com')
   })
 
   it('clips Pinterest title to 100 chars', () => {

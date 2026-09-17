@@ -38,6 +38,12 @@ async function handlePost(request) {
       return NextResponse.json({ error: 'Ordering is not configured' }, { status: 503 })
     }
 
+    // Public checkout stays closed until a real processor is wired — Review order
+    // can still price; this route must not create parked orders in the meantime.
+    if (paymentProviderId() === 'none') {
+      return NextResponse.json({ error: 'Payment service is pending' }, { status: 503 })
+    }
+
     const { slug, productId, color, size, quantity, address, style, leading, scale, credit, placement, text, author } =
       checked.data
     const selection = resolveSelection({ productId, color, size, placement })
