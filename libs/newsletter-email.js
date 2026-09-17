@@ -9,6 +9,10 @@ export const DEFAULT_NEWSLETTER_PREFS = Object.freeze({
   books: true,
 })
 
+/** Match site: Iceberg = display, Jost = body (app/layout + tailwind). */
+const FONT_DISPLAY = `'Iceberg', 'Jost', system-ui, sans-serif`
+const FONT_BODY = `'Jost', system-ui, -apple-system, sans-serif`
+
 export function normalizePrefs(input) {
   if (!input || typeof input !== 'object') return { ...DEFAULT_NEWSLETTER_PREFS }
   return {
@@ -31,11 +35,11 @@ function escapeHtml(value) {
 }
 
 function cta(href, label) {
-  return `<a href="${escapeHtml(href)}" style="background:#34d399;color:#0a140e;padding:12px 20px;text-decoration:none;display:inline-block;">${escapeHtml(label)}</a>`
+  return `<a href="${escapeHtml(href)}" style="font-family:${FONT_DISPLAY};background:#34d399;color:#0a140e;padding:12px 20px;text-decoration:none;display:inline-block;letter-spacing:0.04em;">${escapeHtml(label)}</a>`
 }
 
 function sectionLabel(text) {
-  return `<p style="margin:28px 0 12px;font-family:'Iceberg','Jost',system-ui,sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(text)}</p>`
+  return `<p style="margin:28px 0 12px;font-family:${FONT_DISPLAY};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(text)}</p>`
 }
 
 /** Email-safe 2×2 quote card grid; renders only real cards. */
@@ -74,15 +78,15 @@ function postsListHtml(posts = []) {
     .map((p) => {
       const href = getUrl(postHref(p.slug))
       const blurb = p.excerpt || p.description || ''
-      return `<li style="margin:0 0 12px;">
-        <a href="${href}" style="color:#e9fdf0;text-decoration:none;font-size:15px;">${escapeHtml(p.title)}</a>
-        ${blurb ? `<br><span style="color:#7a9e86;font-size:13px;line-height:1.45;">${escapeHtml(blurb)}</span>` : ''}
+      return `<li style="margin:0 0 12px;font-family:${FONT_BODY};">
+        <a href="${href}" style="font-family:${FONT_DISPLAY};color:#e9fdf0;text-decoration:none;font-size:15px;">${escapeHtml(p.title)}</a>
+        ${blurb ? `<br><span style="font-family:${FONT_BODY};color:#7a9e86;font-size:13px;line-height:1.45;">${escapeHtml(blurb)}</span>` : ''}
       </li>`
     })
     .join('')
   return `
     ${sectionLabel('From the blog')}
-    <ul style="margin:0;padding-left:18px;line-height:1.45;">${items}</ul>
+    <ul style="margin:0;padding-left:18px;line-height:1.45;font-family:${FONT_BODY};">${items}</ul>
   `
 }
 
@@ -92,9 +96,9 @@ function bookPickHtml(book) {
   const href = getUrl(booksHref())
   return `
     ${sectionLabel('Book pick')}
-    <p style="margin:0 0 4px;font-size:16px;color:#e9fdf0;">${escapeHtml(book.title)}</p>
-    ${book.author ? `<p style="margin:0 0 8px;color:#7a9e86;font-size:13px;">${escapeHtml(book.author)}</p>` : ''}
-    ${book.blurb ? `<p style="margin:0 0 12px;line-height:1.5;font-size:14px;">${escapeHtml(book.blurb)}</p>` : ''}
+    <p style="margin:0 0 4px;font-family:${FONT_DISPLAY};font-size:16px;color:#e9fdf0;">${escapeHtml(book.title)}</p>
+    ${book.author ? `<p style="margin:0 0 8px;font-family:${FONT_BODY};color:#7a9e86;font-size:13px;">${escapeHtml(book.author)}</p>` : ''}
+    ${book.blurb ? `<p style="margin:0 0 12px;font-family:${FONT_BODY};line-height:1.5;font-size:14px;">${escapeHtml(book.blurb)}</p>` : ''}
     <p style="margin:0;">${cta(href, 'View book')}</p>
   `
 }
@@ -102,7 +106,7 @@ function bookPickHtml(book) {
 function shopHtml() {
   return `
     ${sectionLabel('Wear the words')}
-    <p style="margin:0 0 12px;line-height:1.5;font-size:14px;">
+    <p style="margin:0 0 12px;font-family:${FONT_BODY};line-height:1.5;font-size:14px;">
       Turn a quote into a tee or mug — print on demand from the shop.
     </p>
     <p style="margin:0;">${cta(getUrl('/shop'), 'Shop tees & mugs')}</p>
@@ -119,16 +123,17 @@ function emailShell({ title, bodyHtml, token }) {
   const manage = token ? manageUrl(token) : getUrl('/')
   const home = getUrl('/')
   const chip = getUrl(brand.mark)
-  const fontBody = `'Jost', system-ui, -apple-system, sans-serif`
-  const fontDisplay = `'Iceberg', 'Jost', system-ui, sans-serif`
   return `
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Iceberg&family=Jost:wght@400;500&display=swap');
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Iceberg&family=Jost:wght@400;500&display=swap" rel="stylesheet" />
-    <div style="font-family:${fontBody};max-width:560px;margin:0 auto;background:#0a140e;color:#c6e8d2;padding:32px 24px;">
+    <div style="font-family:${FONT_BODY};max-width:560px;margin:0 auto;background:#0a140e;color:#c6e8d2;padding:32px 24px;">
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 20px;">
         <tr>
           <td style="vertical-align:middle;">
-            <p style="margin:0;font-family:${fontDisplay};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(brand.name)}</p>
-            <h1 style="margin:8px 0 0;font-family:${fontDisplay};font-size:22px;color:#e9fdf0;font-weight:normal;">${escapeHtml(title)}</h1>
+            <p style="margin:0;font-family:${FONT_DISPLAY};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(brand.name)}</p>
+            <h1 style="margin:8px 0 0;font-family:${FONT_DISPLAY};font-size:22px;color:#e9fdf0;font-weight:normal;">${escapeHtml(title)}</h1>
           </td>
           <td style="vertical-align:middle;text-align:right;width:48px;">
             <a href="${home}" style="display:inline-block;">
@@ -138,8 +143,8 @@ function emailShell({ title, bodyHtml, token }) {
         </tr>
       </table>
       ${bodyHtml}
-      <p style="margin:28px 0 0;font-size:12px;color:#7a9e86;line-height:1.5;">
-        <a href="${manage}" style="color:#34d399;">Manage preferences</a>
+      <p style="margin:28px 0 0;font-family:${FONT_BODY};font-size:12px;color:#7a9e86;line-height:1.5;">
+        <a href="${manage}" style="font-family:${FONT_BODY};color:#34d399;">Manage preferences</a>
         · You’re getting this because you subscribed at ${escapeHtml(brand.name)}.
       </p>
     </div>
@@ -153,10 +158,10 @@ export function buildWelcomeEmail({ token, prefs, extras = {} }) {
   if (prefs.books) lines.push('New book recommendations')
   if (!lines.length) lines.push('Nothing yet — turn topics back on anytime')
 
-  const list = lines.map((l) => `<li style="margin:0 0 6px;">${escapeHtml(l)}</li>`).join('')
+  const list = lines.map((l) => `<li style="margin:0 0 6px;font-family:${FONT_BODY};">${escapeHtml(l)}</li>`).join('')
   const bodyHtml = `
-    <p style="margin:0 0 16px;line-height:1.6;">You’re on the list. Here’s what you’ll get:</p>
-    <ul style="margin:0 0 20px;padding-left:18px;line-height:1.5;">${list}</ul>
+    <p style="margin:0 0 16px;font-family:${FONT_BODY};line-height:1.6;">You’re on the list. Here’s what you’ll get:</p>
+    <ul style="margin:0 0 20px;padding-left:18px;line-height:1.5;font-family:${FONT_BODY};">${list}</ul>
     <p style="margin:0 0 8px;">${cta(getUrl('/'), 'Browse quotes')}</p>
     ${discoveryHtml(extras)}
   `
@@ -184,7 +189,7 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
     : ''
   const bodyHtml = `
     ${img}
-    <p style="margin:0 0 12px;font-size:18px;line-height:1.55;color:#e9fdf0;text-align:center;">“${escapeHtml(quote.text)}”${escapeHtml(author)}</p>
+    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:18px;line-height:1.55;color:#e9fdf0;text-align:center;">“${escapeHtml(quote.text)}”${escapeHtml(author)}</p>
     <p style="margin:0 0 8px;text-align:center;">${cta(pageUrl, `Open card #${quote.n}`)}</p>
     ${discoveryHtml(extras)}
   `
@@ -200,7 +205,7 @@ export function buildQuoteDigestEmail({ quotes = [], token, extras = {} }) {
   const cards = quotes.filter((q) => q?.slug && q?.src).slice(0, 6)
   const grid = digestGridHtml(cards)
   const bodyHtml = `
-    <p style="margin:0 0 16px;line-height:1.6;">
+    <p style="margin:0 0 16px;font-family:${FONT_BODY};line-height:1.6;">
       Here’s a fresh set of cards from ${escapeHtml(brand.name)}. Save one, share one, or browse the full library.
     </p>
     ${grid}
@@ -217,7 +222,7 @@ export function buildQuoteDigestEmail({ quotes = [], token, extras = {} }) {
   }
 }
 
-/** Digest grid: image + number + text so the mail still reads if CDN art is stale. */
+/** Digest grid: image-only cards (quote lives on the artwork). */
 function digestGridHtml(quotes = []) {
   const cards = quotes.filter((q) => q?.src && q?.slug)
   if (!cards.length) return ''
@@ -226,15 +231,9 @@ function digestGridHtml(quotes = []) {
     if (!q) return '<td style="width:50%;padding:4px;"></td>'
     const href = getUrl(`/quotes/${q.slug}`)
     const src = getUrl(q.src)
-    const line = String(q.text || '')
-      .replace(/\n/g, ' ')
-      .trim()
-    const blurb = line.length > 120 ? `${line.slice(0, 117).trim()}…` : line
     return `<td style="width:50%;padding:4px;vertical-align:top;">
-      <a href="${href}" style="display:block;text-decoration:none;color:#c6e8d2;">
+      <a href="${href}" style="display:block;text-decoration:none;">
         <img src="${escapeHtml(src)}" alt="Quote #${q.n || ''}" width="260" style="width:100%;max-width:260px;height:auto;border:1px solid rgba(168,255,200,0.25);display:block;" />
-        <p style="margin:8px 0 0;font-family:'Iceberg','Jost',system-ui,sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#7a9e86;">#${q.n || ''}</p>
-        ${blurb ? `<p style="margin:4px 0 0;font-size:13px;line-height:1.45;color:#e9fdf0;">${escapeHtml(blurb)}</p>` : ''}
       </a>
     </td>`
   }
@@ -298,7 +297,7 @@ function paragraphsHtml(parts) {
   return parts
     .map(
       (p, i) =>
-        `<p style="margin:0 0 ${i === parts.length - 1 ? 20 : 12}px;line-height:1.55;">${escapeHtml(p)}</p>`
+        `<p style="margin:0 0 ${i === parts.length - 1 ? 20 : 12}px;font-family:${FONT_BODY};line-height:1.55;">${escapeHtml(p)}</p>`
     )
     .join('')
 }
@@ -307,7 +306,7 @@ export function buildBlogEmail({ post, token, extras = {} }) {
   const pageUrl = getUrl(postHref(post.slug))
   const parts = blogSummaryParagraphs(post)
   const bodyHtml = `
-    <p style="margin:0 0 12px;font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(post.title)}</p>
+    <p style="margin:0 0 12px;font-family:${FONT_DISPLAY};font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(post.title)}</p>
     ${paragraphsHtml(parts)}
     <p style="margin:0 0 8px;">${cta(pageUrl, 'Read the post')}</p>
     ${discoveryHtml(extras)}
@@ -323,8 +322,8 @@ export function buildBookEmail({ book, token, extras = {} }) {
   const catalogUrl = getUrl(booksHref())
   const parts = bookSummaryParagraphs(book)
   const bodyHtml = `
-    <p style="margin:0 0 8px;font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(book.title)}</p>
-    <p style="margin:0 0 12px;color:#7a9e86;">${escapeHtml(book.author || '')}</p>
+    <p style="margin:0 0 8px;font-family:${FONT_DISPLAY};font-size:18px;line-height:1.45;color:#e9fdf0;">${escapeHtml(book.title)}</p>
+    <p style="margin:0 0 12px;font-family:${FONT_BODY};color:#7a9e86;">${escapeHtml(book.author || '')}</p>
     ${paragraphsHtml(parts)}
     <p style="margin:0 0 8px;">${cta(catalogUrl, 'View book')}</p>
     ${discoveryHtml(extras)}

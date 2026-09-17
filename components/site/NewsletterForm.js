@@ -7,9 +7,9 @@ import { copy } from '@/config/site'
 const DEFAULT_PREFS = { quotes: true, blog: true, books: true }
 
 const PREF_OPTIONS = [
-  { id: 'quotes', label: 'Quote card roundups when we send them' },
-  { id: 'blog', label: 'New blog posts' },
-  { id: 'books', label: 'New book picks' },
+  { id: 'quotes', label: 'Quotes' },
+  { id: 'blog', label: 'Blog' },
+  { id: 'books', label: 'Books' },
 ]
 
 export default function NewsletterForm({ quotes, moods = [], compact = false }) {
@@ -21,7 +21,7 @@ export default function NewsletterForm({ quotes, moods = [], compact = false }) 
   const [error, setError] = useState('')
 
   const surprise = quotes?.length ? (
-    <button type="button" className="btn" onClick={() => dialogRef.current?.showModal()}>
+    <button type="button" className="btn flex-1 sm:flex-none" onClick={() => dialogRef.current?.showModal()}>
       Surprise Me
     </button>
   ) : null
@@ -76,21 +76,23 @@ export default function NewsletterForm({ quotes, moods = [], compact = false }) 
               onChange={(e) => setEmail(e.target.value)}
               placeholder="hello@shalconnects.com"
               aria-label="Email"
-              className="min-w-0 flex-1 border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
+              className="min-w-0 flex-1 border border-line bg-ink px-4 py-3 text-paper outline-none placeholder:text-quiet/45 focus:border-paper/40"
             />
-            <button type="submit" disabled={busy} className="btn disabled:opacity-50">
-              {busy ? '…' : 'Subscribe'}
-            </button>
-            {surprise}
+            <div className={`flex gap-3 ${compact ? '' : 'sm:contents'}`}>
+              <button type="submit" disabled={busy} className="btn flex-1 disabled:opacity-50 sm:flex-none">
+                {busy ? '…' : 'Subscribe'}
+              </button>
+              {surprise}
+            </div>
           </div>
           <fieldset
-            className={`flex flex-wrap items-center gap-x-5 gap-y-2 ${compact ? 'justify-start' : 'justify-center'}`}
+            className={`flex flex-nowrap items-center gap-x-4 gap-y-2 ${compact ? 'justify-start' : 'justify-center'}`}
           >
             <legend className="sr-only">Email preferences</legend>
             {PREF_OPTIONS.map(({ id, label }) => (
               <label
                 key={id}
-                className="inline-flex cursor-pointer items-center gap-2 text-sm text-quiet"
+                className="inline-flex cursor-pointer items-center gap-1.5 text-xs text-quiet sm:gap-2 sm:text-sm"
               >
                 <input
                   type="checkbox"

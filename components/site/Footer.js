@@ -76,26 +76,28 @@ export default function Footer() {
 
       <div className="inset-x-page border-t border-line">
         <div
-          className={`shell-inner flex flex-col items-center gap-3 py-4 text-center md:flex-row md:items-center md:gap-6 md:text-left ${
+          className={`shell-inner flex flex-col items-center gap-5 py-4 text-center md:flex-row md:items-center md:gap-6 md:text-left ${
             hasMaker ? 'md:justify-between' : 'md:justify-start'
           }`}
         >
           <MadeWithLove />
           {hasMaker ? (
-            <p className="flex min-w-0 flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-quiet md:justify-end">
+            <div className="flex min-w-0 flex-col items-center gap-1 text-xs text-quiet md:flex-row md:items-center md:justify-end md:gap-x-3">
               <span className="text-[11px] uppercase tracking-[0.2em]">More from this maker:</span>
-              {makerProducts.map(({ name, href }) => (
-                <a
-                  key={href}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center transition-colors hover:text-paper"
-                >
-                  {name}
-                </a>
-              ))}
-            </p>
+              <span className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0 leading-none md:justify-end">
+                {makerProducts.map(({ name, href }) => (
+                  <a
+                    key={href}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center py-1 leading-none transition-colors hover:text-paper"
+                  >
+                    {name}
+                  </a>
+                ))}
+              </span>
+            </div>
           ) : null}
         </div>
       </div>

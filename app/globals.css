@@ -335,6 +335,24 @@
   }
 }
 
+/* Mobile only: soft icons + tighter share/print (md+ keeps text chrome above). */
+@media (max-width: 767px) {
+  .quote-card-passage,
+  .quote-card-share {
+    opacity: 0.4;
+  }
+
+  .quote-card-print {
+    opacity: 1;
+  }
+
+  .quote-card-share {
+    position: static;
+    right: auto;
+    margin-right: -0.125rem;
+  }
+}
+
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .hero-scatter:hover .hero-scatter-card:not(:hover):not(:focus-visible) {
     opacity: 0.45;

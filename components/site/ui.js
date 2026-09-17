@@ -73,11 +73,11 @@ export function Pager({ page, pages, href, total, pageSize }) {
 
   const edge = (target, label, enabled, hideSm) =>
     enabled ? (
-      <ScrollLink href={href(target)} className={`tag${hideSm ? ' hidden sm:inline' : ''}`}>
+      <ScrollLink href={href(target)} className={`tag${hideSm ? ' hidden sm:inline-flex' : ''}`}>
         {label}
       </ScrollLink>
     ) : (
-      <span className={`tag opacity-40${hideSm ? ' hidden sm:inline' : ''}`}>{label}</span>
+      <span className={`tag opacity-40${hideSm ? ' hidden sm:inline-flex' : ''}`}>{label}</span>
     )
 
   return (
@@ -88,14 +88,14 @@ export function Pager({ page, pages, href, total, pageSize }) {
         {edge(page - 1, 'Prev', page > 1)}
         {pageWindow(page, pages).map((item, i) =>
           item === '…' ? (
-            <span key={`e${i}`} className="tag hidden opacity-40 sm:inline" aria-hidden>
+            <span key={`e${i}`} className="tag hidden opacity-40 sm:inline-flex" aria-hidden>
               …
             </span>
           ) : (
             <ScrollLink
               key={item}
               href={href(item)}
-              className={`${item === page ? 'tag-active' : 'tag'} hidden sm:inline`}
+              className={`${item === page ? 'tag-active' : 'tag'} hidden sm:inline-flex`}
               aria-current={item === page ? 'page' : undefined}
             >
               {item}
@@ -115,7 +115,7 @@ export function Pager({ page, pages, href, total, pageSize }) {
 export function QuoteGrid({ items, priorityCount = 0 }) {
   if (!items.length) return <p className="text-center text-quiet">No quotes yet.</p>
   return (
-    <div className="grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4">
       {items.map((quote, i) => (
         <QuoteCard key={quote.slug} quote={quote} priority={i < priorityCount} />
       ))}

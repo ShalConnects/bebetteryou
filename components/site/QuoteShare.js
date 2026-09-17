@@ -8,7 +8,8 @@ import { saveImage, shareOrCopy, shareTargets } from '@/libs/share'
 import { scriptureShareText } from '@/libs/scripture-core'
 import { useScriptureQuote } from './TraditionProvider'
 
-const btn = 'inline-flex min-h-10 min-w-10 items-center justify-center text-quiet transition-colors hover:text-paper'
+const btn =
+  'inline-flex min-h-8 min-w-8 shrink-0 items-center justify-center text-quiet transition-colors hover:text-paper sm:min-h-10 sm:min-w-10'
 
 function Icon({ children, ...props }) {
   return (
@@ -73,10 +74,13 @@ export default function QuoteShareRail({
     }
   }
 
+  const socialOnly = showSocial && !showActions
   const wrap =
     layout === 'row'
-      ? 'flex flex-row flex-wrap items-center gap-3 sm:gap-4'
-      : 'flex flex-row flex-wrap items-center justify-center gap-4 md:flex-col md:gap-5'
+      ? socialOnly
+        ? 'flex w-full flex-nowrap items-center justify-between gap-0 sm:w-auto sm:flex-wrap sm:justify-start sm:gap-4'
+        : 'flex flex-nowrap items-center gap-1.5 sm:flex-wrap sm:gap-4'
+      : 'flex flex-row flex-nowrap items-center justify-center gap-1.5 sm:flex-wrap sm:gap-4 md:flex-col md:gap-5'
 
   return (
     <div className={wrap} aria-label="Share">

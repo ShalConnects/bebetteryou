@@ -8,7 +8,7 @@ import { printHref } from '@/libs/print-link'
 import { isPrintableQuote } from '@/libs/quote-text'
 import { quotesHref, formatTag } from '@/libs/quotes-url'
 
-const btn = 'inline-flex min-h-10 min-w-10 items-center justify-center text-quiet transition-colors hover:text-paper'
+const btn = 'inline-flex min-h-8 min-w-8 items-center justify-center text-quiet transition-colors hover:text-paper sm:min-h-10 sm:min-w-10'
 
 export default function QuoteDetailMedia({ quote, share, alt, priority }) {
   const shareProps = useShareProps(share, quote)
@@ -23,7 +23,7 @@ export default function QuoteDetailMedia({ quote, share, alt, priority }) {
         variant="detail"
         className="h-auto w-full"
       />
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+      <div className="mt-4 flex flex-nowrap items-center justify-center gap-1.5 sm:gap-4">
         <QuoteShareRail {...shareProps} layout="row" showSocial={false} />
         {canPrint ? (
           <Link href={printHref(quote.slug)} className={btn} aria-label="Print">

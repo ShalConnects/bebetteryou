@@ -80,7 +80,7 @@ export default async function Shop({ searchParams }) {
                     ) : null}
                   </span>
                 </span>
-                <span className="flex flex-wrap gap-4 sm:shrink-0 sm:justify-end">
+                <span className="flex flex-wrap justify-center gap-4 sm:shrink-0 sm:justify-end">
                   {publicPrintProducts.map((product) => (
                     <Link
                       key={product.id}
@@ -125,7 +125,7 @@ export default async function Shop({ searchParams }) {
               className="w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
             />
           </label>
-          <span className="flex flex-wrap gap-4">
+          <span className="flex flex-wrap justify-center gap-4 sm:justify-start">
             {publicPrintProducts.map((product) => (
               <button key={product.id} type="submit" name="product" value={product.id} className="tag font-semibold">
                 {product.name}

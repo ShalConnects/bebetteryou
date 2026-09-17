@@ -87,9 +87,12 @@ describe('newsletter', () => {
       expect(mail.subject).toContain('#19')
       expect(mail.html).toContain('Latest cards')
       expect(mail.html).toContain('/quotes/bby-20')
-      expect(mail.html).toContain('Be yourself.')
+      expect(mail.html).toContain('/q20.jpg')
+      expect(mail.html).not.toContain('Be yourself.')
       expect(mail.html).toContain('/quotes')
       expect(mail.html).toContain('/shop')
+      expect(mail.html).toContain('Iceberg')
+      expect(mail.html).toContain('Jost')
     })
 
     it('builds a quote email with centered 65% card image and discovery', () => {

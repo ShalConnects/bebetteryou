@@ -60,8 +60,8 @@ export default async function Home() {
             <div className="shell-inner">
               <p className="label">{copy.homeBlogLabel}</p>
               <ul className="grid grid-cols-1 gap-8 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-10">
-                {posts.map((post) => (
-                  <li key={post.slug}>
+                {posts.map((post, i) => (
+                  <li key={post.slug} className={i >= 2 ? 'hidden md:block' : undefined}>
                     <Link href={postHref(post.slug)} className="group block h-full">
                       <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">
                         {post.date}

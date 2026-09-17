@@ -75,7 +75,7 @@ function Block({ block, quotes, tag, topic, slug }) {
     return (
       <section>
         <Heading>{heading}</Heading>
-        <div className="mt-4 grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4">
           {quotes.map((quote) => (
             <QuoteCard key={quote.slug} quote={quote} />
           ))}
