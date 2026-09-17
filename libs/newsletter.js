@@ -8,6 +8,10 @@ import { pickNewsletterExtras, pickQuoteDigest } from '@/libs/newsletter-picks'
 import { readQuotes } from '@/libs/quotes-store'
 import { sendEmail } from '@/libs/resend'
 import {
+  NEWSLETTER_IMPORT_MAX,
+  parseNewsletterImportCsv,
+} from '@/libs/newsletter-import'
+import {
   DEFAULT_NEWSLETTER_PREFS,
   buildBlogEmail,
   buildBookEmail,
@@ -241,3 +245,53 @@ export async function deleteNewsletterSubscriber(email) {
   const result = await Lead.deleteOne({ email: normalized, source: 'newsletter' })
   return { deleted: result.deletedCount > 0 }
 }
+
+/**
+ * Bulk upsert opted-in newsletter subscribers from CSV / line list.
+ * Does not send welcome mail. Requires parse + size checks first.
+ */
+export async function importNewsletterSubscribers(rows) {
+  await connectDB()
+  const list = Array.isArray(rows) ? rows : []
+  if (!list.length) {
+    return { created: 0, updated: 0, total: 0 }
+  }
+  if (list.length > NEWSLETTER_IMPORT_MAX) {
+    const err = new Error(`Import limited to ${NEWSLETTER_IMPORT_MAX} emails per upload`)
+    err.status = 400
+    throw err
+  }
+
+  const now = new Date()
+  const ops = list.map(({ email, prefs }) => {
+    const token = newUnsubscribeToken()
+    return {
+      updateOne: {
+        filter: { email, source: 'newsletter' },
+        update: [
+          {
+            $set: {
+              prefs: normalizePrefs(prefs),
+              unsubscribedAt: null,
+              updatedAt: now,
+              unsubscribeToken: { $ifNull: ['$unsubscribeToken', token] },
+              email,
+              source: 'newsletter',
+              createdAt: { $ifNull: ['$createdAt', now] },
+              // Imports are existing opt-ins — never queue a welcome blast.
+              welcomeSentAt: { $ifNull: ['$welcomeSentAt', now] },
+            },
+          },
+        ],
+        upsert: true,
+      },
+    }
+  })
+
+  const result = await Lead.bulkWrite(ops, { ordered: false })
+  const created = result.upsertedCount || 0
+  const updated = result.modifiedCount || 0
+  return { created, updated, total: list.length }
+}
+
+export { NEWSLETTER_IMPORT_MAX, parseNewsletterImportCsv }

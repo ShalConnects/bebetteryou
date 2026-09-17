@@ -17,6 +17,22 @@ export function hostOf(value) {
   }
 }
 
+/**
+ * Local browsing — `localhost`, `*.localhost`, loopback IPs. Used to keep
+ * development traffic out of the dashboard.
+ */
+export function isLoopbackHost(value) {
+  const host = hostOf(value)
+  if (!host) {
+    const raw = String(value || '').trim().toLowerCase()
+    return raw === '::1' || raw === '[::1]'
+  }
+  if (host === 'localhost' || host.endsWith('.localhost')) return true
+  if (host === '::1' || host === '[::1]') return true
+  if (/^127(?:\.\d{1,3}){3}$/.test(host)) return true
+  return false
+}
+
 export function matchReferrer(host) {
   if (!host) return null
   return referrerRules.find((rule) => rule.hosts.some((h) => host.includes(h))) || null

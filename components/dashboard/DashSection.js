@@ -1,13 +1,17 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 
 /** Collapsible section block for multi-tool admin pages. Scrolls into view when opened. */
 export default function DashSection({ title, description, children, className = '', defaultOpen = true }) {
   const ref = useRef(null)
+  const [open, setOpen] = useState(defaultOpen)
 
   function handleToggle(e) {
-    if (!e.currentTarget.open) return
+    const next = e.currentTarget.open
+    if (next === open) return
+    setOpen(next)
+    if (!next) return
     requestAnimationFrame(() => {
       ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     })
@@ -17,7 +21,7 @@ export default function DashSection({ title, description, children, className = 
     <details
       ref={ref}
       className={`group/section scroll-mt-6 border border-line open:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04)] ${className}`}
-      defaultOpen={defaultOpen}
+      open={open}
       onToggle={handleToggle}
     >
       <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-6 py-4 marker:content-none [&::-webkit-details-marker]:hidden">

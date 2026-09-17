@@ -3,7 +3,13 @@
  */
 import { analyticsEvents, resolveRange } from '@/config/analytics'
 import { barWidths, dayKey, dayKeys, rangeStart, summarize } from '@/libs/analytics'
-import { channelFromMedium, hostOf, matchReferrer, resolveAttribution } from '@/libs/analytics-channel'
+import {
+  channelFromMedium,
+  hostOf,
+  isLoopbackHost,
+  matchReferrer,
+  resolveAttribution,
+} from '@/libs/analytics-channel'
 import { deviceFrom, isBot, visitorId } from '@/libs/analytics-request'
 import { trackEventSchema, validateSchema } from '@/libs/validation-schemas'
 
@@ -22,6 +28,22 @@ describe('hostOf', () => {
     expect(hostOf('')).toBe('')
     expect(hostOf(null)).toBe('')
     expect(hostOf('   ')).toBe('')
+  })
+})
+
+describe('isLoopbackHost', () => {
+  it('flags localhost, loopback IPs, and the .localhost TLD', () => {
+    expect(isLoopbackHost('localhost')).toBe(true)
+    expect(isLoopbackHost('http://localhost:3000/quotes')).toBe(true)
+    expect(isLoopbackHost('app.localhost')).toBe(true)
+    expect(isLoopbackHost('127.0.0.1:3000')).toBe(true)
+    expect(isLoopbackHost('[::1]')).toBe(true)
+  })
+
+  it('lets real site hosts through', () => {
+    expect(isLoopbackHost(SITE)).toBe(false)
+    expect(isLoopbackHost('bebetteryou.online')).toBe(false)
+    expect(isLoopbackHost('')).toBe(false)
   })
 })
 

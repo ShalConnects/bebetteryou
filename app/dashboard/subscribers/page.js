@@ -1,4 +1,5 @@
 import DigestNotify from '@/components/dashboard/DigestNotify'
+import ImportSubscribers from '@/components/dashboard/ImportSubscribers'
 import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
 import SubscriberTable from '@/components/dashboard/SubscriberTable'
 import TestNewsletterMail from '@/components/dashboard/TestNewsletterMail'
@@ -6,6 +7,7 @@ import { PageIntro } from '@/components/site/ui'
 import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
 import { requireAdminPage } from '@/libs/dashboard-auth'
+import { logError } from '@/libs/logger'
 import { listNewsletterSubscribers } from '@/libs/newsletter'
 import { readQuotes } from '@/libs/quotes-store'
 
@@ -14,13 +16,22 @@ export const metadata = { title: 'Subscribers' }
 export default async function AdminSubscribersPage() {
   await requireAdminPage()
 
-  const subscribers = await listNewsletterSubscribers()
-  const list = subscribers.map((row) => ({
-    email: row.email,
-    prefs: row.prefs || { quotes: false, blog: false, books: false },
-    unsubscribedAt: row.unsubscribedAt ? String(row.unsubscribedAt) : null,
-    createdAt: row.createdAt ? String(row.createdAt) : null,
-  }))
+  let list = []
+  let dbError = ''
+  try {
+    const subscribers = await listNewsletterSubscribers()
+    list = subscribers.map((row) => ({
+      email: row.email,
+      prefs: row.prefs || { quotes: false, blog: false, books: false },
+      unsubscribedAt: row.unsubscribedAt ? String(row.unsubscribedAt) : null,
+      createdAt: row.createdAt ? String(row.createdAt) : null,
+    }))
+  } catch (error) {
+    logError('Subscribers page: Mongo unavailable', error)
+    dbError =
+      'Could not reach MongoDB (connection timed out). In Atlas → Network Access, allow your current IP (or 0.0.0.0/0 for testing), confirm the cluster is not paused, then refresh.'
+  }
+
   // Include unsubscribed so you can still test templates to your own address.
   const testEmails = list.map((row) => row.email).filter(Boolean)
 
@@ -47,6 +58,13 @@ export default async function AdminSubscribersPage() {
         Newsletter list and digests. Creating a quote no longer emails everyone — send a roundup here when you
         want.
       </PageIntro>
+
+      {dbError ? <p className="text-sm text-red-400">{dbError}</p> : null}
+
+      <section className="space-y-4">
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Import opted-in CSV</h2>
+        <ImportSubscribers />
+      </section>
 
       <section className="space-y-4">
         <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Send test email</h2>

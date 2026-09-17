@@ -69,6 +69,14 @@ export const newsletterDeleteSchema = z.object({
   email: emailField,
 })
 
+/** Admin CSV / paste import — confirmedOptIn must be true. */
+export const newsletterImportSchema = z.object({
+  csv: z.string().trim().min(1, 'CSV or email list is required').max(2_000_000),
+  confirmedOptIn: z.literal(true, {
+    errorMap: () => ({ message: 'Confirm every address already opted in' }),
+  }),
+})
+
 export const createLeadSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(100, 'Name must be less than 100 characters'),
   email: emailField,

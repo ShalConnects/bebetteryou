@@ -10,6 +10,7 @@
  */
 import { analyticsEvents } from '@/config/analytics'
 import { appConfig } from '@/config/app'
+import { isLoopbackHost } from '@/libs/analytics-channel'
 
 const STORE_KEY = 'bby:attribution'
 const ENDPOINT = '/api/track'
@@ -17,6 +18,7 @@ const ENDPOINT = '/api/track'
 function enabled() {
   if (typeof window === 'undefined') return false
   if (!appConfig.features.enableAnalytics) return false
+  if (isLoopbackHost(window.location.hostname)) return false
   /** Honour the browser's opt-out rather than argue with it. */
   return navigator.doNotTrack !== '1' && window.doNotTrack !== '1'
 }

@@ -8,6 +8,11 @@ import {
   normalizePrefs,
   DEFAULT_NEWSLETTER_PREFS,
 } from '@/libs/newsletter-email'
+import {
+  NEWSLETTER_IMPORT_MAX,
+  parseNewsletterImportCsv,
+  splitCsvLine,
+} from '@/libs/newsletter-import'
 
 describe('newsletter', () => {
   describe('normalizePrefs', () => {
@@ -22,6 +27,43 @@ describe('newsletter', () => {
         blog: true,
         books: false,
       })
+    })
+  })
+
+  describe('parseNewsletterImportCsv', () => {
+    it('parses one email per line without a header', () => {
+      const { rows, invalid } = parseNewsletterImportCsv('a@ex.com\nb@ex.com\nnot-an-email')
+      expect(rows.map((r) => r.email)).toEqual(['a@ex.com', 'b@ex.com'])
+      expect(rows[0].prefs).toEqual(DEFAULT_NEWSLETTER_PREFS)
+      expect(invalid).toEqual(['not-an-email'])
+    })
+
+    it('parses email header and optional prefs', () => {
+      const csv = [
+        'email,quotes,blog,books',
+        'One@Ex.COM,true,false,yes',
+        'two@ex.com,0,1,no',
+        'one@ex.com,true,true,true',
+      ].join('\n')
+      const { rows, invalid } = parseNewsletterImportCsv(csv)
+      expect(invalid).toEqual([])
+      expect(rows).toHaveLength(2)
+      expect(rows[0]).toEqual({
+        email: 'one@ex.com',
+        prefs: { quotes: true, blog: false, books: true },
+      })
+      expect(rows[1]).toEqual({
+        email: 'two@ex.com',
+        prefs: { quotes: false, blog: true, books: false },
+      })
+    })
+
+    it('splits quoted CSV cells', () => {
+      expect(splitCsvLine('"a,b",c')).toEqual(['a,b', 'c'])
+    })
+
+    it('exports a sane max batch size', () => {
+      expect(NEWSLETTER_IMPORT_MAX).toBe(5000)
     })
   })
 

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { appConfig } from '@/config/app'
 import { analyticsEvents } from '@/config/analytics'
 import { guard } from '@/libs/api-guard'
-import { resolveAttribution } from '@/libs/analytics-channel'
+import { isLoopbackHost, resolveAttribution } from '@/libs/analytics-channel'
 import { describeRequest } from '@/libs/analytics-request'
 import { analyticsReady, recordEvent } from '@/libs/analytics-store'
 import { rateLimitPresets } from '@/libs/rate-limit'
@@ -52,6 +52,11 @@ async function handlePost(request) {
   const { data } = gate
   const caller = describeRequest(request.headers)
   if (caller.bot) return noContent()
+  const requestHost =
+    (request.headers.get('x-forwarded-host') || '').split(',')[0].trim() ||
+    request.headers.get('host') ||
+    ''
+  if (isLoopbackHost(requestHost)) return noContent()
 
   const attribution = resolveAttribution({
     referrer: data.referrer,
