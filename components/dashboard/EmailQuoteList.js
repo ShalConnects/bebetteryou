@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-/** Email a single quote to the newsletter list (existing or just-saved). */
+/** Optional: email one quote. Prefer the 6-card digest on Subscribers. */
 export default function EmailQuoteList({ slug }) {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState('')
@@ -11,6 +11,7 @@ export default function EmailQuoteList({ slug }) {
   if (!slug) return null
 
   async function onSend() {
+    if (!window.confirm('Email this single card to all quote subscribers? Prefer the digest for roundups.')) return
     setBusy(true)
     setError('')
     setResult('')
@@ -34,7 +35,7 @@ export default function EmailQuoteList({ slug }) {
     <div className="space-y-2">
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Newsletter</p>
       <button type="button" className="btn disabled:opacity-50" disabled={busy} onClick={onSend}>
-        {busy ? 'Sending…' : 'Email list'}
+        {busy ? 'Sending…' : 'Email this card'}
       </button>
       {result ? <p className="text-sm text-body">{result}</p> : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}

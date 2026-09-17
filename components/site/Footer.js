@@ -38,7 +38,7 @@ export default function Footer() {
       <div className="inset-x-page">
         <div className="shell-inner flex flex-col items-center gap-4 py-4 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col items-center gap-4 md:flex-row">
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 md:justify-start">
               {socials.map(({ id, href, label }) => (
                 <a
                   key={id}
@@ -46,7 +46,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="inline-flex min-h-10 min-w-10 items-center justify-center text-quiet transition-colors hover:text-paper"
+                  className="inline-flex min-h-10 items-center text-quiet transition-colors hover:text-paper"
                 >
                   <SocialIcon id={id} />
                 </a>

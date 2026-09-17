@@ -7,7 +7,7 @@ import { themesMap } from '@/libs/tag-lane'
 import { NextResponse } from 'next/server'
 
 function revalidateScripture() {
-  for (const path of ['/', '/quotes', '/dashboard/scripture']) revalidatePath(path)
+  for (const path of ['/', '/quotes', '/dashboard/tags']) revalidatePath(path)
 }
 
 export async function GET() {

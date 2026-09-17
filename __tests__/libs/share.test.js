@@ -23,6 +23,12 @@ describe('saveImage', () => {
   it('builds share targets with media', () => {
     const targets = shareTargets({ url: 'https://x.test/q', text: 'Hi', media: 'https://x.test/a.jpg' })
     expect(targets.find((t) => t.id === 'pinterest').href).toContain('a.jpg')
+    const facebook = targets.find((t) => t.id === 'facebook')
+    expect(facebook.href).toContain('facebook.com/sharer')
+    expect(facebook.href).toContain(encodeURIComponent('https://x.test/q'))
+    const telegram = targets.find((t) => t.id === 'telegram')
+    expect(telegram.href).toContain('t.me/share/url')
+    expect(telegram.href).toContain(encodeURIComponent('https://x.test/q'))
   })
 
   it('fetches cross-origin images before saving', async () => {

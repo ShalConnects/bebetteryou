@@ -7,12 +7,12 @@ import { copy } from '@/config/site'
 const DEFAULT_PREFS = { quotes: true, blog: true, books: true }
 
 const PREF_OPTIONS = [
-  { id: 'quotes', label: 'Quote cards when we post' },
+  { id: 'quotes', label: 'Quote card roundups when we send them' },
   { id: 'blog', label: 'New blog posts' },
   { id: 'books', label: 'New book picks' },
 ]
 
-export default function NewsletterForm({ quotes, moods = [] }) {
+export default function NewsletterForm({ quotes, moods = [], compact = false }) {
   const dialogRef = useRef(null)
   const [email, setEmail] = useState('')
   const [prefs, setPrefs] = useState(DEFAULT_PREFS)
@@ -58,19 +58,23 @@ export default function NewsletterForm({ quotes, moods = [] }) {
   return (
     <>
       {done ? (
-        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div
+          className={`flex flex-col gap-4 ${
+            compact ? 'mt-5 items-start' : 'mt-8 items-center sm:flex-row sm:justify-center'
+          }`}
+        >
           <p className="text-sm text-body">You&apos;re on the list.</p>
           {surprise}
         </div>
       ) : (
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={onSubmit} className={`space-y-4 ${compact ? 'mt-5' : 'mt-8'}`}>
+          <div className={`flex flex-col gap-3 ${compact ? '' : 'sm:flex-row'}`}>
             <input
               type="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@email.com"
+              placeholder="hello@shalconnects.com"
               aria-label="Email"
               className="min-w-0 flex-1 border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
             />
@@ -79,7 +83,9 @@ export default function NewsletterForm({ quotes, moods = [] }) {
             </button>
             {surprise}
           </div>
-          <fieldset className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          <fieldset
+            className={`flex flex-wrap items-center gap-x-5 gap-y-2 ${compact ? 'justify-start' : 'justify-center'}`}
+          >
             <legend className="sr-only">Email preferences</legend>
             {PREF_OPTIONS.map(({ id, label }) => (
               <label

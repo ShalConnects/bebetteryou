@@ -4,10 +4,10 @@ import { booksHref } from '@/libs/books-url'
 import { postHref } from '@/libs/blog-url'
 
 /** Shared related-books rail for quote + blog pages. */
-export function RelatedBooks({ books }) {
+export function RelatedBooks({ books, className = 'border-t border-line pt-5' }) {
   if (!books?.length) return null
   return (
-    <nav className="border-t border-line pt-5" aria-label="Related books">
+    <nav className={className} aria-label="Related books">
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Related books</p>
       <ul className="mt-4 space-y-3">
         {books.map((book) => {

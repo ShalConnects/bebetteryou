@@ -70,7 +70,7 @@ export default async function Shop({ searchParams }) {
         {items.length ? (
           <ul className="divide-y divide-line">
             {items.map((quote) => (
-              <li key={quote.slug} className="flex items-center justify-between gap-4 py-8 first:pt-0 last:pb-0 sm:gap-6">
+              <li key={quote.slug} className="flex flex-col gap-4 py-8 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                 <span className="flex min-w-0 items-center gap-4">
                   <ShopQuoteThumb quote={quote} />
                   <span className="min-w-0">
@@ -80,7 +80,7 @@ export default async function Shop({ searchParams }) {
                     ) : null}
                   </span>
                 </span>
-                <span className="flex shrink-0 flex-wrap justify-end gap-4">
+                <span className="flex flex-wrap gap-4 sm:shrink-0 sm:justify-end">
                   {publicPrintProducts.map((product) => (
                     <Link
                       key={product.id}

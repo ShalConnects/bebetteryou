@@ -4,13 +4,14 @@ import { readBooks } from '@/libs/books-store'
 import { logError } from '@/libs/logger'
 import { connectDB } from '@/libs/mongo'
 import Lead from '@/models/Lead'
-import { pickNewsletterExtras } from '@/libs/newsletter-picks'
+import { pickNewsletterExtras, pickQuoteDigest } from '@/libs/newsletter-picks'
 import { readQuotes } from '@/libs/quotes-store'
 import { sendEmail } from '@/libs/resend'
 import {
   DEFAULT_NEWSLETTER_PREFS,
   buildBlogEmail,
   buildBookEmail,
+  buildQuoteDigestEmail,
   buildQuoteEmail,
   buildWelcomeEmail,
   normalizePrefs,
@@ -20,6 +21,7 @@ export {
   DEFAULT_NEWSLETTER_PREFS,
   buildBlogEmail,
   buildBookEmail,
+  buildQuoteDigestEmail,
   buildQuoteEmail,
   buildWelcomeEmail,
   normalizePrefs,
@@ -180,6 +182,19 @@ export async function notifyQuoteSubscribers(quote) {
   return fanOut('quotes', (row) =>
     buildQuoteEmail({ quote, token: row.unsubscribeToken, extras })
   )
+}
+
+/** Manual roundup — newest public cards. Not called on quote create. */
+export async function notifyQuoteDigest(count = 6) {
+  const quotes = await pickQuoteDigest(count)
+  if (!quotes.length) return { total: 0, sent: 0, quotes: 0 }
+  const exclude = new Set(quotes.map((q) => q.slug))
+  const extras = await pickNewsletterExtras({ quoteCount: 0 })
+  extras.quotes = extras.quotes.filter((q) => !exclude.has(q.slug))
+  const result = await fanOut('quotes', (row) =>
+    buildQuoteDigestEmail({ quotes, token: row.unsubscribeToken, extras })
+  )
+  return { ...result, quotes: quotes.length }
 }
 
 export async function notifyBlogSubscribers(post) {

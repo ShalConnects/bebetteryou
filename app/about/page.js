@@ -10,8 +10,8 @@ export default function About() {
       <PageIntro title={copy.aboutLead}>{copy.aboutTeaser}</PageIntro>
       <div className="max-w-2xl space-y-5 text-body/80">
         <p>
-          Quote images first. Social next. Merch when it earns a place. No noise — just the mark, the cards,
-          and a reason to keep going.
+          Quote images first. Social every day. Email only when we send a roundup. Merch when it earns a place.
+          No noise — just the mark, the cards, and a reason to keep going.
         </p>
       </div>
       <div className="mt-12 flex flex-wrap gap-x-5 gap-y-2">

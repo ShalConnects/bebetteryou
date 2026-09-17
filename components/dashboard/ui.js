@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+export { default as DashSection } from './DashSection'
+
 export function DashPanel({ title, children, className = '' }) {
   return (
     <section className={`border border-line p-6 ${className}`}>

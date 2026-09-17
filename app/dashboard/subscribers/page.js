@@ -1,3 +1,4 @@
+import DigestNotify from '@/components/dashboard/DigestNotify'
 import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
 import SubscriberTable from '@/components/dashboard/SubscriberTable'
 import TestNewsletterMail from '@/components/dashboard/TestNewsletterMail'
@@ -43,7 +44,8 @@ export default async function AdminSubscribersPage() {
   return (
     <div className="space-y-10">
       <PageIntro title="Subscribers">
-        Newsletter list, send test templates, and notify for quotes, blog, or book drops.
+        Newsletter list and digests. Creating a quote no longer emails everyone — send a roundup here when you
+        want.
       </PageIntro>
 
       <section className="space-y-4">
@@ -52,7 +54,12 @@ export default async function AdminSubscribersPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — quotes</h2>
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Quote digest</h2>
+        <DigestNotify />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — one quote</h2>
         <NotifySubscribers type="quote" options={quotes} />
       </section>
 

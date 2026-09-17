@@ -48,7 +48,7 @@ function passageCount(book, theme) {
 }
 
 export function revalidateTags() {
-  for (const path of ['/', '/quotes', '/blog', '/books', '/dashboard/quotes', '/dashboard/tags', '/dashboard/scripture']) {
+  for (const path of ['/', '/quotes', '/blog', '/books', '/dashboard/quotes', '/dashboard/tags']) {
     revalidatePath(path, 'layout')
   }
 }

@@ -121,9 +121,6 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
               {filtered.length} of {items.length}
             </span>
           </div>
-          <Link href="/dashboard/quotes/new" className="btn flex shrink-0 items-center px-7 py-0">
-            New quote
-          </Link>
         </div>
       </div>
 

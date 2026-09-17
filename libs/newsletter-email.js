@@ -39,7 +39,7 @@ function sectionLabel(text) {
 }
 
 /** Email-safe 2×2 quote card grid; renders only real cards. */
-function quoteGridHtml(quotes = []) {
+function quoteGridHtml(quotes = [], heading = 'More cards') {
   const cards = quotes.filter((q) => q?.src && q?.slug)
   if (!cards.length) return ''
 
@@ -60,7 +60,7 @@ function quoteGridHtml(quotes = []) {
   }
 
   return `
-    ${sectionLabel('More cards')}
+    ${sectionLabel(heading)}
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
       ${rows.join('')}
     </table>
@@ -148,7 +148,7 @@ function emailShell({ title, bodyHtml, token }) {
 
 export function buildWelcomeEmail({ token, prefs, extras = {} }) {
   const lines = []
-  if (prefs.quotes) lines.push('Quote cards whenever we post a new one')
+  if (prefs.quotes) lines.push('Quote card roundups when we send them')
   if (prefs.blog) lines.push('New blog posts')
   if (prefs.books) lines.push('New book recommendations')
   if (!lines.length) lines.push('Nothing yet — turn topics back on anytime')
@@ -193,6 +193,63 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
     html: emailShell({ title: `Quote #${quote.n}`, bodyHtml, token }),
     text: `“${quote.text}”${author}\n${pageUrl}\n\nManage: ${manageUrl(token)}`,
   }
+}
+
+/** Roundup of several cards — for manual / Broadcast-style digests, not per-create mail. */
+export function buildQuoteDigestEmail({ quotes = [], token, extras = {} }) {
+  const cards = quotes.filter((q) => q?.slug && q?.src).slice(0, 6)
+  const grid = digestGridHtml(cards)
+  const bodyHtml = `
+    <p style="margin:0 0 16px;line-height:1.6;">
+      Here’s a fresh set of cards from ${escapeHtml(brand.name)}. Save one, share one, or browse the full library.
+    </p>
+    ${grid}
+    <p style="margin:20px 0 8px;">${cta(getUrl('/quotes'), 'Browse all cards')}</p>
+    ${discoveryHtml({ ...extras, quotes: [] })}
+  `
+  const nums = cards.map((q) => `#${q.n}`).join(', ')
+  return {
+    subject: `Fresh cards ${nums} — ${brand.name}`,
+    html: emailShell({ title: 'Quote cards', bodyHtml, token }),
+    text: `Fresh cards from ${brand.name}: ${nums}\n\n${cards
+      .map((q) => `#${q.n}\n${String(q.text || '').replace(/\n/g, ' ')}\n${getUrl(`/quotes/${q.slug}`)}`)
+      .join('\n\n')}\n\nManage: ${manageUrl(token)}`,
+  }
+}
+
+/** Digest grid: image + number + text so the mail still reads if CDN art is stale. */
+function digestGridHtml(quotes = []) {
+  const cards = quotes.filter((q) => q?.src && q?.slug)
+  if (!cards.length) return ''
+
+  const cell = (q) => {
+    if (!q) return '<td style="width:50%;padding:4px;"></td>'
+    const href = getUrl(`/quotes/${q.slug}`)
+    const src = getUrl(q.src)
+    const line = String(q.text || '')
+      .replace(/\n/g, ' ')
+      .trim()
+    const blurb = line.length > 120 ? `${line.slice(0, 117).trim()}…` : line
+    return `<td style="width:50%;padding:4px;vertical-align:top;">
+      <a href="${href}" style="display:block;text-decoration:none;color:#c6e8d2;">
+        <img src="${escapeHtml(src)}" alt="Quote #${q.n || ''}" width="260" style="width:100%;max-width:260px;height:auto;border:1px solid rgba(168,255,200,0.25);display:block;" />
+        <p style="margin:8px 0 0;font-family:'Iceberg','Jost',system-ui,sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:#7a9e86;">#${q.n || ''}</p>
+        ${blurb ? `<p style="margin:4px 0 0;font-size:13px;line-height:1.45;color:#e9fdf0;">${escapeHtml(blurb)}</p>` : ''}
+      </a>
+    </td>`
+  }
+
+  const rows = []
+  for (let i = 0; i < cards.length; i += 2) {
+    rows.push(`<tr>${cell(cards[i])}${cell(cards[i + 1])}</tr>`)
+  }
+
+  return `
+    ${sectionLabel('Latest cards')}
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      ${rows.join('')}
+    </table>
+  `
 }
 
 /** First narrative paragraph from blog blocks, if any. */

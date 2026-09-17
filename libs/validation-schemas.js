@@ -32,8 +32,16 @@ export const newsletterManageSchema = z.object({
 })
 
 export const newsletterNotifySchema = z.object({
-  type: z.enum(['blog', 'book', 'quote']),
-  slug: z.string().trim().min(1).max(200),
+  type: z.enum(['blog', 'book', 'quote', 'digest']),
+  slug: z.string().trim().min(1).max(200).optional(),
+}).superRefine((data, ctx) => {
+  if (data.type !== 'digest' && !data.slug) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Slug is required for quote, blog, and book notifies',
+      path: ['slug'],
+    })
+  }
 })
 
 export const newsletterTestWelcomeSchema = z.object({

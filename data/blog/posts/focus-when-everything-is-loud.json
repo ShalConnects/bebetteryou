@@ -1,0 +1,55 @@
+{
+  "slug": "focus-when-everything-is-loud",
+  "topic": "focus",
+  "tag": "Mindset",
+  "title": "Focus When Everything Is Loud",
+  "description": "Focus isn't a personality trait. It's what happens when you remove the easy escapes. Here's a practical way to protect deep work without a perfect morning routine.",
+  "excerpt": "Focus isn't a mood. It's what you protect when the noise gets easy.",
+  "date": "2026-09-17",
+  "status": "published",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "Most people don't have a focus problem. They have an access problem. The phone is in reach. The tabs are open. Every hard task has a softer option next to it. So the mind does the reasonable thing: it picks the softer option. Here's the simple answer. You don't need more willpower. You need fewer exits."
+    },
+    {
+      "type": "section",
+      "heading": "Why it feels impossible",
+      "text": "Your brain isn't broken. It's responding to the environment you built. If every ten minutes there's a ping, a feed, or a \"quick check,\" deep work never gets a clean hour. That doesn't mean you have to become a monk. It means the session has to be designed like a room with a closed door."
+    },
+    {
+      "type": "section",
+      "heading": "A practical focus block",
+      "items": [
+        "Pick one outcome for the block. Not five. One.",
+        "Put the phone in another room, or at least out of arm's reach. Out of sight beats \"I'll be strong.\"",
+        "Close everything that isn't the task. Browser tabs count.",
+        "Set a short timer first: 25 or 45 minutes. Finish the block before you renegotiate.",
+        "Write the next action on paper before you start. Starting is easier when you don't have to invent the first move."
+      ]
+    },
+    {
+      "type": "quotes",
+      "heading": "Cards for the noisy days"
+    },
+    {
+      "type": "section",
+      "heading": "The trade-off",
+      "text": "You will miss some messages. You will feel behind on the feed. That's the cost of doing the one thing that actually moves your life. In practice, most of those messages wait just fine. The work usually doesn't."
+    },
+    {
+      "type": "faq",
+      "heading": "Common questions",
+      "items": [
+        {
+          "q": "What if my job requires being available?",
+          "a": "Then shrink the block, don't abandon it. Even 25 protected minutes beats an open day of half-attention. Tell people when you'll check back, and actually check back."
+        },
+        {
+          "q": "Should I use focus apps?",
+          "a": "If they help you remove exits, sure. If they become another thing to tinker with, skip them. The phone in another room is still undefeated."
+        }
+      ]
+    }
+  ]
+}

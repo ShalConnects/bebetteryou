@@ -7,12 +7,13 @@ import { readBooks } from '@/libs/books-store'
 import {
   notifyBlogSubscribers,
   notifyBookSubscribers,
+  notifyQuoteDigest,
   notifyQuoteSubscribers,
 } from '@/libs/newsletter'
 import { readQuotes } from '@/libs/quotes-store'
 import { newsletterNotifySchema, validateSchema } from '@/libs/validation-schemas'
 
-/** Sequential Resend fan-out for quote/blog/book drops. */
+/** Sequential Resend fan-out for quote/blog/book/digest drops. */
 export const maxDuration = 60
 
 async function handlePost(request) {
@@ -30,6 +31,11 @@ async function handlePost(request) {
     }
 
     const { type, slug } = validation.data
+
+    if (type === 'digest') {
+      const result = await notifyQuoteDigest(6)
+      return NextResponse.json({ success: true, ...result })
+    }
 
     if (type === 'blog') {
       const post = getPost(slug)

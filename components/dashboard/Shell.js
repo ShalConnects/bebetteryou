@@ -7,7 +7,7 @@ import LogoutButton from './LogoutButton'
 export default function DashboardShell({ isAdmin, children }) {
   return (
     <div className="flex min-h-screen flex-col bg-ink">
-      <header className="inset-x-page shrink-0 border-b border-line">
+      <header className="inset-x-page shrink-0 border-b border-line pt-[env(safe-area-inset-top)]">
         <div className="shell-inner flex h-14 items-center justify-between md:h-16">
           <Link href="/" aria-label={brand.name}>
             <BrandLogo />
@@ -20,7 +20,7 @@ export default function DashboardShell({ isAdmin, children }) {
           </div>
         </div>
       </header>
-      <div className="inset-x-page flex min-h-0 flex-1 flex-col py-8">
+      <div className="inset-x-page flex min-h-0 flex-1 flex-col py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
         <div className="shell-inner flex min-h-0 flex-1 flex-col gap-8 md:flex-row md:items-stretch md:gap-12">
           {isAdmin ? (
             <aside className="shrink-0 md:w-40">

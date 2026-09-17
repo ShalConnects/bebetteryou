@@ -16,6 +16,7 @@ import { postYouTube } from './providers/youtube'
 import { postPinterest } from './providers/pinterest'
 import { postThreads } from './providers/threads'
 import { postBluesky } from './providers/bluesky'
+import { postTelegram } from './providers/telegram'
 import { recordPost } from './post-store'
 
 const providers = {
@@ -27,6 +28,7 @@ const providers = {
   pinterest: postPinterest,
   threads: postThreads,
   bluesky: postBluesky,
+  telegram: postTelegram,
 }
 
 /** Env keys plus a YouTube refresh token saved from Connect on the dashboard. */
@@ -36,10 +38,11 @@ export async function readyNetworks() {
     clientId && clientSecret && (process.env.YOUTUBE_REFRESH_TOKEN || (await readYoutubeRefreshToken()))
   )
   return networkStatus().map((n) => {
-    if (n.id !== 'youtube') return { ...n, connectable: false }
+    if (n.id !== 'youtube') return n
     return {
       ...n,
       ready: youtubeReady,
+      pending: false,
       connectable: Boolean(clientId && clientSecret) && !youtubeReady,
     }
   })

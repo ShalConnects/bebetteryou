@@ -6,9 +6,11 @@ export function shareTargets({ url, text, media }) {
   const t = text ? `${text}\n${url}` : url
   return [
     { id: 'x', label: 'X', href: `https://twitter.com/intent/tweet?url=${enc(url)}&text=${enc(text || '')}` },
+    { id: 'facebook', label: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}` },
     { id: 'linkedin', label: 'LinkedIn', href: `https://www.linkedin.com/sharing/share-offsite/?url=${enc(url)}` },
     { id: 'pinterest', label: 'Pinterest', href: `https://pinterest.com/pin/create/button/?url=${enc(url)}&media=${enc(media)}&description=${enc(text || '')}` },
     { id: 'whatsapp', label: 'WhatsApp', href: `https://wa.me/?text=${enc(t)}` },
+    { id: 'telegram', label: 'Telegram', href: `https://t.me/share/url?url=${enc(url)}&text=${enc(text || '')}` },
     { id: 'threads', label: 'Threads', href: `https://www.threads.net/intent/post?text=${enc(t)}` },
     { id: 'bluesky', label: 'Bluesky', href: `https://bsky.app/intent/compose?text=${enc(t)}` },
   ]

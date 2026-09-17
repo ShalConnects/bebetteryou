@@ -4,19 +4,19 @@
   "modifier": "short",
   "tag": "Motivation",
   "title": "Short Workout Motivation: Lines That Get You Off the Couch",
-  "description": "Short workout motivation for the moment you're deciding — one-liners, a two-minute rule, and quote cards to keep on your phone.",
+  "description": "Short workout motivation for the moment you're deciding. One line, a two-minute rule, and quote cards for your phone.",
   "excerpt": "You don't need a speech. You need one line and the first two minutes.",
   "date": "2026-09-04",
   "status": "published",
   "blocks": [
     {
       "type": "p",
-      "text": "The gap between training and not training is about ninety seconds long. It's the moment you're on the couch with your shoes in view, running the negotiation. Long motivational speeches lose that fight because they take longer than the negotiation does. Short lines win it."
+      "text": "The gap between training and not training is about ninety seconds long. It's the moment you're on the couch with your shoes in view, running the negotiation. Long motivational speeches lose that fight because they take longer than the negotiation. Short lines win it."
     },
     {
       "type": "section",
       "heading": "The two-minute rule, honestly applied",
-      "text": "Promise yourself two minutes. Shoes on, out the door, first set — then you're allowed to quit. You will almost never quit, because the hard part was never the workout. It was the transition. Most people who skip the gym didn't decide against training; they just never got out of the chair."
+      "text": "Promise yourself two minutes. Shoes on, out the door, first set. Then you're allowed to quit. You will almost never quit, because the hard part was never the workout. It was the transition. Most people who skip the gym didn't decide against training. They just never got out of the chair."
     },
     {
       "type": "section",
@@ -37,7 +37,7 @@
     {
       "type": "section",
       "heading": "Make the decision earlier",
-      "text": "The real fix isn't a better line — it's moving the decision to a moment when you're not tired. Pack the bag the night before. Put training in the calendar next to things you don't cancel. Choose the gym on the way home rather than the one you have to double back for. Every bit of friction you remove today is willpower you don't have to spend tomorrow."
+      "text": "The real fix isn't a better line. It's moving the decision to a moment when you're not tired. Pack the bag the night before. Put training in the calendar next to things you don't cancel. Choose the gym on the way home rather than the one you have to double back for. Every bit of friction you remove today is willpower you don't have to spend tomorrow."
     },
     {
       "type": "faq",
@@ -49,11 +49,11 @@
         },
         {
           "q": "Do motivational quotes actually work for training?",
-          "a": "As a trigger, yes — for a few seconds, which is exactly as long as you need. As a strategy, no. Pair the line with a removed obstacle and it holds."
+          "a": "As a trigger, yes, for a few seconds, which is exactly as long as you need. As a full strategy, no. Pair the line with a removed obstacle and it holds."
         },
         {
           "q": "How do I get motivated when I'm exhausted?",
-          "a": "Downgrade instead of cancelling. Walk instead of run, half the sets, mobility instead of lifting. Exhaustion is a reason to shrink the session, not to skip it."
+          "a": "Downgrade instead of cancelling. Walk instead of run. Half the sets. Mobility instead of lifting. Exhaustion is a reason to shrink the session, not to skip it."
         }
       ]
     }

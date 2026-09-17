@@ -78,9 +78,11 @@ export const shareTargetLabels = {
   native: 'Share sheet',
   copy: 'Copy link',
   x: 'X',
+  facebook: 'Facebook',
   linkedin: 'LinkedIn',
   pinterest: 'Pinterest',
   whatsapp: 'WhatsApp',
+  telegram: 'Telegram',
   threads: 'Threads',
   bluesky: 'Bluesky',
 }

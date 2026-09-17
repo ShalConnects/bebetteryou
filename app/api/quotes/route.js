@@ -1,14 +1,12 @@
 import { requireAdmin } from '@/libs/auth-helpers'
 import { assertQuoteFits } from '@/libs/quote-card.mjs'
 import { createQuote } from '@/libs/create-quote'
-import { logError } from '@/libs/logger'
-import { notifyQuoteSubscribers } from '@/libs/newsletter'
 import { normalizeQuoteText } from '@/libs/quote-text'
 import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 
-/** Fan-out to subscribers after the card is saved. */
+/** Save a card. Newsletter digests are sent manually from Subscribers — not here. */
 export const maxDuration = 60
 
 export async function GET() {
@@ -37,14 +35,7 @@ export async function POST(req) {
     revalidatePath(`/quotes/${quote.slug}`)
     revalidatePath('/')
 
-    let mail = { sent: 0, total: 0 }
-    try {
-      mail = await notifyQuoteSubscribers(quote)
-    } catch (error) {
-      logError('Quote subscriber notify failed', error, { slug: quote.slug })
-    }
-
-    return NextResponse.json({ ...quote, mail }, { status: 201 })
+    return NextResponse.json(quote, { status: 201 })
   } catch (err) {
     const bad =
       err.message === 'text required' ||

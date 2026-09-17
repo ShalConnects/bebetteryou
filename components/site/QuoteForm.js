@@ -179,12 +179,6 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
             <Link href={`/quotes/${result.slug}`} className="text-paper underline">
               #{result.n}
             </Link>
-            {result.mail ? (
-              <span className="text-quiet">
-                {' '}
-                · Email {result.mail.sent} of {result.mail.total} sent
-              </span>
-            ) : null}
           </p>
         ) : null}
 

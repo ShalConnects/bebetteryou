@@ -20,6 +20,7 @@ import {
 } from '@/libs/social/providers/pinterest'
 import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
+import { clipTelegramCaption, hasTelegramKeys } from '@/libs/social/providers/telegram'
 import { letterboxRect } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
 import { alreadyPosted, defaultSelected, mergePostRecord } from '@/libs/social/post-log'
@@ -77,6 +78,16 @@ describe('social', () => {
   it('detects missing Bluesky keys', () => {
     expect(hasBlueskyKeys({ handle: 'a.bsky.social', password: '' })).toBe(false)
     expect(hasBlueskyKeys({ handle: 'a.bsky.social', password: 'xxxx-xxxx' })).toBe(true)
+  })
+
+  it('detects missing Telegram keys', () => {
+    expect(hasTelegramKeys({ token: 't', chatId: '' })).toBe(false)
+    expect(hasTelegramKeys({ token: 't', chatId: '@channel' })).toBe(true)
+  })
+
+  it('clips Telegram captions to 1024 chars', () => {
+    expect(clipTelegramCaption('Keep going.')).toBe('Keep going.')
+    expect(clipTelegramCaption('x'.repeat(1100)).length).toBe(1024)
   })
 
   it('keeps Bluesky captions under 300 graphemes with a clickable link', () => {

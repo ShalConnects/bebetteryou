@@ -32,11 +32,13 @@ export const makerProducts = [
 export const socials = [
   { id: 'instagram', href: 'https://www.instagram.com/be__better__you/', label: 'Instagram' },
   { id: 'threads', href: 'https://www.threads.net/@be__better__you', label: 'Threads' },
+  { id: 'facebook', href: 'https://www.facebook.com/profile.php?id=100083130852497', label: 'Facebook' },
   { id: 'linkedin', href: 'https://www.linkedin.com/company/be-better-you', label: 'LinkedIn' },
   { id: 'x', href: 'https://x.com/BeBetterYou3', label: 'X' },
   { id: 'pinterest', href: 'https://www.pinterest.com/bebetteryoumotivational/', label: 'Pinterest' },
   { id: 'youtube', href: 'https://www.youtube.com/@BeBetterYou_Motivational', label: 'YouTube' },
   { id: 'bluesky', href: 'https://bsky.app/profile/bebetteryou.bsky.social', label: 'Bluesky' },
+  { id: 'telegram', href: 'https://t.me/BeBetterYou_Motivational', label: 'Telegram' },
 ]
 
 const mark = '/brand/fav.png'
@@ -53,12 +55,17 @@ export const brand = {
 
 export const copy = {
   heroLine: 'Be better than yesterday.',
-  heroSub: 'Daily quote cards for the days you need a push.',
+  heroSub: 'Quote cards every day — for the moments you need a push.',
   aboutTeaser:
-    'Daily quote cards for the days you need a push. Built for people who want to be better than yesterday.',
+    'Quote cards every day on the site and where you follow us. Built for people who want to be better than yesterday.',
   aboutLead: 'Hey you — yeah, you.',
   newsletterTitle: 'Stay in the loop.',
-  newsletterSub: 'Quote cards when we post — plus blog and book notes if you want them.',
+  newsletterSub: 'Quote card roundups when we send them — plus blog and book notes if you want them.',
   surpriseTitle: 'How do you feel?',
   surpriseSub: 'Pick a mood. We’ll deal one card.',
+  homeBlogLabel: 'Notes',
+  homeBooksLabel: 'Books',
+  homePrintTitle: 'Want one on a tee or mug?',
+  homePrintSub: 'Print a quote when you order — nothing sitting in a warehouse.',
+  homePrintCta: 'Browse the shop',
 }

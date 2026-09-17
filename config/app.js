@@ -13,7 +13,7 @@ export const appConfig = {
   name,
   description:
     process.env.APP_DESCRIPTION ||
-    'Got the motivation? Now grow beyond impossible. Daily quote cards and a little fire.',
+    'Got the motivation? Now grow beyond impossible. Quote cards every day and a little fire.',
   shortName: process.env.APP_SHORT_NAME || 'Be',
   
   // URLs

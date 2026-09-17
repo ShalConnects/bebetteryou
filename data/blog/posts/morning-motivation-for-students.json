@@ -4,8 +4,8 @@
   "modifier": "for-students",
   "tag": "Motivation",
   "title": "Morning Motivation for Students: 7 Ways to Start the Day Awake",
-  "description": "Seven realistic ways for students to build morning motivation — no 5am cold plunge required. Plus quote cards for the days you hit snooze twice.",
-  "excerpt": "No 5am cold plunge. Seven things that actually work when your first lecture is in forty minutes.",
+  "description": "Seven realistic ways for students to start the morning. No 5am cold plunge. Just eleven minutes and one decision made the night before.",
+  "excerpt": "No 5am cold plunge. Seven things that work when your first lecture is in forty minutes.",
   "date": "2026-09-08",
   "status": "published",
   "blocks": [
@@ -15,20 +15,20 @@
     },
     {
       "type": "section",
-      "heading": "Mornings aren't magic — they're just cheap",
-      "text": "The reason mornings matter for students isn't discipline folklore. It's that 7am is the only part of your day nobody else has booked. No group chat, no seminar, no shift. Whatever you put there is the one thing the day can't take back from you. Protect eleven minutes of it and you've already won something before anyone else is awake."
+      "heading": "Mornings aren't magic. They're just cheap.",
+      "text": "The reason mornings matter for students isn't discipline folklore. It's that early is often the only part of the day nobody else has booked. No group chat. No seminar. No shift. Whatever you put there is the one thing the day can't take back. Protect eleven minutes of it and you've already won something before anyone else is awake."
     },
     {
       "type": "section",
       "heading": "Seven things that actually work",
       "items": [
-        "Decide tonight, not tomorrow. Motivation at 7am is a coin flip. A decision made at 11pm is a plan.",
-        "Put the alarm across the room. Boring, ancient, still undefeated.",
-        "Open the curtains before you open your phone. Light tells your body the day started; your phone tells it there's an emergency.",
-        "Drink water first. You woke up dehydrated, and dehydration does an excellent impression of tiredness.",
+        "Decide tonight, not tomorrow. Motivation at 7am is a coin flip. A decision at 11pm is a plan.",
+        "Put the alarm across the room. Boring. Ancient. Still undefeated.",
+        "Open the curtains before you open your phone. Light says the day started. Your phone says there's an emergency.",
+        "Drink water first. You woke up dehydrated, and dehydration does a good impression of tiredness.",
         "Do the smallest version of the hard thing. Ten minutes of the essay, not the essay. Starting is the whole trick.",
         "Keep one thing off the list. A morning with six tasks is a morning you'll skip.",
-        "Two minutes of movement. Stairs, pushups, a walk to the kettle and back twice. You're not training, you're switching the lights on."
+        "Two minutes of movement. Stairs, pushups, a walk to the kettle and back. You're not training. You're switching the lights on."
       ]
     },
     {
@@ -38,7 +38,7 @@
     {
       "type": "section",
       "heading": "If you only do one thing",
-      "text": "Pick the smallest version of the hard thing and do it before you check your phone. That's it. Not because ten minutes finishes the work, but because you spend the rest of the day as someone who already started — and that person makes different choices at 4pm."
+      "text": "Pick the smallest version of the hard thing and do it before you check your phone. That's it. Not because ten minutes finishes the work, but because you spend the rest of the day as someone who already started. That person makes different choices at 4pm."
     },
     {
       "type": "faq",
@@ -50,11 +50,11 @@
         },
         {
           "q": "What if I'm genuinely not a morning person?",
-          "a": "Then stop trying to become one and shrink the target instead. Eleven minutes of light, water and movement works at any chronotype. The 5am crowd are selling identity, not results."
+          "a": "Then stop trying to become one and shrink the target instead. Eleven minutes of light, water, and movement works at any chronotype. The 5am crowd are selling identity, not results."
         },
         {
           "q": "How long until it feels normal?",
-          "a": "Roughly two weeks of imperfect attempts. Missing a day doesn't reset anything — missing a week quietly does, so treat two in a row as the line you don't cross."
+          "a": "Roughly two weeks of imperfect attempts. Missing a day doesn't reset anything. Missing a week quietly does, so treat two missed days in a row as the line you don't cross."
         }
       ]
     }

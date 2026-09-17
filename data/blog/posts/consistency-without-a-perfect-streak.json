@@ -1,0 +1,55 @@
+{
+  "slug": "consistency-without-a-perfect-streak",
+  "topic": "consistency",
+  "tag": "Growth",
+  "title": "Consistency Without a Perfect Streak",
+  "description": "Consistency isn't never missing a day. It's not missing twice. Here's how to build a habit that survives bad weeks without restarting from zero every Monday.",
+  "excerpt": "You don't need a perfect streak. You need a floor you can keep on a bad day.",
+  "date": "2026-09-17",
+  "status": "published",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "The main problem with consistency advice is that it sells perfection. One missed day and people act like the whole chain snapped. Then they wait for Monday and start again from zero. There is a better way to approach this. Build a floor you can keep when life gets ugly, not a streak you have to babysit."
+    },
+    {
+      "type": "section",
+      "heading": "Perfect streaks create fragile people",
+      "text": "If your system only works when you're sleeping well, free, and motivated, it isn't a system. It's a fair-weather hobby. The important thing to understand is that identity comes from what you do on the average day, not the highlight day."
+    },
+    {
+      "type": "section",
+      "heading": "Rules that actually hold",
+      "items": [
+        "Never miss twice. One miss is weather. Two is a new pattern.",
+        "Define a minimum version in advance: 10 minutes, 1 page, 1 set.",
+        "Track the habit, not the mood. A boring calendar with Xs beats a fancy app.",
+        "When you miss, restart the same day if you can. Don't wait for a cleaner date.",
+        "Add only after the floor is easy. Most people stack too early and collapse."
+      ]
+    },
+    {
+      "type": "quotes",
+      "heading": "Cards for the long middle"
+    },
+    {
+      "type": "section",
+      "heading": "What consistency really looks like",
+      "text": "It looks unimpressive from the outside. Same small action. Same rough time. Weeks where nothing dramatic happens. That doesn't mean it isn't working. Compounding is quiet until it isn't."
+    },
+    {
+      "type": "faq",
+      "heading": "Common questions",
+      "items": [
+        {
+          "q": "Is missing one day a big deal?",
+          "a": "No. Making missing normal is. Protect the second day harder than the first."
+        },
+        {
+          "q": "How small should the minimum be?",
+          "a": "Small enough that you'd feel silly skipping it. If your worst-day version still feels heroic, it's still too big."
+        }
+      ]
+    }
+  ]
+}

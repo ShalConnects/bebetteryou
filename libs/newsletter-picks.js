@@ -1,5 +1,6 @@
 import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
+import { cardRevision } from '@/config/quote-card'
 import { readQuotes } from '@/libs/quotes-store'
 
 function shuffle(list) {
@@ -9,6 +10,10 @@ function shuffle(list) {
     ;[rows[i], rows[j]] = [rows[j], rows[i]]
   }
   return rows
+}
+
+function publicQuote(q) {
+  return q?.slug && q?.src && q.rev === cardRevision
 }
 
 /**
@@ -30,7 +35,7 @@ export async function pickNewsletterExtras({
   ])
 
   const quotes = shuffle(
-    allQuotes.filter((q) => q?.slug && q?.src && q.slug !== excludeQuoteSlug)
+    allQuotes.filter((q) => publicQuote(q) && q.slug !== excludeQuoteSlug)
   ).slice(0, quoteCount)
 
   const posts = shuffle(
@@ -46,4 +51,14 @@ export async function pickNewsletterExtras({
     posts,
     book: books[0] || null,
   }
+}
+
+/** Newest public cards for a digest mail (default 6). */
+export async function pickQuoteDigest(count = 6) {
+  const all = await readQuotes()
+  return all
+    .filter(publicQuote)
+    .slice()
+    .sort((a, b) => (b.n || 0) - (a.n || 0))
+    .slice(0, count)
 }

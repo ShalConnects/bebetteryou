@@ -3,28 +3,28 @@
   "topic": "motivation-when-stuck",
   "tag": "Motivation",
   "title": "When the Spark Fades",
-  "description": "Motivation usually fades because the goal got vague, not because you got lazy. Reconnect with the why and make the target specific enough to chase.",
-  "excerpt": "Reconnect with your values and make the goal specific enough to chase.",
+  "description": "Motivation usually fades because the goal got vague, or stopped being yours. Here's how to check the why and make the target specific enough to chase.",
+  "excerpt": "Check whose goal it is. Then make it specific enough to chase.",
   "date": "2022-05-24",
   "status": "published",
   "blocks": [
     {
       "type": "p",
-      "text": "When motivation disappears, the instinct is to question your discipline. Usually the problem is upstream of that: the goal stopped being specific, or it stopped being yours. Both feel identical from the inside — like laziness — and neither is fixed by trying harder."
+      "text": "When motivation disappears, the instinct is to question your discipline. In practice, the problem is usually upstream of that. The goal got vague, or it stopped being yours. Both feel like laziness from the inside. Neither gets fixed by trying harder."
     },
     {
       "type": "section",
       "heading": "Check whose goal it is",
-      "text": "Some goals are inherited. A career someone else wanted for you, a body shape from an algorithm, a version of success you picked up at nineteen and never re-examined. You can force those for a while, but you can't sustain them, because there's no answer to \"why bother\" that you actually believe. Ask what you'd still want if nobody found out you'd achieved it. What survives that question is worth building on."
+      "text": "Some goals are inherited. A career someone else wanted for you. A body shape from an algorithm. A version of success you picked up at nineteen and never re-checked. You can force those for a while. You can't sustain them, because there's no honest answer to \"why bother.\" Ask what you'd still want if nobody found out you achieved it. What survives that question is worth building on."
     },
     {
       "type": "section",
       "heading": "Make it specific enough to chase",
       "items": [
-        "\"Get fit\" is a mood. \"Three sessions a week, Monday, Wednesday, Saturday\" is a target.",
+        "\"Get fit\" is a mood. \"Three sessions a week: Monday, Wednesday, Saturday\" is a target.",
         "Name the next action, not the outcome. Outcomes aren't things you can do today.",
-        "Attach it to a time and a place, or it'll stay hypothetical.",
-        "Define done. Vague goals can never be finished, so they only ever generate guilt."
+        "Attach it to a time and a place, or it stays hypothetical.",
+        "Define done. Vague goals never finish. They only generate guilt."
       ]
     },
     {
@@ -34,7 +34,21 @@
     {
       "type": "section",
       "heading": "Expect the dip, plan for it",
-      "text": "Every worthwhile pursuit has a stretch in the middle where the novelty is gone and the results haven't arrived. That's not a sign you chose wrong — it's the standard shape of the thing. Decide now what you'll do during that stretch, because deciding during it is how people quit."
+      "text": "Every worthwhile pursuit has a middle stretch where the novelty is gone and the results haven't arrived. That's not a sign you chose wrong. It's the normal shape of the thing. Decide now what you'll do during that stretch. Deciding during it is how people quit."
+    },
+    {
+      "type": "faq",
+      "heading": "Common questions",
+      "items": [
+        {
+          "q": "What if I don't know what I want anymore?",
+          "a": "Then stop building a five-year plan. Run a two-week experiment on one small target and see if you still care when it's specific. Clarity comes from contact, not from more thinking."
+        },
+        {
+          "q": "Is it okay to drop a goal?",
+          "a": "Yes, if it fails the \"whose goal is this\" test. Quitting something that was never yours isn't failure. It's editing."
+        }
+      ]
     }
   ]
 }

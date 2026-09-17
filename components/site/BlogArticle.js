@@ -4,6 +4,7 @@ import QuoteCard from '@/components/site/QuoteCard'
 import { RelatedBooks } from '@/components/site/RelatedContent'
 import TraditionPassage from '@/components/site/TraditionPassage'
 import { blogCta } from '@/config/blog'
+import { copy } from '@/config/site'
 import { blogHref, postHref } from '@/libs/blog-url'
 import { quoteShowsScripture } from '@/libs/scripture-core'
 import { formatTag, quotesHref } from '@/libs/quotes-url'
@@ -74,7 +75,7 @@ function Block({ block, quotes, tag, topic, slug }) {
     return (
       <section>
         <Heading>{heading}</Heading>
-        <div className="mt-4 grid grid-cols-2 gap-px bg-line sm:grid-cols-3">
+        <div className="mt-4 grid grid-cols-1 gap-px bg-line min-[400px]:grid-cols-2 md:grid-cols-3">
           {quotes.map((quote) => (
             <QuoteCard key={quote.slug} quote={quote} />
           ))}
@@ -109,48 +110,50 @@ export default function BlogArticle({ post, quotes = [], related = [], books = [
   const hasScripture = post.blocks?.some((b) => b.type === 'scripture')
 
   return (
-    <article className="mx-auto w-full max-w-2xl">
-      <header className="mb-2">
-        <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
-        <h1 className="heading mt-3">{post.heading || post.title}</h1>
-        {post.excerpt ? <p className="lede">{post.excerpt}</p> : null}
-      </header>
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_min(18rem,100%)] lg:items-start lg:gap-16">
+      <article className="min-w-0 max-w-2xl">
+        <header className="mb-2">
+          <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
+          <h1 className="heading mt-3">{post.heading || post.title}</h1>
+          {post.excerpt ? <p className="lede">{post.excerpt}</p> : null}
+        </header>
 
-      {post.blocks?.map((block, i) => (
-        <Block key={i} block={block} quotes={quotes} tag={tag} topic={post.topic} slug={post.slug} />
-      ))}
+        {post.blocks?.map((block, i) => (
+          <Block key={i} block={block} quotes={quotes} tag={tag} topic={post.topic} slug={post.slug} />
+        ))}
 
-      {!hasScripture ? <Scripture tag={tag} slug={post.slug} /> : null}
+        {!hasScripture ? <Scripture tag={tag} slug={post.slug} /> : null}
+      </article>
 
-      <div className="mt-12">
-        <RelatedBooks books={books} />
-      </div>
+      <aside className="space-y-10 lg:sticky lg:top-24" aria-label="Related">
+        <RelatedBooks books={books} className="border-t border-line pt-5 lg:border-t-0 lg:pt-0" />
 
-      <section className="mt-16 border border-line p-6 md:p-8">
-        <h2 className="heading-sm">{blogCta.title}</h2>
-        <p className="mt-3 text-sm text-body/80">{blogCta.body}</p>
-        <NewsletterForm />
-        <p className="mt-6">
-          <Link href={blogCta.href} className="tag">
-            {blogCta.label}
-          </Link>
-        </p>
-      </section>
+        <section className="border border-line p-5">
+          <h2 className="heading-sm">{copy.newsletterTitle}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-body/75">{copy.newsletterSub}</p>
+          <NewsletterForm compact />
+          <p className="mt-5">
+            <Link href={blogCta.href} className="tag">
+              {blogCta.label}
+            </Link>
+          </p>
+        </section>
 
-      {related.length ? (
-        <nav className="mt-16 border-t border-line pt-8" aria-label="Related posts">
-          <h2 className="label mb-6 text-left">Keep reading</h2>
-          <ul className="space-y-4">
-            {related.map((p) => (
-              <li key={p.slug}>
-                <Link href={postHref(p.slug)} className="text-body/85 transition-colors hover:text-paper">
-                  {p.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      ) : null}
-    </article>
+        {related.length ? (
+          <nav className="border-t border-line pt-5" aria-label="Related posts">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Keep reading</p>
+            <ul className="mt-4 space-y-3">
+              {related.map((p) => (
+                <li key={p.slug}>
+                  <Link href={postHref(p.slug)} className="text-body/85 transition-colors hover:text-paper">
+                    {p.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
+      </aside>
+    </div>
   )
 }

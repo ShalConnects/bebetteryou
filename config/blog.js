@@ -5,10 +5,8 @@ export const blogQuoteCount = 3
 
 export const blogIntro = 'Notes on motivation, discipline, and the days you don’t feel like it.'
 
-/** Closing CTA copy — one place to retune conversion wording across every post. */
+/** Closing CTA — heading/sub share homepage newsletter copy in `config/site.js`. */
 export const blogCta = {
-  title: 'One card a week.',
-  body: 'Pick a mood, get a card, keep the streak. No noise, no daily spam.',
   href: '/quotes',
   label: 'Browse the cards',
 }

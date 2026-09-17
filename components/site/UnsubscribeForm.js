@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 const PREF_OPTIONS = [
-  { id: 'quotes', label: 'Quote cards when we post' },
+  { id: 'quotes', label: 'Quote card roundups when we send them' },
   { id: 'blog', label: 'New blog posts' },
   { id: 'books', label: 'New book picks' },
 ]

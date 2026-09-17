@@ -155,13 +155,13 @@ export default function TagManager({ tags: initial }) {
   return (
     <div className="space-y-8">
       <form onSubmit={create} className="space-y-2">
-        <div className="grid gap-3 sm:grid-cols-4">
+        <div className="grid gap-3 lg:grid-cols-4">
           <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Name</span>
           <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Mood</span>
           <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Theme</span>
           <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Hashtags</span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto]">
+        <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
           {fields(draft, setDraft)}
           <button type="submit" disabled={busy || !draft.name.trim()} className="btn flex shrink-0 items-center px-7 py-0 disabled:opacity-50">
             Add tag
@@ -175,7 +175,7 @@ export default function TagManager({ tags: initial }) {
         {items.map((tag) => (
           <li key={tag.name} className="px-4 py-4">
             {editing === tag.name ? (
-              <div className="grid gap-3 sm:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] sm:items-end">
+              <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] lg:items-end">
                 {fields(edit, setEdit)}
                 <button type="button" disabled={busy} onClick={saveEdit} className="btn disabled:opacity-50">
                   Save

@@ -8,13 +8,18 @@ import ButtonCheckout from '@/components/ButtonCheckout'
 import { appConfig } from '@/config/app'
 import { adminOverview } from '@/libs/dashboard'
 import { readQuotes } from '@/libs/quotes-store'
-import { ActionLink, DashPanel, Stat } from '@/components/dashboard/ui'
+import AnalyticsBoard from '@/components/dashboard/AnalyticsBoard'
+import { ActionLink, DashPanel, DashSection, Stat } from '@/components/dashboard/ui'
 import { PageIntro } from '@/components/site/ui'
+
+/** Overview hosts live analytics; avoid a stale cached snapshot. */
+export const dynamic = 'force-dynamic'
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions)
   const isAdmin = isAdminSession(session)
   const name = session?.user?.name
+  const params = (await searchParams) || {}
 
   let hasAccess = Boolean(session?.user?.hasAccess)
   if (!isAdmin && session?.user?.id) {
@@ -30,7 +35,7 @@ export default async function Dashboard({ searchParams }) {
   if (isAdmin) {
     const { stats, social } = await adminOverview(await readQuotes())
     const readySocial = social.filter((n) => n.ready).length
-    const yt = (await searchParams)?.youtube
+    const yt = params.youtube
     const ytNote =
       yt === 'connected'
         ? 'YouTube connected. You can post Shorts from this dashboard.'
@@ -50,20 +55,11 @@ export default async function Dashboard({ searchParams }) {
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <ActionLink href="/dashboard/analytics" title="Analytics">
-            Channels, top pages, downloads and shares.
-          </ActionLink>
-          <ActionLink href="/dashboard/quotes/new" title="New quote">
-            Generate a card and publish.
-          </ActionLink>
           <ActionLink href="/dashboard/quotes" title="Manage quotes">
-            Edit, regenerate, or delete cards.
+            New cards, schedules, and library edits.
           </ActionLink>
-          <ActionLink href="/dashboard/tags" title="Manage tags">
-            Tags and mood labels for Surprise.
-          </ActionLink>
-          <ActionLink href="/dashboard/scripture" title="Tradition passages">
-            Scripture and reflections per tag theme.
+          <ActionLink href="/dashboard/tags" title="Tags & scripture">
+            Mood labels, content lanes, and tradition passages per theme.
           </ActionLink>
           <ActionLink href="/" title="View site">
             See the public homepage.
@@ -73,11 +69,13 @@ export default async function Dashboard({ searchParams }) {
         <DashPanel title="Social">
           {ytNote ? <p className="mb-4 text-sm text-paper">{ytNote}</p> : null}
           <ul className="space-y-2">
-            {social.map(({ id, label, ready, connectable }) => (
+            {social.map(({ id, label, ready, pending, connectable }) => (
               <li key={id} className="flex items-center justify-between text-sm">
                 <span className="text-body">{label}</span>
                 {ready ? (
                   <span className="text-paper">Ready</span>
+                ) : pending ? (
+                  <span className="text-quiet">Pending approval</span>
                 ) : connectable ? (
                   <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
                     Connect
@@ -89,6 +87,14 @@ export default async function Dashboard({ searchParams }) {
             ))}
           </ul>
         </DashPanel>
+
+        <DashSection
+          title="Analytics"
+          description="Channels, top pages, downloads and shares."
+          defaultOpen={Boolean(params.range)}
+        >
+          <AnalyticsBoard range={params.range} />
+        </DashSection>
       </div>
     )
   }

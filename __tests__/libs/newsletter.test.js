@@ -1,6 +1,7 @@
 import {
   buildBlogEmail,
   buildBookEmail,
+  buildQuoteDigestEmail,
   buildQuoteEmail,
   buildWelcomeEmail,
   discoveryHtml,
@@ -62,7 +63,7 @@ describe('newsletter', () => {
         extras,
       })
       expect(mail.subject).toBe('You’re in — BeBetterYou')
-      expect(mail.html).toContain('Quote cards whenever we post')
+      expect(mail.html).toContain('Quote card roundups when we send them')
       expect(mail.html).toContain('Browse quotes')
       expect(mail.html).toContain('/brand/fav.png')
       expect(mail.html).toContain('subscribed at BeBetterYou')
@@ -71,6 +72,24 @@ describe('newsletter', () => {
       expect(mail.html).toContain('Jost')
       expect(mail.html).toContain('Iceberg')
       expect(mail.html).toContain('/unsubscribe?t=')
+    })
+
+    it('builds a quote digest with a 6-card grid', () => {
+      const mail = buildQuoteDigestEmail({
+        token,
+        extras: { posts: extras.posts, book: extras.book },
+        quotes: [
+          { n: 20, slug: 'bby-20', src: '/q20.jpg', text: 'Be yourself.' },
+          { n: 19, slug: 'bby-19', src: '/q19.jpg', text: 'Keep going.' },
+        ],
+      })
+      expect(mail.subject).toContain('#20')
+      expect(mail.subject).toContain('#19')
+      expect(mail.html).toContain('Latest cards')
+      expect(mail.html).toContain('/quotes/bby-20')
+      expect(mail.html).toContain('Be yourself.')
+      expect(mail.html).toContain('/quotes')
+      expect(mail.html).toContain('/shop')
     })
 
     it('builds a quote email with centered 65% card image and discovery', () => {
