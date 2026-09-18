@@ -44,13 +44,28 @@ export const quoteCard = {
   },
 }
 
-/** Vertical still used to encode a YouTube Short from the quote JPEG. */
+/** 9:16 Short layout — same chrome as the card, scaled to 1080 wide. */
+const shortScale = 1080 / quoteCard.width
 export const quoteShort = {
+  ...quoteCard,
   width: 1080,
   height: 1920,
-  seconds: 8,
+  padX: Math.round(quoteCard.padX * shortScale),
+  sectionH: Math.round(quoteCard.sectionH * shortScale),
+  number: { ...quoteCard.number, size: Math.round(quoteCard.number.size * shortScale) },
+  quote: {
+    ...quoteCard.quote,
+    size: Math.round(quoteCard.quote.size * shortScale),
+    firstCharSize: Math.round(quoteCard.quote.firstCharSize * shortScale),
+  },
+  meta: { ...quoteCard.meta, size: Math.round(quoteCard.meta.size * shortScale) },
   fps: 30,
-  bg: quoteCard.bg,
+  beat: 1.15,
+  hold: 2.8,
+  maxSeconds: 18,
+  fallbackSeconds: 8,
+  /** Licensed instrumentals (no vocals). Each post picks one at random. Missing → drone. */
+  musicDir: 'assets/shorts',
 }
 
 /** next/image sizes — tuned to grid / hero scatter / detail layouts. */

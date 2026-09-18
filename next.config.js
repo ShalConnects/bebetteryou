@@ -24,6 +24,9 @@ const renderAssets = [
   './public/brand/**/*',
 ]
 
+/** ffmpeg binary + card assets + optional Shorts bed. */
+const shortEncode = [...renderAssets, './node_modules/ffmpeg-static/**/*', './assets/shorts/**/*']
+
 /** Static media — CDN only; keep out of every serverless bundle. */
 const staticMedia = [
   './public/quotes/**/*',
@@ -39,8 +42,9 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/api/quotes/**': renderAssets,
     '/api/print/**': ['./assets/fonts/**/*'],
-    // YouTube Short encode only — not oauth connect/callback.
-    '/api/social/post': ['./node_modules/ffmpeg-static/**/*'],
+    // YouTube Short encode — not oauth connect/callback.
+    '/api/social/post': shortEncode,
+    '/api/cron/social': shortEncode,
   },
   outputFileTracingExcludes: {
     '/**': staticMedia,

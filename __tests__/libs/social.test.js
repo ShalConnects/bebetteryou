@@ -21,7 +21,7 @@ import {
 import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { clipTelegramCaption, hasTelegramKeys } from '@/libs/social/providers/telegram'
-import { letterboxRect } from '@/libs/social/quote-short'
+import { letterboxRect, listShortBeds, pickShortBed, quotePhrases, shortBeats } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
 import { alreadyPosted, defaultSelected, mergePostRecord } from '@/libs/social/post-log'
 
@@ -133,6 +133,25 @@ describe('social', () => {
     expect(box.y).toBe(285)
   })
 
+  it('splits Short beats from line breaks, clauses, then word groups', () => {
+    expect(quotePhrases('Be yourself,\nWorld will\nADJUST.')).toEqual(['Be yourself,', 'World will', 'ADJUST.'])
+    expect(quotePhrases('Be yourself, world will adjust.')).toEqual(['Be yourself,', 'world will adjust.'])
+    expect(quotePhrases('Keep going.')).toEqual(['Keep', 'going.'])
+    const beats = shortBeats('Be yourself,\nWorld will\nADJUST.')
+    expect(beats).toHaveLength(3)
+    expect(beats[0].text).toBe('Be yourself,\nWorld will\nADJUST.')
+    expect(beats.map((b) => b.reveal)).toEqual([1, 2, 3])
+    expect(beats[2].seconds).toBeGreaterThan(beats[0].seconds)
+  })
+
+  it('rotates Shorts beds from assets/shorts', () => {
+    const beds = listShortBeds()
+    expect(pickShortBed(() => 0)).toBe(beds[0] || '')
+    if (!beds.length) return
+    expect(beds.every((file) => file.endsWith('.mp3'))).toBe(true)
+    expect(pickShortBed(() => 0.999)).toBe(beds[beds.length - 1])
+  })
+
   it('builds the live-site YouTube callback URL from the request host', () => {
     const req = {
       headers: new Headers({
@@ -152,7 +171,20 @@ describe('social', () => {
     const mp4 = await encodeQuoteShort(jpg)
     expect(mp4.slice(4, 8).toString()).toBe('ftyp')
     expect(mp4.length).toBeGreaterThan(10_000)
-  }, 30_000)
+    expect(mp4.includes(Buffer.from('mp4a'))).toBe(true)
+  }, 45_000)
+
+  it('encodes a kinetic Short from quote text', async () => {
+    const { encodeQuoteShort } = require('@/libs/social/quote-short')
+    const mp4 = await encodeQuoteShort(null, {
+      n: 8,
+      text: 'Be yourself,\nWorld will\nADJUST.',
+      author: '',
+    })
+    expect(mp4.slice(4, 8).toString()).toBe('ftyp')
+    expect(mp4.length).toBeGreaterThan(10_000)
+    expect(mp4.includes(Buffer.from('mp4a'))).toBe(true)
+  }, 45_000)
 
   it('leaves already-posted networks unchecked', () => {
     const networks = [

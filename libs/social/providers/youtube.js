@@ -56,13 +56,12 @@ async function youtubeError(res) {
   return data.error?.message || data.error?.errors?.[0]?.message || `YouTube upload failed (${res.status})`
 }
 
-/** Upload a quote card as a YouTube Short (official videos.insert). */
+/** Upload a quote as a YouTube Short (official videos.insert). */
 export async function postYouTube({ caption, imageBuffer, quote }) {
-  if (!imageBuffer?.length) throw new Error('Image file missing')
   const keys = await youtubeKeys()
   if (!hasYoutubeKeys(keys)) throw new Error('YouTube not configured')
 
-  const video = await encodeQuoteShort(imageBuffer)
+  const video = await encodeQuoteShort(imageBuffer, quote)
   const token = await accessToken(keys)
   const metadata = {
     snippet: {

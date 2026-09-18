@@ -131,12 +131,15 @@ function drawMeta(ctx, w, h, sectionH, site, author, meta) {
   }
 }
 
-function drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX) {
+function drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX, reveal) {
   const maxW = w - padX * 2
   const line = quote.size * quote.lineHeight
-  const { first, firstW, lead, restLines, rows, font, size, big } = layoutQuote(ctx, text, quote, maxW)
+  const chunks = String(text ?? '').split(/\n/)
+  const visible = reveal == null ? text : chunks.slice(0, reveal).join('\n')
+  const full = layoutQuote(ctx, text, quote, maxW)
+  const { first, firstW, lead, restLines, font, size, big } = layoutQuote(ctx, visible || text, quote, maxW)
   const mid = sectionH + (h - sectionH * 2) / 2
-  let y = mid - (rows * line) / 2 + line / 2
+  let y = mid - (full.rows * line) / 2 + line / 2
 
   ctx.fillStyle = quote.color
   ctx.textBaseline = 'middle'
@@ -166,21 +169,21 @@ function drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX) {
 
 /**
  * Render a quote card to a JPEG buffer.
- * @param {{ n: number, text: string, author?: string }} quote
+ * @param {{ n: number, text: string, author?: string, card?: typeof quoteCard, reveal?: number }} quote
  */
-export async function renderQuoteCard({ n, text, author = '' }) {
+export async function renderQuoteCard({ n, text, author = '', card = quoteCard, reveal } = {}) {
   registerFonts()
   const layers = await ensureLayers()
-  const { width: w, height: h, bg, padX, sectionH, number, quote, meta } = quoteCard
+  const { width: w, height: h, bg, padX, sectionH, number, quote, meta } = card
   const site = getSiteLabel()
   const canvas = createCanvas(w, h)
   const ctx = canvas.getContext('2d')
 
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, w, h)
-  drawBackdrop(ctx, w, h, layers, quoteCard.layers)
+  drawBackdrop(ctx, w, h, layers, card.layers || quoteCard.layers)
   drawTopChrome(ctx, n, w, sectionH, padX, layers.mark, number)
-  drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX)
+  drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX, reveal)
   drawMeta(ctx, w, h, sectionH, site, author, meta)
 
   return canvas.toBuffer('image/jpeg', 92)

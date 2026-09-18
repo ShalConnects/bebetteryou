@@ -9,6 +9,7 @@
     "test": "jest --watchAll=false",
     "import:quotes": "node scripts/import-wp-quotes.mjs",
     "generate:quote": "node scripts/generate-quote.mjs",
+    "preview:short": "node scripts/preview-short.mjs",
     "render:cards": "node scripts/render-cards.mjs",
     "check:env": "node scripts/check-env.mjs",
     "hash:admin": "node scripts/hash-admin-password.mjs",
