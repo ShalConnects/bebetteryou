@@ -6,7 +6,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { encodeQuoteShort, pickShortBed } from '../libs/social/quote-short.mjs'
+import { encodeQuoteShort, pickShortBed, quoteHook } from '../libs/social/quote-short.mjs'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const envFile = path.join(root, '.env.local')
@@ -29,9 +29,13 @@ if (!quote) {
   process.exit(1)
 }
 
-const music = pickShortBed()
+const music = pickShortBed(Math.random, quote.tags)
 const out = path.resolve(root, arg('out', 'tmp/bby-short-preview.mp4'))
 fs.mkdirSync(path.dirname(out), { recursive: true })
-fs.writeFileSync(out, await encodeQuoteShort(null, quote, { music }))
+const { video, poster } = await encodeQuoteShort(null, quote, { music })
+fs.writeFileSync(out, video)
+const posterPath = out.replace(/\.mp4$/i, '.jpg')
+if (poster?.length) fs.writeFileSync(posterPath, poster)
 console.log(`Wrote ${path.relative(root, out)}`)
-console.log(`Quote #${quote.n} · ${music ? path.basename(music) : 'drone'}`)
+if (poster?.length) console.log(`Poster ${path.relative(root, posterPath)}`)
+console.log(`Quote #${quote.n} · ${quoteHook(quote.text) || quote.slug} · ${music ? path.basename(music) : 'drone'}`)

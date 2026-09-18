@@ -7,6 +7,13 @@ export const analyticsEvents = {
   pageview: 'pageview',
   download: 'quote_download',
   share: 'quote_share',
+  motivationViewed: 'motivation_viewed',
+  actionStarted: 'action_started',
+  actionCompleted: 'action_completed',
+  planCreated: 'plan_created',
+  planCompleted: 'plan_completed',
+  itemSaved: 'item_saved',
+  itemShared: 'item_shared',
 }
 
 export const analyticsEventNames = Object.values(analyticsEvents)

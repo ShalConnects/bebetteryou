@@ -52,6 +52,8 @@ export const quoteShort = {
   height: 1920,
   padX: Math.round(quoteCard.padX * shortScale),
   sectionH: Math.round(quoteCard.sectionH * shortScale),
+  /** Extra footer so author/site sit above YouTube’s caption + audio pill. */
+  footerH: 500,
   number: { ...quoteCard.number, size: Math.round(quoteCard.number.size * shortScale) },
   quote: {
     ...quoteCard.quote,
@@ -61,10 +63,17 @@ export const quoteShort = {
   meta: { ...quoteCard.meta, size: Math.round(quoteCard.meta.size * shortScale) },
   fps: 30,
   beat: 1.15,
-  hold: 2.8,
+  hold: 3.6,
+  hook: 0.7,
+  end: 1.4,
+  endText: 'Follow for daily quotes.',
   maxSeconds: 18,
   fallbackSeconds: 8,
-  /** Licensed instrumentals (no vocals). Each post picks one at random. Missing → drone. */
+  /** Fade-through-black on layout changes (hook → quote, quote → end). */
+  crossfade: 0.3,
+  /** Short dissolve while lines accumulate in the same layout. */
+  lineFade: 0.15,
+  /** Licensed instrumentals (no vocals). Tagged quotes pick a stable bed; untagged → random. Missing → drone. */
   musicDir: 'assets/shorts',
 }
 

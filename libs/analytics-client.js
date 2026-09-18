@@ -94,3 +94,8 @@ export function trackDownload(slug) {
 export function trackShare(slug, target) {
   track(analyticsEvents.share, { slug, target })
 }
+
+/** Practice events — slug holds the item or plan id; never send journal text. */
+export function trackPractice(name, itemId = '', target = '') {
+  track(name, { slug: itemId, target })
+}

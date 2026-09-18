@@ -8,18 +8,7 @@ import { renderQuoteCard } from '../quote-card.mjs'
 
 const CHUNK = 4
 const BED_EXT = /\.(mp3|m4a|aac|wav)$/i
-const videoOut = [
-  '-c:v',
-  'libx264',
-  '-preset',
-  'veryfast',
-  '-tune',
-  'stillimage',
-  '-pix_fmt',
-  'yuv420p',
-  '-movflags',
-  '+faststart',
-]
+const videoOut = ['-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-movflags', '+faststart']
 
 function hasQuoteText(quote) {
   return Boolean(String(quote?.text ?? '').replace(/\n/g, ' ').trim())
@@ -33,37 +22,56 @@ export function letterboxRect(srcW, srcH, dstW, dstH) {
   return { x: Math.round((dstW - w) / 2), y: Math.round((dstH - h) / 2), w, h }
 }
 
-/** Line breaks, then clauses, then word groups. One-word beats when the line is short. */
-export function quotePhrases(text) {
+/** Fit src into dst by covering (center crop). */
+export function coverRect(srcW, srcH, dstW, dstH) {
+  const scale = Math.max(dstW / srcW, dstH / srcH)
+  const w = Math.round(srcW * scale)
+  const h = Math.round(srcH * scale)
+  return { x: Math.round((dstW - w) / 2), y: Math.round((dstH - h) / 2), w, h }
+}
+
+/** Line / clause units — hook uses this; beats may split a leftover short line into words. */
+function phraseUnits(text) {
   const raw = String(text ?? '').trim()
   if (!raw) return []
   const lines = raw.split(/\n/).map((s) => s.trim()).filter(Boolean)
   if (lines.length > 1) return lines
   const clauses = raw.split(/(?<=[,;:.—–!?])\s+/).map((s) => s.trim()).filter(Boolean)
-  if (clauses.length > 1) return clauses
-  const words = raw.split(/\s+/).filter(Boolean)
-  const n = words.length <= CHUNK ? 1 : CHUNK
+  return clauses.length > 1 ? clauses : [raw.replace(/\s+/g, ' ')]
+}
+
+/** First line or clause — Shorts title / opening punch, never a one-word split. */
+export function quoteHook(text) {
+  return phraseUnits(text)[0] || ''
+}
+
+/** Line breaks, then clauses. A leftover short line stays one beat — not one word at a time. */
+export function quotePhrases(text) {
+  const units = phraseUnits(text)
+  if (units.length !== 1) return units
+  const words = (units[0] || '').split(/\s+/).filter(Boolean)
+  if (words.length <= CHUNK) return units
   const out = []
-  for (let i = 0; i < words.length; i += n) out.push(words.slice(i, i + n).join(' '))
+  for (let i = 0; i < words.length; i += CHUNK) out.push(words.slice(i, i + CHUNK).join(' '))
   return out
 }
 
-/** Accumulating on-screen beats. Last frame holds longer. Total capped at maxSeconds. */
+/** First beat is a centered hook line; later beats accumulate. Last frame holds longer. */
 export function shortBeats(text) {
   const phrases = quotePhrases(text)
-  const { beat, hold, maxSeconds } = quoteShort
-  const times = phrases.map((_, i) => (i === phrases.length - 1 ? beat + hold : beat))
+  const { beat, hold, hook, maxSeconds } = quoteShort
+  const times = phrases.map((_, i) => (i === phrases.length - 1 ? beat + hold : beat) + (i === 0 ? hook : 0))
   const total = times.reduce((sum, t) => sum + t, 0)
   const scale = total > maxSeconds ? maxSeconds / total : 1
   const full = phrases.join('\n')
-  return phrases.map((_, i) => ({
-    text: full,
-    reveal: i + 1,
+  return phrases.map((phrase, i) => ({
+    text: i === 0 ? phrase : full,
+    reveal: i === 0 ? undefined : i + 1,
     seconds: Math.round(times[i] * scale * 100) / 100,
   }))
 }
 
-/** 9:16 JPEG of the quote card on the Short canvas (no-text fallback). */
+/** 9:16 JPEG of the quote card covering the Short canvas (no-text fallback). */
 export async function renderShortFrame(imageBuffer) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   const img = await loadImage(imageBuffer)
@@ -72,7 +80,7 @@ export async function renderShortFrame(imageBuffer) {
   const ctx = canvas.getContext('2d')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, width, height)
-  const r = letterboxRect(img.width, img.height, width, height)
+  const r = coverRect(img.width, img.height, width, height)
   ctx.drawImage(img, r.x, r.y, r.w, r.h)
   return canvas.toBuffer('image/jpeg', 92)
 }
@@ -92,11 +100,48 @@ function run(cmd, args) {
   })
 }
 
-function concatScript(files, seconds) {
-  const esc = (file) => file.replace(/'/g, "'\\''")
-  const lines = files.flatMap((file, i) => [`file '${esc(file)}'`, `duration ${seconds[i]}`])
-  lines.push(`file '${esc(files[files.length - 1])}'`)
-  return lines.join('\n')
+function clipFade(prev, next, desired) {
+  const cap = Math.min(prev, next) / 3
+  return prev > 0 && next > 0 && desired > 0 ? Math.min(desired, cap) : 0
+}
+
+/** fadeblack on hook→stack and quote→end; dissolve while lines accumulate. */
+export function shortTransitions(seconds, quoteCount, card = quoteShort) {
+  if (!seconds || seconds.length < 2) return []
+  const n = seconds.length
+  const out = []
+  for (let i = 1; i < n; i++) {
+    const layout = (i === 1 && quoteCount > 1) || (i === quoteCount && quoteCount < n)
+    const d = clipFade(seconds[i - 1], seconds[i], layout ? card.crossfade : card.lineFade)
+    out.push({ type: layout ? 'fadeblack' : 'fade', d })
+  }
+  return out
+}
+
+function stillInputs(files, seconds, fps) {
+  return files.flatMap((file, i) => ['-loop', '1', '-framerate', String(fps), '-t', String(seconds[i]), '-i', file])
+}
+
+function xfadeGraph(seconds, transitions) {
+  const { width, height, fps } = quoteShort
+  const prep = (i, out) => `[${i}:v]scale=${width}:${height},setsar=1,fps=${fps},format=yuv420p[${out}]`
+  if (seconds.length < 2) return prep(0, 'v')
+  const parts = seconds.map((_, i) => prep(i, `s${i}`))
+  let prev = 's0'
+  let t = seconds[0]
+  for (let i = 1; i < seconds.length; i++) {
+    const { type, d } = transitions[i - 1]
+    const out = i === seconds.length - 1 ? 'v' : `x${i}`
+    if (d > 0) {
+      parts.push(`[${prev}][s${i}]xfade=transition=${type}:duration=${d}:offset=${+(t - d).toFixed(3)}[${out}]`)
+      t += seconds[i] - d
+    } else {
+      parts.push(`[${prev}][s${i}]concat=n=2:v=1:a=0[${out}]`)
+      t += seconds[i]
+    }
+    prev = out
+  }
+  return parts.join(';')
 }
 
 /** Audio files in quoteShort.musicDir, sorted so picks are stable. */
@@ -113,10 +158,21 @@ export function listShortBeds() {
   }
 }
 
-/** One bed per post. Pass `random` in tests. */
-export function pickShortBed(random = Math.random) {
+function tagSeed(tags) {
+  const key = [...new Set((tags || []).map((t) => String(t).trim()).filter(Boolean))].sort().join('|')
+  if (!key) return null
+  let h = 2166136261
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619)
+  return h >>> 0
+}
+
+/** Stable bed from quote tags. Pass `random` when untagged (tests). */
+export function pickShortBed(random = Math.random, tags) {
   const beds = listShortBeds()
-  return beds.length ? beds[Math.floor(random() * beds.length)] : ''
+  if (!beds.length) return ''
+  const seed = tagSeed(tags)
+  const i = seed == null ? Math.floor(random() * beds.length) : seed % beds.length
+  return beds[i]
 }
 
 function musicInput(seconds, file = pickShortBed()) {
@@ -131,12 +187,12 @@ function musicInput(seconds, file = pickShortBed()) {
   ]
 }
 
-/** Encode a 9:16 H.264 Short: phrase stills + bed, or letterboxed JPEG if no text. */
+/** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
 export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
   if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
 
-  const beats = hasQuoteText(quote)
+  const quoteBeats = hasQuoteText(quote)
     ? await Promise.all(
         shortBeats(quote.text).map(async (beat) => ({
           seconds: beat.seconds,
@@ -150,8 +206,26 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
         }))
       )
     : [{ seconds: quoteShort.fallbackSeconds, jpg: await renderShortFrame(imageBuffer) }]
+  const poster = quoteBeats[quoteBeats.length - 1].jpg
+  const beats =
+    hasQuoteText(quote) && quoteShort.end
+      ? [
+          ...quoteBeats,
+          {
+            seconds: quoteShort.end,
+            jpg: await renderQuoteCard({
+              n: quote.n,
+              text: quoteShort.endText,
+              author: '',
+              card: quoteShort,
+            }),
+          },
+        ]
+      : quoteBeats
 
-  const duration = beats.reduce((sum, b) => sum + b.seconds, 0)
+  const seconds = beats.map((b) => b.seconds)
+  const transitions = shortTransitions(seconds, quoteBeats.length)
+  const duration = seconds.reduce((sum, t) => sum + t, 0) - transitions.reduce((sum, x) => sum + x.d, 0)
   const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'bby-short-'))
   const mp4 = path.join(dir, 'short.mp4')
   try {
@@ -162,22 +236,19 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
         return file
       })
     )
-    const list = path.join(dir, 'concat.txt')
-    await fs.promises.writeFile(list, concatScript(files, beats.map((b) => b.seconds)))
-    const fade = Math.max(0, duration - 1)
+    const audioFade = Math.max(0, duration - 1)
     await run(ffmpeg, [
       '-y',
-      '-f',
-      'concat',
-      '-safe',
-      '0',
-      '-i',
-      list,
-      ...musicInput(duration, music),
+      ...stillInputs(files, seconds, quoteShort.fps),
+      ...musicInput(duration, music ?? pickShortBed(Math.random, quote?.tags)),
       '-t',
       String(duration),
-      '-vf',
-      `fps=${quoteShort.fps},format=yuv420p`,
+      '-filter_complex',
+      xfadeGraph(seconds, transitions),
+      '-map',
+      '[v]',
+      '-map',
+      `${files.length}:a`,
       ...videoOut,
       '-c:a',
       'aac',
@@ -188,10 +259,10 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
       '-b:a',
       '96k',
       '-af',
-      `afade=t=in:d=0.3,afade=t=out:st=${fade}:d=1,volume=0.55`,
+      `afade=t=in:d=0.3,afade=t=out:st=${audioFade}:d=1,volume=0.55`,
       mp4,
     ])
-    return fs.promises.readFile(mp4)
+    return { video: await fs.promises.readFile(mp4), poster }
   } finally {
     await fs.promises.rm(dir, { recursive: true, force: true })
   }

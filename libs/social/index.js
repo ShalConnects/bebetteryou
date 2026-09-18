@@ -17,6 +17,7 @@ import { postPinterest } from './providers/pinterest'
 import { postThreads } from './providers/threads'
 import { postBluesky } from './providers/bluesky'
 import { postTelegram } from './providers/telegram'
+import { encodeQuoteShort, pickShortBed } from '@/libs/social/quote-short'
 import { recordPost } from './post-store'
 
 const providers = {
@@ -108,6 +109,14 @@ export async function postQuote(slug, networkIds) {
       }
     })
   )
+}
+
+/** Encode a Short for dashboard preview (does not upload). */
+export async function previewQuoteShort(slug) {
+  const quote = (await readQuotes()).find((q) => q.slug === slug)
+  if (!quote) throw new Error('Quote not found')
+  const imageBuffer = await resolveImageBuffer(quote.src)
+  return encodeQuoteShort(imageBuffer, quote, { music: pickShortBed(Math.random, quote.tags) })
 }
 
 async function resolveImageBuffer(src) {

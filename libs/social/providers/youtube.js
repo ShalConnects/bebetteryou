@@ -1,5 +1,5 @@
 import { quoteOneLine } from '@/libs/quote-text'
-import { encodeQuoteShort } from '@/libs/social/quote-short'
+import { encodeQuoteShort, quoteHook } from '@/libs/social/quote-short'
 import { youtubeClient } from '@/libs/social/youtube-oauth'
 import { readYoutubeRefreshToken } from '@/libs/social/youtube-store'
 
@@ -19,13 +19,16 @@ export function hasYoutubeKeys(keys) {
   return Boolean(keys?.clientId && keys?.clientSecret && keys?.refreshToken)
 }
 
-/** YouTube titles cap at 100 chars. #Shorts helps the 9:16 clip land in Shorts. */
+/** Opening punch, 100-char cap. 9:16 already classifies as a Short. */
 export function youtubeTitle(quote) {
-  const suffix = ' #Shorts'
-  const raw = quoteOneLine(quote?.text) || `Quote #${quote?.n || ''}`
-  const max = 100
-  if (raw.length + suffix.length <= max) return `${raw}${suffix}`
-  return `${raw.slice(0, max - suffix.length - 1).trimEnd()}…${suffix}`
+  const raw = quoteHook(quote?.text) || quoteOneLine(quote?.text) || `Quote #${quote?.n || ''}`
+  return raw.length <= 100 ? raw : `${raw.slice(0, 99).trimEnd()}…`
+}
+
+/** Caption (quote + link + tags) plus #Shorts for search. */
+export function youtubeDescription(quote, caption) {
+  const body = String(caption || '').trim() || youtubeTitle(quote)
+  return /#shorts/i.test(body) ? body : `${body}\n\n#Shorts`
 }
 
 function youtubePrivacy() {
@@ -56,17 +59,29 @@ async function youtubeError(res) {
   return data.error?.message || data.error?.errors?.[0]?.message || `YouTube upload failed (${res.status})`
 }
 
+async function setThumbnail(token, videoId, jpeg) {
+  if (!jpeg?.length || !videoId) return
+  await fetch(
+    `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURIComponent(videoId)}&uploadType=media`,
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'image/jpeg' },
+      body: new Uint8Array(jpeg),
+    }
+  ).catch(() => {})
+}
+
 /** Upload a quote as a YouTube Short (official videos.insert). */
 export async function postYouTube({ caption, imageBuffer, quote }) {
   const keys = await youtubeKeys()
   if (!hasYoutubeKeys(keys)) throw new Error('YouTube not configured')
 
-  const video = await encodeQuoteShort(imageBuffer, quote)
+  const { video, poster } = await encodeQuoteShort(imageBuffer, quote)
   const token = await accessToken(keys)
   const metadata = {
     snippet: {
       title: youtubeTitle(quote),
-      description: caption || youtubeTitle(quote),
+      description: youtubeDescription(quote, caption),
       categoryId: '22',
       tags: ['BeBetterYou', 'motivation', 'Shorts', ...(quote?.tags || [])].slice(0, 15),
     },
@@ -102,6 +117,7 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
   if (!put.ok || !posted.id) {
     throw new Error(posted.error?.message || `YouTube upload failed (${put.status})`)
   }
+  await setThumbnail(token, posted.id, poster)
 
   const watch = `https://www.youtube.com/watch?v=${posted.id}`
   const meta = await fetch(

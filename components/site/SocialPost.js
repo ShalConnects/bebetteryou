@@ -41,6 +41,7 @@ export default function SocialPost({ slug }) {
   const [selected, setSelected] = useState([])
   const [runAt, setRunAt] = useState(localInputValue)
   const [busy, setBusy] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState('')
   const [results, setResults] = useState(null)
   const [error, setError] = useState('')
 
@@ -63,6 +64,10 @@ export default function SocialPost({ slug }) {
         setSelected(defaultSelected(list, log))
         setResults(null)
         setError('')
+        setPreviewUrl((prev) => {
+          if (prev) URL.revokeObjectURL(prev)
+          return ''
+        })
       })
       .catch(() => {})
     loadSchedules(slug)
@@ -70,6 +75,27 @@ export default function SocialPost({ slug }) {
 
   function toggle(id) {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+
+  async function onPreview() {
+    setBusy(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/social/preview?slug=${encodeURIComponent(slug)}`)
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.error || 'Failed to preview Short')
+      }
+      const url = URL.createObjectURL(await res.blob())
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev)
+        return url
+      })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
 
   async function onPost() {
@@ -196,6 +222,14 @@ export default function SocialPost({ slug }) {
         </p>
       ) : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
+      {previewUrl ? (
+        <video
+          src={previewUrl}
+          controls
+          playsInline
+          className="max-h-80 w-auto rounded border border-line bg-ink"
+        />
+      ) : null}
       {shown.length ? (
         <ul className="space-y-1 text-sm">
           {shown.map((r) => {
@@ -241,6 +275,14 @@ export default function SocialPost({ slug }) {
       ) : null}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <button
+          type="button"
+          disabled={busy}
+          onClick={onPreview}
+          className="btn disabled:opacity-50"
+        >
+          {busy ? 'Working…' : 'Preview Short'}
+        </button>
         <button
           type="button"
           disabled={busy || !selected.length}

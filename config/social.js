@@ -28,6 +28,8 @@ export const postNetworks = [
     id: 'x',
     label: 'X',
     env: ['X_API_KEY', 'X_API_SECRET', 'X_ACCESS_TOKEN', 'X_ACCESS_SECRET'],
+    /** Set true while skipping paid API credits; admin shows Pending. */
+    pendingEnv: 'X_PENDING',
   },
   {
     id: 'youtube',

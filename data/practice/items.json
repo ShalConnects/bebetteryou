@@ -1,0 +1,147 @@
+[
+  {
+    "id": "enough-for-today",
+    "title": "Enough for today",
+    "thought": "You don't need to fix your whole life today. Start with one thing.",
+    "action": "Work on the thing you've been avoiding for 5 minutes.",
+    "question": "What is one thing you've been avoiding because it feels too big?",
+    "category": "Starting Over",
+    "estimatedMinutes": 5,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "before-ready",
+    "title": "Start before ready",
+    "thought": "Waiting to feel ready is often just waiting.",
+    "action": "Open the task and do the first visible step only.",
+    "question": "What is the smallest next step you can see without planning the whole project?",
+    "category": "Procrastination",
+    "estimatedMinutes": 5,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "one-door",
+    "title": "Close one door",
+    "thought": "Focus is less about willpower and more about fewer exits.",
+    "action": "Put your phone in another room for one short work block.",
+    "question": "Which distraction is easiest to remove for the next 25 minutes?",
+    "category": "Focus",
+    "estimatedMinutes": 25,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "show-up-small",
+    "title": "Show up small",
+    "thought": "Consistency is built on returns, not perfect streaks.",
+    "action": "Do today's version at half the size you planned.",
+    "question": "What would \"half size\" look like for the habit you care about?",
+    "category": "Consistency",
+    "estimatedMinutes": 10,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "quiet-push",
+    "title": "A quiet push",
+    "thought": "Motivation fades. A finished first minute still counts.",
+    "action": "Set a 5-minute timer and start before it ends.",
+    "question": "If you only had five minutes, what would you choose to move?",
+    "category": "Motivation",
+    "estimatedMinutes": 5,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "name-the-load",
+    "title": "Name the load",
+    "thought": "Overwhelm shrinks when the next move has a name.",
+    "action": "Write three tasks, circle one, ignore the rest for now.",
+    "question": "Which one task would make the rest feel lighter?",
+    "category": "Focus",
+    "estimatedMinutes": 5,
+    "isOriginal": true
+  },
+  {
+    "id": "restart-clean",
+    "title": "Restart clean",
+    "thought": "A missed day is information, not a verdict.",
+    "action": "Do a two-minute restart of the habit you dropped.",
+    "question": "What made it hard last time — and what is one easier setup?",
+    "category": "Starting Over",
+    "estimatedMinutes": 2,
+    "isOriginal": true
+  },
+  {
+    "id": "discipline-window",
+    "title": "A discipline window",
+    "thought": "Discipline is often a protected window, not a personality.",
+    "action": "Block 15 minutes on your calendar and keep only one task in it.",
+    "question": "When today could that window realistically happen?",
+    "category": "Discipline",
+    "estimatedMinutes": 15,
+    "isOriginal": true
+  },
+  {
+    "id": "evidence-not-mood",
+    "title": "Evidence, not mood",
+    "thought": "Confidence grows from kept promises to yourself.",
+    "action": "Keep one small promise you can finish in under 10 minutes.",
+    "question": "What promise is small enough that you can keep it today?",
+    "category": "Confidence",
+    "estimatedMinutes": 10,
+    "isOriginal": true
+  },
+  {
+    "id": "first-brick",
+    "title": "The first brick",
+    "thought": "You don't need the whole staircase to place the first brick.",
+    "action": "Define the outcome in one sentence, then start the first brick.",
+    "question": "In one sentence, what does \"done enough\" look like?",
+    "category": "Goals",
+    "estimatedMinutes": 10,
+    "isOriginal": true
+  },
+  {
+    "id": "growth-note",
+    "title": "A growth note",
+    "thought": "Progress is easier to trust when you can point to it.",
+    "action": "Write one sentence: what improved this week, even slightly.",
+    "question": "What is one thing you handled better than last month?",
+    "category": "Personal Growth",
+    "estimatedMinutes": 5,
+    "isOriginal": true
+  },
+  {
+    "id": "failure-next",
+    "title": "After a miss",
+    "thought": "Failure is a stop, not a identity. The next action is the exit.",
+    "action": "Name the miss in one line, then take a 5-minute recovery step.",
+    "question": "What recovery step would your future self thank you for?",
+    "category": "Failure",
+    "estimatedMinutes": 5,
+    "isOriginal": true
+  },
+  {
+    "id": "procrastination-timer",
+    "title": "Five-minute entry",
+    "thought": "The hard part is usually entry, not the whole task.",
+    "action": "Work for 5 minutes with permission to stop after.",
+    "question": "What have you been negotiating with yourself about starting?",
+    "category": "Procrastination",
+    "estimatedMinutes": 5,
+    "isOriginal": true
+  },
+  {
+    "id": "fresh-desk",
+    "title": "Clear one corner",
+    "thought": "A fresh start can be physical: one clear surface, one clear task.",
+    "action": "Clear one small surface or inbox row, then begin.",
+    "question": "Which tiny mess is stealing the most attention?",
+    "category": "Starting Over",
+    "estimatedMinutes": 10,
+    "isOriginal": true
+  }
+]

@@ -44,6 +44,7 @@ const nextConfig = {
     '/api/print/**': ['./assets/fonts/**/*'],
     // YouTube Short encode — not oauth connect/callback.
     '/api/social/post': shortEncode,
+    '/api/social/preview': shortEncode,
     '/api/cron/social': shortEncode,
   },
   outputFileTracingExcludes: {

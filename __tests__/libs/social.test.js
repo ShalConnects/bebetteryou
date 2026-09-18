@@ -10,8 +10,19 @@ jest.mock('@/libs/social/youtube-store', () => ({
 }))
 
 import { oauth1Header, hasXKeys } from '@/libs/social/oauth'
+import { networkStatus } from '@/config/social'
 import { quoteCaption } from '@/libs/social'
-import { hasYoutubeKeys, youtubeTitle } from '@/libs/social/providers/youtube'
+import { hasYoutubeKeys, youtubeDescription, youtubeTitle } from '@/libs/social/providers/youtube'
+import {
+  coverRect,
+  letterboxRect,
+  listShortBeds,
+  pickShortBed,
+  quoteHook,
+  quotePhrases,
+  shortBeats,
+  shortTransitions,
+} from '@/libs/social/quote-short'
 import {
   clipPinText,
   hasPinterestKeys,
@@ -21,7 +32,6 @@ import {
 import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads'
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { clipTelegramCaption, hasTelegramKeys } from '@/libs/social/providers/telegram'
-import { letterboxRect, listShortBeds, pickShortBed, quotePhrases, shortBeats } from '@/libs/social/quote-short'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
 import { alreadyPosted, defaultSelected, mergePostRecord } from '@/libs/social/post-log'
 
@@ -53,6 +63,21 @@ describe('social', () => {
 
   it('detects missing X keys', () => {
     expect(hasXKeys({ consumerKey: 'a', consumerSecret: '', token: 'c', tokenSecret: 'd' })).toBe(false)
+  })
+
+  it('marks X pending when X_PENDING is set', () => {
+    const prev = process.env.X_PENDING
+    process.env.X_PENDING = 'true'
+    process.env.X_API_KEY = 'k'
+    process.env.X_API_SECRET = 's'
+    process.env.X_ACCESS_TOKEN = 't'
+    process.env.X_ACCESS_SECRET = 'ts'
+    expect(networkStatus().find((n) => n.id === 'x')).toMatchObject({
+      ready: false,
+      pending: true,
+    })
+    if (prev === undefined) delete process.env.X_PENDING
+    else process.env.X_PENDING = prev
   })
 
   it('detects missing YouTube keys', () => {
@@ -116,13 +141,30 @@ describe('social', () => {
     expect(clipPinText('x'.repeat(120), 100).length).toBe(100)
   })
 
-  it('builds a Shorts title under 100 chars', () => {
-    const short = youtubeTitle({ n: 3, text: 'Keep going.' })
-    expect(short).toBe('Keep going. #Shorts')
-    const long = 'x'.repeat(120)
-    const clipped = youtubeTitle({ text: long })
-    expect(clipped.endsWith('#Shorts')).toBe(true)
+  it('builds a Shorts title from the opening punch', () => {
+    expect(youtubeTitle({ n: 3, text: 'Keep going.' })).toBe('Keep going.')
+    expect(youtubeTitle({ text: 'Be yourself,\nWorld will\nADJUST.' })).toBe('Be yourself,')
+    const clipped = youtubeTitle({ text: 'x'.repeat(120) })
+    expect(clipped.endsWith('…')).toBe(true)
     expect(clipped.length).toBeLessThanOrEqual(100)
+  })
+
+  it('appends #Shorts to the YouTube description', () => {
+    expect(youtubeDescription({ text: 'Keep going.' }, 'Keep going.\nhttps://example.com')).toBe(
+      'Keep going.\nhttps://example.com\n\n#Shorts'
+    )
+    expect(youtubeDescription({ text: 'Keep going.' }, 'Keep going. #Shorts')).toBe('Keep going. #Shorts')
+  })
+
+  it('uses fade-through-black only when the Short layout changes', () => {
+    expect(shortTransitions([8], 1)).toEqual([])
+    expect(shortTransitions([3.95, 2.2], 1).map((x) => x.type)).toEqual(['fadeblack'])
+    expect(shortTransitions([1.85, 1.15, 3.95, 2.2], 3).map((x) => x.type)).toEqual([
+      'fadeblack',
+      'fade',
+      'fadeblack',
+    ])
+    expect(shortTransitions([1.85, 1.15, 3.95, 2.2], 3)[1].d).toBe(0.15)
   })
 
   it('letterboxes the 600×750 card on a 9:16 Short', () => {
@@ -133,15 +175,32 @@ describe('social', () => {
     expect(box.y).toBe(285)
   })
 
+  it('cover-crops the 600×750 card to fill a 9:16 Short', () => {
+    const box = coverRect(600, 750, 1080, 1920)
+    expect(box.h).toBe(1920)
+    expect(box.w).toBeGreaterThan(1080)
+    expect(box.y).toBe(0)
+    expect(box.x).toBeLessThan(0)
+  })
+
   it('splits Short beats from line breaks, clauses, then word groups', () => {
+    expect(quoteHook('Be yourself,\nWorld will\nADJUST.')).toBe('Be yourself,')
+    expect(quoteHook('Keep going.')).toBe('Keep going.')
     expect(quotePhrases('Be yourself,\nWorld will\nADJUST.')).toEqual(['Be yourself,', 'World will', 'ADJUST.'])
     expect(quotePhrases('Be yourself, world will adjust.')).toEqual(['Be yourself,', 'world will adjust.'])
-    expect(quotePhrases('Keep going.')).toEqual(['Keep', 'going.'])
+    expect(quotePhrases('Keep going.')).toEqual(['Keep going.'])
+    expect(quotePhrases('one two three four five six seven eight')).toEqual([
+      'one two three four',
+      'five six seven eight',
+    ])
     const beats = shortBeats('Be yourself,\nWorld will\nADJUST.')
     expect(beats).toHaveLength(3)
-    expect(beats[0].text).toBe('Be yourself,\nWorld will\nADJUST.')
-    expect(beats.map((b) => b.reveal)).toEqual([1, 2, 3])
-    expect(beats[2].seconds).toBeGreaterThan(beats[0].seconds)
+    expect(beats[0].text).toBe('Be yourself,')
+    expect(beats[0].reveal).toBeUndefined()
+    expect(beats[1].text).toBe('Be yourself,\nWorld will\nADJUST.')
+    expect(beats.map((b) => b.reveal)).toEqual([undefined, 2, 3])
+    expect(beats[0].seconds).toBeGreaterThan(beats[1].seconds)
+    expect(beats[2].seconds).toBeGreaterThan(beats[1].seconds)
   })
 
   it('rotates Shorts beds from assets/shorts', () => {
@@ -150,6 +209,7 @@ describe('social', () => {
     if (!beds.length) return
     expect(beds.every((file) => file.endsWith('.mp3'))).toBe(true)
     expect(pickShortBed(() => 0.999)).toBe(beds[beds.length - 1])
+    expect(pickShortBed(() => 0, ['Love'])).toBe(pickShortBed(() => 0.999, ['Love']))
   })
 
   it('builds the live-site YouTube callback URL from the request host', () => {
@@ -168,15 +228,16 @@ describe('social', () => {
     const fs = require('fs')
     const { encodeQuoteShort } = require('@/libs/social/quote-short')
     const jpg = fs.readFileSync('public/quotes/bby1.jpg')
-    const mp4 = await encodeQuoteShort(jpg)
+    const { video: mp4, poster } = await encodeQuoteShort(jpg)
     expect(mp4.slice(4, 8).toString()).toBe('ftyp')
     expect(mp4.length).toBeGreaterThan(10_000)
     expect(mp4.includes(Buffer.from('mp4a'))).toBe(true)
+    expect(poster?.length).toBeGreaterThan(1_000)
   }, 45_000)
 
   it('encodes a kinetic Short from quote text', async () => {
     const { encodeQuoteShort } = require('@/libs/social/quote-short')
-    const mp4 = await encodeQuoteShort(null, {
+    const { video: mp4, poster } = await encodeQuoteShort(null, {
       n: 8,
       text: 'Be yourself,\nWorld will\nADJUST.',
       author: '',
@@ -184,6 +245,7 @@ describe('social', () => {
     expect(mp4.slice(4, 8).toString()).toBe('ftyp')
     expect(mp4.length).toBeGreaterThan(10_000)
     expect(mp4.includes(Buffer.from('mp4a'))).toBe(true)
+    expect(poster?.length).toBeGreaterThan(1_000)
   }, 45_000)
 
   it('leaves already-posted networks unchecked', () => {

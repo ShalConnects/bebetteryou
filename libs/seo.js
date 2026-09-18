@@ -45,9 +45,11 @@ export async function getSitemapEntries() {
   const base = appConfig.siteUrl.replace(/\/$/, '')
   const blog = appConfig.features.enableBlog
   const books = appConfig.features.enableBooks
+  const practice = appConfig.features.enablePractice
   const paths = [
     '',
     '/quotes',
+    ...(practice ? ['/practice', '/practice/saved'] : []),
     ...(blog ? ['/blog'] : []),
     ...(books ? ['/books'] : []),
     '/about',

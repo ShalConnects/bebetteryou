@@ -114,12 +114,12 @@ function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, cir
   ctx.fillText(`#${n}`, w - padX, y)
 }
 
-function drawMeta(ctx, w, h, sectionH, site, author, meta) {
+function drawMeta(ctx, w, h, sectionH, footerH, site, author, meta) {
   const credit = String(author || '').trim()
   const lines = credit ? [`— ${credit}`, site] : [site]
   const gap = meta.size * meta.lineHeight
   const blockH = lines.length * gap
-  let y = h - sectionH / 2 - blockH / 2 + gap / 2
+  let y = h - footerH + sectionH / 2 - blockH / 2 + gap / 2
 
   ctx.font = `${meta.size}px ${meta.font}`
   ctx.fillStyle = meta.color
@@ -131,14 +131,14 @@ function drawMeta(ctx, w, h, sectionH, site, author, meta) {
   }
 }
 
-function drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX, reveal) {
+function drawQuoteBlock(ctx, w, h, sectionH, footerH, text, quote, padX, reveal) {
   const maxW = w - padX * 2
   const line = quote.size * quote.lineHeight
   const chunks = String(text ?? '').split(/\n/)
   const visible = reveal == null ? text : chunks.slice(0, reveal).join('\n')
   const full = layoutQuote(ctx, text, quote, maxW)
   const { first, firstW, lead, restLines, font, size, big } = layoutQuote(ctx, visible || text, quote, maxW)
-  const mid = sectionH + (h - sectionH * 2) / 2
+  const mid = sectionH + (h - sectionH - footerH) / 2
   let y = mid - (full.rows * line) / 2 + line / 2
 
   ctx.fillStyle = quote.color
@@ -174,7 +174,7 @@ function drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX, reveal) {
 export async function renderQuoteCard({ n, text, author = '', card = quoteCard, reveal } = {}) {
   registerFonts()
   const layers = await ensureLayers()
-  const { width: w, height: h, bg, padX, sectionH, number, quote, meta } = card
+  const { width: w, height: h, bg, padX, sectionH, footerH = sectionH, number, quote, meta } = card
   const site = getSiteLabel()
   const canvas = createCanvas(w, h)
   const ctx = canvas.getContext('2d')
@@ -183,8 +183,8 @@ export async function renderQuoteCard({ n, text, author = '', card = quoteCard, 
   ctx.fillRect(0, 0, w, h)
   drawBackdrop(ctx, w, h, layers, card.layers || quoteCard.layers)
   drawTopChrome(ctx, n, w, sectionH, padX, layers.mark, number)
-  drawQuoteBlock(ctx, w, h, sectionH, text, quote, padX, reveal)
-  drawMeta(ctx, w, h, sectionH, site, author, meta)
+  drawQuoteBlock(ctx, w, h, sectionH, footerH, text, quote, padX, reveal)
+  drawMeta(ctx, w, h, sectionH, footerH, site, author, meta)
 
   return canvas.toBuffer('image/jpeg', 92)
 }

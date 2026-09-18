@@ -1,11 +1,14 @@
 import Link from 'next/link'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import QuoteCard from '@/components/site/QuoteCard'
+import TryThis from '@/components/practice/TryThis'
 import { RelatedBooks } from '@/components/site/RelatedContent'
 import TraditionPassage from '@/components/site/TraditionPassage'
+import { appConfig } from '@/config/app'
 import { blogCta } from '@/config/blog'
 import { copy } from '@/config/site'
 import { blogHref, postHref } from '@/libs/blog-url'
+import { itemForPost } from '@/libs/practice'
 import { quoteShowsScripture } from '@/libs/scripture-core'
 import { formatTag, quotesHref } from '@/libs/quotes-url'
 
@@ -123,6 +126,8 @@ export default function BlogArticle({ post, quotes = [], related = [], books = [
         ))}
 
         {!hasScripture ? <Scripture tag={tag} slug={post.slug} /> : null}
+
+        {appConfig.features.enablePractice ? <TryThis item={itemForPost(post)} /> : null}
       </article>
 
       <aside className="space-y-10 lg:sticky lg:top-24" aria-label="Related">
