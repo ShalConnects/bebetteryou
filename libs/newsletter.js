@@ -321,6 +321,76 @@ export async function listNewsletterSubscribers() {
     .lean()
 }
 
+const ACTIVE_FILTER = {
+  source: 'newsletter',
+  $or: [{ unsubscribedAt: null }, { unsubscribedAt: { $exists: false } }],
+}
+
+const UNSUBSCRIBED_FILTER = {
+  source: 'newsletter',
+  unsubscribedAt: { $exists: true, $ne: null },
+}
+
+/**
+ * Paginated newsletter list for the dashboard.
+ * @param {{ page?: number, pageSize?: number, status?: 'all'|'active'|'unsubscribed' }} opts
+ */
+export async function listNewsletterSubscribersPage({
+  page = 1,
+  pageSize = 50,
+  status = 'all',
+} = {}) {
+  await connectDB()
+  const size = Math.min(Math.max(Number(pageSize) || 50, 10), 200)
+  const pageNum = Math.max(Number(page) || 1, 1)
+  const statusKey = ['all', 'active', 'unsubscribed'].includes(status) ? status : 'all'
+
+  let filter = { source: 'newsletter' }
+  if (statusKey === 'active') filter = ACTIVE_FILTER
+  if (statusKey === 'unsubscribed') filter = UNSUBSCRIBED_FILTER
+
+  const [filteredTotal, activeCount, unsubscribedCount] = await Promise.all([
+    Lead.countDocuments(filter),
+    Lead.countDocuments(ACTIVE_FILTER),
+    Lead.countDocuments(UNSUBSCRIBED_FILTER),
+  ])
+
+  const totalPages = Math.max(1, Math.ceil(filteredTotal / size) || 1)
+  const safePage = Math.min(pageNum, totalPages)
+  const skip = (safePage - 1) * size
+
+  const rows = await Lead.find(filter)
+    .select('-unsubscribeToken')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(size)
+    .lean()
+
+  return {
+    rows,
+    page: safePage,
+    pageSize: size,
+    status: statusKey,
+    filteredTotal,
+    totalPages,
+    activeCount,
+    unsubscribedCount,
+    totalCount: activeCount + unsubscribedCount,
+  }
+}
+
+/** Recent addresses for the test-email picker (not the full list). */
+export async function listNewsletterTestEmails(limit = 100) {
+  await connectDB()
+  const n = Math.min(Math.max(Number(limit) || 100, 1), 200)
+  const rows = await Lead.find({ source: 'newsletter' })
+    .select('email')
+    .sort({ createdAt: -1 })
+    .limit(n)
+    .lean()
+  return rows.map((r) => r.email).filter(Boolean)
+}
+
 /** Recent Resend failures from quote/digest batches (for admin dashboard). */
 export async function listQuoteSendFailures(limit = 100) {
   await connectDB()

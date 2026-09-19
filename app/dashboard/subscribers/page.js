@@ -9,23 +9,67 @@ import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
 import { requireAdminPage } from '@/libs/dashboard-auth'
 import { logError } from '@/libs/logger'
-import { listNewsletterSubscribers, listQuoteSendFailures } from '@/libs/newsletter'
+import {
+  listNewsletterSubscribersPage,
+  listNewsletterTestEmails,
+  listQuoteSendFailures,
+} from '@/libs/newsletter'
 import { readQuotes } from '@/libs/quotes-store'
 
 export const metadata = { title: 'Subscribers' }
+export const dynamic = 'force-dynamic'
 
-export default async function AdminSubscribersPage() {
+const PAGE_SIZE = 50
+
+function parsePage(value) {
+  const n = Number.parseInt(String(value || '1'), 10)
+  return Number.isFinite(n) && n > 0 ? n : 1
+}
+
+function parseStatus(value) {
+  const s = String(value || 'all')
+  return s === 'active' || s === 'unsubscribed' ? s : 'all'
+}
+
+export default async function AdminSubscribersPage({ searchParams }) {
   await requireAdminPage()
+
+  const params = (await searchParams) || {}
+  const page = parsePage(params.page)
+  const status = parseStatus(params.status)
 
   let list = []
   let failures = []
+  let testEmails = []
+  let pageMeta = {
+    page: 1,
+    pageSize: PAGE_SIZE,
+    totalPages: 1,
+    filteredTotal: 0,
+    status: 'all',
+    activeCount: 0,
+    unsubscribedCount: 0,
+    totalCount: 0,
+  }
   let dbError = ''
+
   try {
-    const [subscribers, failureRows] = await Promise.all([
-      listNewsletterSubscribers(),
+    const [paged, failureRows, emails] = await Promise.all([
+      listNewsletterSubscribersPage({ page, pageSize: PAGE_SIZE, status }),
       listQuoteSendFailures(100),
+      listNewsletterTestEmails(100),
     ])
-    list = subscribers.map((row) => ({
+    pageMeta = {
+      page: paged.page,
+      pageSize: paged.pageSize,
+      totalPages: paged.totalPages,
+      filteredTotal: paged.filteredTotal,
+      status: paged.status,
+      activeCount: paged.activeCount,
+      unsubscribedCount: paged.unsubscribedCount,
+      totalCount: paged.totalCount,
+    }
+    list = paged.rows.map((row) => ({
       email: row.email,
       prefs: row.prefs || { quotes: false, blog: false, books: false },
       unsubscribedAt: row.unsubscribedAt ? String(row.unsubscribedAt) : null,
@@ -38,14 +82,12 @@ export default async function AdminSubscribersPage() {
       error: row.error || 'Send failed',
       createdAt: row.createdAt ? String(row.createdAt) : null,
     }))
+    testEmails = emails
   } catch (error) {
     logError('Subscribers page: Mongo unavailable', error)
     dbError =
       'Could not reach MongoDB (connection timed out). In Atlas → Network Access, allow your current IP (or 0.0.0.0/0 for testing), confirm the cluster is not paused, then refresh.'
   }
-
-  // Include unsubscribed so you can still test templates to your own address.
-  const testEmails = list.map((row) => row.email).filter(Boolean)
 
   const posts = listPosts()
     .slice()
@@ -114,8 +156,21 @@ export default async function AdminSubscribersPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">List ({list.length})</h2>
-        <SubscriberTable subscribers={list} />
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
+          List ({pageMeta.totalCount})
+        </h2>
+        <SubscriberTable
+          key={`${pageMeta.status}-${pageMeta.page}`}
+          subscribers={list}
+          page={pageMeta.page}
+          pageSize={pageMeta.pageSize}
+          totalPages={pageMeta.totalPages}
+          filteredTotal={pageMeta.filteredTotal}
+          status={pageMeta.status}
+          activeCount={pageMeta.activeCount}
+          unsubscribedCount={pageMeta.unsubscribedCount}
+          totalCount={pageMeta.totalCount}
+        />
       </section>
     </div>
   )
