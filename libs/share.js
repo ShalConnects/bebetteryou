@@ -26,6 +26,12 @@ export async function shareOrCopy({ title, text, url }) {
   return 'Link copied'
 }
 
+/** Copy plain text (thought + action) without forcing a share sheet. */
+export async function copyText(text) {
+  await navigator.clipboard.writeText(String(text || ''))
+  return 'Text copied'
+}
+
 export function saveImage(src, fileName = 'quote.jpg') {
   const a = document.createElement('a')
   a.download = fileName

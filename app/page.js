@@ -4,6 +4,7 @@ import Hero from '@/components/Hero'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import { BookList, QuoteGrid, TextLink, ViewMore } from '@/components/site/ui'
 import { appConfig } from '@/config/app'
+import { practiceCopy, practiceDiscoverable } from '@/config/practice'
 import { copy, shop } from '@/config/site'
 import { listPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
@@ -120,6 +121,22 @@ export default async function Home() {
                     {copy.homePrintCta}
                   </a>
                 )}
+              </p>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {appConfig.features.enablePractice && practiceDiscoverable ? (
+        <section className="border-t border-line">
+          <div className="section">
+            <div className="shell-inner mx-auto max-w-xl text-center">
+              <h2 className="heading-sm">{practiceCopy.homeCtaTitle}</h2>
+              <p className="lede mx-auto">{practiceCopy.homeCtaSub}</p>
+              <p className="mt-8">
+                <Link href="/practice" className="btn">
+                  {practiceCopy.homeCta}
+                </Link>
               </p>
             </div>
           </div>

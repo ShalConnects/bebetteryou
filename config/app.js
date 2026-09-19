@@ -81,8 +81,8 @@ export const appConfig = {
     enablePricing:
       process.env.NEXT_PUBLIC_ENABLE_PRICING === 'true' || process.env.ENABLE_PRICING === 'true',
     enablePrintShop: process.env.NEXT_PUBLIC_ENABLE_PRINT_SHOP === 'true',
-    // Practice (motivation → action); opt-in until ready to launch.
-    enablePractice: process.env.NEXT_PUBLIC_ENABLE_PRACTICE === 'true',
+    // Practice (motivation → action); on unless disabled. Public nav stays hidden until launch.
+    enablePractice: process.env.NEXT_PUBLIC_ENABLE_PRACTICE !== 'false',
   },
 }
 

@@ -43,6 +43,21 @@ function settle(row) {
   return { ...row, visitors: row.visitors.size }
 }
 
+function emptyPractice() {
+  return { viewed: 0, started: 0, completed: 0, plans: 0, planDone: 0, saves: 0, shares: 0 }
+}
+
+function addPractice(counts, event) {
+  const { name } = event
+  if (name === analyticsEvents.motivationViewed) counts.viewed += 1
+  else if (name === analyticsEvents.actionStarted) counts.started += 1
+  else if (name === analyticsEvents.actionCompleted) counts.completed += 1
+  else if (name === analyticsEvents.planCreated) counts.plans += 1
+  else if (name === analyticsEvents.planCompleted) counts.planDone += 1
+  else if (name === analyticsEvents.itemSaved) counts.saves += 1
+  else if (name === analyticsEvents.itemShared) counts.shares += 1
+}
+
 /** Group events by a derived key, dropping rows whose key is empty. */
 function group(events, keyFn, labelFn = (key) => key) {
   const rows = new Map()
@@ -103,6 +118,8 @@ export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
   )
 
   const settled = settle(totals)
+  const practice = emptyPractice()
+  for (const event of inRange) addPractice(practice, event)
 
   return {
     days,
@@ -112,6 +129,7 @@ export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
       ...settled,
       downloadRate: perVisitor(settled.downloads, settled.visitors),
     },
+    practice,
     daily,
     /** Every channel that sent someone, ranked — the "what is working" list. */
     channels: rank(channelRows, 'visitors', channelRows.size),

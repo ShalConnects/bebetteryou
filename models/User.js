@@ -50,6 +50,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: 'niv',
   },
+  /** Practice progress sync (saved ids, plans, completion days). Guests stay on localStorage. */
+  practiceState: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null,
+  },
   magicTokenHash: {
     type: String,
     select: false,

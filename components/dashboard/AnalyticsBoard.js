@@ -35,6 +35,15 @@ export default async function AnalyticsBoard({ range }) {
         <Stat label="Saves / 100 visits" value={data.totals.downloadRate} />
       </div>
 
+      {data.practice.viewed || data.practice.completed || data.practice.plans ? (
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
+          <Stat label="Practice views" value={data.practice.viewed.toLocaleString('en-US')} />
+          <Stat label="Actions done" value={data.practice.completed.toLocaleString('en-US')} />
+          <Stat label="Plans created" value={data.practice.plans.toLocaleString('en-US')} />
+          <Stat label="Practice saves" value={data.practice.saves.toLocaleString('en-US')} />
+        </div>
+      ) : null}
+
       <TrendChart daily={data.daily} />
 
       <ChannelTable rows={data.channels} />

@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { saveImage, shareTargets } from '@/libs/share'
+import { copyText, saveImage, shareTargets } from '@/libs/share'
 
 describe('saveImage', () => {
   beforeEach(() => {
@@ -47,5 +47,14 @@ describe('saveImage', () => {
     expect(clicks[0].download).toBe('bby1.jpg')
     expect(clicks[0].href).toBe('blob:mock')
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock')
+  })
+})
+
+describe('copyText', () => {
+  it('writes to the clipboard', async () => {
+    const writeText = jest.fn(async () => {})
+    Object.assign(navigator, { clipboard: { writeText } })
+    await expect(copyText('hello')).resolves.toBe('Text copied')
+    expect(writeText).toHaveBeenCalledWith('hello')
   })
 })

@@ -84,6 +84,7 @@ export const mediumRules = [
 export const shareTargetLabels = {
   native: 'Share sheet',
   copy: 'Copy link',
+  'copy-text': 'Copy text',
   x: 'X',
   facebook: 'Facebook',
   linkedin: 'LinkedIn',

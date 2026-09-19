@@ -1,3 +1,5 @@
+import appConfig from '@/config/app'
+
 /** Admin dashboard nav — `match(pathname)` drives active state. */
 export const adminNav = [
   {
@@ -20,6 +22,9 @@ export const adminNav = [
   },
   { href: '/dashboard/print-orders', label: 'Print orders', match: (p) => p.startsWith('/dashboard/print-orders') },
   { href: '/dashboard/subscribers', label: 'Subscribers', match: (p) => p.startsWith('/dashboard/subscribers') },
+  ...(appConfig.features.enablePractice
+    ? [{ href: '/dashboard/practice', label: 'Practice', match: (p) => p.startsWith('/dashboard/practice') }]
+    : []),
 ]
 
 export function filterQuotes(quotes, { q = '', tag = '' } = {}) {

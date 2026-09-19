@@ -9,7 +9,6 @@ export const shop = {
 /** Public chrome. Copy for marketing surfaces. */
 export const nav = [
   { href: '/quotes', label: 'Quotes' },
-  ...(appConfig.features.enablePractice ? [{ href: '/practice', label: 'Practice' }] : []),
   ...(appConfig.features.enableBlog ? [{ href: '/blog', label: 'Blog' }] : []),
   ...(appConfig.features.enableBooks ? [{ href: '/books', label: 'Books' }] : []),
   { href: '/shop', label: 'Shop', soon: !(appConfig.features.enablePrintShop || shop.url) },

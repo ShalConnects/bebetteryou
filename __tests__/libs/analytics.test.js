@@ -225,6 +225,18 @@ describe('summarize', () => {
     expect(data.shareTargets[0]).toMatchObject({ key: 'x', label: 'X', shares: 1 })
   })
 
+  it('exposes empty practice totals when none fired', () => {
+    expect(data.practice).toEqual({
+      viewed: 0,
+      started: 0,
+      completed: 0,
+      plans: 0,
+      planDone: 0,
+      saves: 0,
+      shares: 0,
+    })
+  })
+
   it('fills every day in the range, including quiet ones', () => {
     expect(data.daily).toHaveLength(7)
     expect(data.daily[0]).toMatchObject({ key: '2026-03-04', visitors: 0 })

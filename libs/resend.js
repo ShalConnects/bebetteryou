@@ -31,6 +31,28 @@ export function resolveFromEmail() {
   return raw
 }
 
+/** Human-readable Resend / thrown error for logs and the failure dashboard. */
+export function formatEmailError(error) {
+  if (!error) return 'Failed to send email'
+  if (typeof error === 'string') {
+    const t = error.trim()
+    return t || 'Failed to send email'
+  }
+  if (typeof error.message === 'string' && error.message.trim()) return error.message.trim()
+  if (Array.isArray(error.message)) {
+    const joined = error.message.map((m) => String(m || '').trim()).filter(Boolean).join('; ')
+    if (joined) return joined
+  }
+  if (typeof error.name === 'string' && error.name && error.name !== 'Error') return error.name
+  try {
+    const json = JSON.stringify(error)
+    if (json && json !== '{}' && json !== 'null') return json
+  } catch {
+    /* ignore */
+  }
+  return 'Failed to send email'
+}
+
 /** Replies go to SUPPORT_EMAIL / ADMIN_EMAIL (e.g. Gmail) when set. */
 export function resolveReplyTo() {
   const reply = (
@@ -70,7 +92,7 @@ export const sendEmail = async ({ to, subject, html, text, replyTo } = {}) => {
 
     if (error) {
       logError('Resend error', error)
-      throw new Error('Failed to send email')
+      throw new Error(formatEmailError(error))
     }
 
     return data

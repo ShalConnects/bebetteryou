@@ -2,11 +2,16 @@
 
 import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
+import PracticeSync from '@/components/practice/PracticeSync'
 import { practiceCopy } from '@/config/practice'
 import {
-  completePlan,
+  PRACTICE_CHANGE,
+  deletePlan,
+  finishPractice,
   practiceStats,
+  pushPracticeState,
   readPracticeState,
+  returnMessage,
   toggleSaved,
 } from '@/libs/practice-store'
 import { analyticsEvents } from '@/config/analytics'
@@ -16,24 +21,28 @@ export default function PracticeSaved({ itemsById }) {
   const [state, setState] = useState(null)
 
   useEffect(() => {
-    setState(readPracticeState())
+    const refresh = () => setState(readPracticeState())
+    refresh()
+    window.addEventListener(PRACTICE_CHANGE, refresh)
+    return () => window.removeEventListener(PRACTICE_CHANGE, refresh)
   }, [])
 
   const stats = useMemo(() => (state ? practiceStats(state) : null), [state])
 
-  function refresh() {
-    setState(readPracticeState())
-  }
-
   function unsave(id) {
-    toggleSaved(id)
-    refresh()
+    pushPracticeState(toggleSaved(id))
   }
 
   function finishPlan(id) {
-    completePlan(id)
+    const plan = state.plans.find((row) => row.id === id)
+    pushPracticeState(
+      finishPractice({ planId: id, itemId: plan?.itemId || id, kind: 'plan' })
+    )
     trackPractice(analyticsEvents.planCompleted, id)
-    refresh()
+  }
+
+  function removePlan(id) {
+    pushPracticeState(deletePlan(id))
   }
 
   if (!state || !stats) {
@@ -41,14 +50,18 @@ export default function PracticeSaved({ itemsById }) {
   }
 
   const savedItems = state.saved.map((id) => itemsById[id]).filter(Boolean)
+  const welcome = returnMessage(stats.tone)
 
   return (
     <div className="space-y-10">
+      <PracticeSync />
       <p>
         <Link href="/practice" className="nav-link">
           ← Back to Practice
         </Link>
       </p>
+
+      {welcome ? <p className="text-sm text-body/80">{welcome}</p> : null}
 
       <section>
         <h2 className="heading-sm">{practiceCopy.progressTitle}</h2>
@@ -71,6 +84,27 @@ export default function PracticeSaved({ itemsById }) {
             <dd className="mt-1 text-2xl text-paper">{stats.donePlans}</dd>
           </div>
         </dl>
+      </section>
+
+      <section>
+        <h2 className="heading-sm">{practiceCopy.recentTitle}</h2>
+        {stats.recent.length ? (
+          <ul className="mt-4 space-y-3">
+            {stats.recent.map((row) => {
+              const item = itemsById[row.itemId]
+              return (
+                <li key={`${row.at}-${row.itemId}`} className="text-sm text-body/80">
+                  <time className="text-quiet">{row.day}</time>
+                  <span className="mx-2 text-quiet">·</span>
+                  {item?.title || item?.thought || row.itemId}
+                  <span className="text-quiet"> ({row.kind})</span>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
+          <p className="mt-3 text-sm text-body/70">{practiceCopy.recentEmpty}</p>
+        )}
       </section>
 
       <section>
@@ -111,11 +145,16 @@ export default function PracticeSaved({ itemsById }) {
                   {plan.completed ? 'Completed' : 'Open'}
                   {plan.itemId ? ` · ${plan.itemId}` : ''}
                 </p>
-                {!plan.completed ? (
-                  <button type="button" className="btn mt-3" onClick={() => finishPlan(plan.id)}>
-                    Mark complete
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {!plan.completed ? (
+                    <button type="button" className="btn" onClick={() => finishPlan(plan.id)}>
+                      Mark complete
+                    </button>
+                  ) : null}
+                  <button type="button" className="tag" onClick={() => removePlan(plan.id)}>
+                    Delete
                   </button>
-                ) : null}
+                </div>
               </li>
             ))}
           </ul>

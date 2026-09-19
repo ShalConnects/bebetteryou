@@ -27,6 +27,10 @@ const LeadSchema = new mongoose.Schema({
   unsubscribeToken: String,
   unsubscribedAt: Date,
   welcomeSentAt: Date,
+  /** Last quote or digest send attempt (success or fail). Used for 30-day rotation. */
+  lastQuoteEmailedAt: Date,
+  /** Ephemeral claim id for the in-flight quote batch (prevents concurrent double-send). */
+  lastQuoteClaimId: String,
   status: {
     type: String,
     enum: ['new', 'contacted', 'qualified', 'converted', 'lost'],
@@ -44,6 +48,7 @@ const LeadSchema = new mongoose.Schema({
 
 LeadSchema.index({ email: 1, source: 1 }, { unique: true, partialFilterExpression: { source: 'newsletter' } })
 LeadSchema.index({ unsubscribeToken: 1 }, { unique: true, sparse: true })
+LeadSchema.index({ source: 1, 'prefs.quotes': 1, lastQuoteEmailedAt: 1 })
 
 LeadSchema.pre('save', function (next) {
   this.updatedAt = Date.now()

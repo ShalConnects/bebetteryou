@@ -1,43 +1,69 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import { ActionCard, PlanForm } from '@/components/practice/ActionCard'
+import PracticeSync from '@/components/practice/PracticeSync'
 import { analyticsEvents } from '@/config/analytics'
 import { practiceCopy, practiceIntents } from '@/config/practice'
 import { getUrl } from '@/config/app'
 import { trackPractice } from '@/libs/analytics-client'
-import { utcDayKey } from '@/libs/practice'
-import { recordCompletion, savePlan } from '@/libs/practice-store'
+import {
+  finishPractice,
+  pushPracticeState,
+  readPracticeState,
+  returnMessage,
+  returnTone,
+  savePlan,
+} from '@/libs/practice-store'
 
-export default function PracticeHome({ resetItem, intentItems }) {
+export default function PracticeHome({ resetItem, pinnedItem = null, intentItems }) {
   const [intentId, setIntentId] = useState(null)
+  const [holdPin, setHoldPin] = useState(Boolean(pinnedItem))
   const [showNewsletter, setShowNewsletter] = useState(false)
+  const [welcome, setWelcome] = useState('')
+  const viewed = useRef(new Set())
 
   const active = useMemo(() => {
     if (intentId) return intentItems[intentId] || resetItem
+    if (holdPin && pinnedItem) return pinnedItem
     return resetItem
-  }, [intentId, intentItems, resetItem])
+  }, [intentId, intentItems, resetItem, holdPin, pinnedItem])
 
-  const mode = intentId ? 'intent' : 'reset'
+  const mode = intentId ? 'intent' : holdPin && pinnedItem ? 'pin' : 'reset'
   const shareUrl = getUrl(`/practice?item=${encodeURIComponent(active.id)}`)
 
   useEffect(() => {
+    setWelcome(returnMessage(returnTone(readPracticeState())))
+  }, [])
+
+  useEffect(() => {
+    const key = `${mode}:${active.id}`
+    if (viewed.current.has(key)) return
+    viewed.current.add(key)
     trackPractice(analyticsEvents.motivationViewed, active.id, mode)
   }, [active.id, mode])
 
   function onCreated(plan) {
-    savePlan(plan)
+    const state = savePlan(plan)
+    pushPracticeState(state)
+    return state.plans[0]?.id || ''
   }
 
-  function onCompleted() {
-    recordCompletion({ itemId: active.id, kind: mode, dayKey: utcDayKey() })
+  function onCompleted({ planId, itemId }) {
+    pushPracticeState(finishPractice({ planId, itemId, kind: mode }))
     setShowNewsletter(true)
+  }
+
+  function showReset() {
+    setIntentId(null)
+    setHoldPin(false)
   }
 
   return (
     <div className="space-y-10">
+      <PracticeSync />
       <nav className="flex flex-wrap gap-4 text-sm" aria-label="Practice">
         <Link href="/practice/saved" className="nav-link">
           Saved & progress
@@ -61,8 +87,8 @@ export default function PracticeHome({ resetItem, intentItems }) {
               {intent.label}
             </button>
           ))}
-          {intentId ? (
-            <button type="button" className="tag" onClick={() => setIntentId(null)}>
+          {intentId || holdPin ? (
+            <button type="button" className="tag" onClick={showReset}>
               {practiceCopy.resetLabel}
             </button>
           ) : null}
@@ -79,6 +105,7 @@ export default function PracticeHome({ resetItem, intentItems }) {
             <PlanForm
               itemId={active.id}
               defaultAction={active.action}
+              welcome={welcome}
               onCreated={onCreated}
               onCompleted={onCompleted}
             />

@@ -7,6 +7,15 @@
   "excerpt": "You don't need a perfect streak. You need a floor you can keep on a bad day.",
   "date": "2026-09-17",
   "status": "published",
+  "tryThis": {
+    "itemId": "show-up-small",
+    "trigger": "I notice I skipped yesterday",
+    "steps": [
+      "Do today's version at half the size you planned.",
+      "Treat the return as the win — not a perfect streak.",
+      "Write a tiny if-then for the next easy window."
+    ]
+  },
   "blocks": [
     {
       "type": "p",

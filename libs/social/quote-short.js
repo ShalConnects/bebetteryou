@@ -8,5 +8,8 @@ export {
   renderShortFrame,
   listShortBeds,
   pickShortBed,
+  resolveShortStyle,
+  fitShortStyle,
+  pickShortStyle,
   encodeQuoteShort,
 } from './quote-short.mjs'

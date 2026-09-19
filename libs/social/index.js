@@ -17,7 +17,7 @@ import { postPinterest } from './providers/pinterest'
 import { postThreads } from './providers/threads'
 import { postBluesky } from './providers/bluesky'
 import { postTelegram } from './providers/telegram'
-import { encodeQuoteShort, pickShortBed } from '@/libs/social/quote-short'
+import { encodeQuoteShort } from '@/libs/social/quote-short'
 import { recordPost } from './post-store'
 
 const providers = {
@@ -99,6 +99,9 @@ export async function postQuote(slug, networkIds) {
           url: posted?.url || null,
           privacy: posted?.privacy || null,
           channel: posted?.channel || null,
+          ...(posted?.thumbnail === false
+            ? { thumbnailError: posted.thumbnailError || 'Thumbnail not set' }
+            : {}),
         }
         await recordPost(slug, result)
         return result
@@ -116,7 +119,7 @@ export async function previewQuoteShort(slug) {
   const quote = (await readQuotes()).find((q) => q.slug === slug)
   if (!quote) throw new Error('Quote not found')
   const imageBuffer = await resolveImageBuffer(quote.src)
-  return encodeQuoteShort(imageBuffer, quote, { music: pickShortBed(Math.random, quote.tags) })
+  return encodeQuoteShort(imageBuffer, quote)
 }
 
 async function resolveImageBuffer(src) {

@@ -30,6 +30,15 @@ export default function PrivacyPolicy() {
         </p>
       </section>
       <section>
+        <h2>Practice progress</h2>
+        <p>
+          If you use Practice, progress (saved items, if-then plans, and days you showed up) is stored in your
+          browser. When you are signed in, that same data may sync to your account so it can follow you across
+          devices. Plan text is limited and used only to show your plans back to you. We do not sell this data or
+          use it for advertising.
+        </p>
+      </section>
+      <section>
         <h2>Information Sharing</h2>
         <p>
           We do not sell, trade, or otherwise transfer your personal information to third parties without

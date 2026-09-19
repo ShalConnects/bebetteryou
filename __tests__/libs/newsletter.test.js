@@ -13,6 +13,12 @@ import {
   parseNewsletterImportCsv,
   splitCsvLine,
 } from '@/libs/newsletter-import'
+import {
+  QUOTE_EMAIL_BATCH_SIZE,
+  QUOTE_EMAIL_COOLDOWN_DAYS,
+  eligibleQuoteSubscriberFilter,
+  quoteEmailCooldownCutoff,
+} from '@/libs/newsletter-quote-batch'
 
 describe('newsletter', () => {
   describe('normalizePrefs', () => {
@@ -67,6 +73,33 @@ describe('newsletter', () => {
     })
   })
 
+  describe('quote email batch', () => {
+    it('uses 100 / 30-day defaults', () => {
+      expect(QUOTE_EMAIL_BATCH_SIZE).toBe(100)
+      expect(QUOTE_EMAIL_COOLDOWN_DAYS).toBe(30)
+    })
+
+    it('cutoff is 30 days before now', () => {
+      const now = new Date('2026-09-19T12:00:00.000Z')
+      expect(quoteEmailCooldownCutoff(now).toISOString()).toBe('2026-08-20T12:00:00.000Z')
+    })
+
+    it('eligible filter excludes recent lastQuoteEmailedAt', () => {
+      const now = new Date('2026-09-19T12:00:00.000Z')
+      const filter = eligibleQuoteSubscriberFilter(now)
+      expect(filter.source).toBe('newsletter')
+      expect(filter['prefs.quotes']).toBe(true)
+      const cooldownOr = filter.$and[1].$or
+      expect(cooldownOr).toEqual(
+        expect.arrayContaining([
+          { lastQuoteEmailedAt: null },
+          { lastQuoteEmailedAt: { $exists: false } },
+          { lastQuoteEmailedAt: { $lt: quoteEmailCooldownCutoff(now) } },
+        ])
+      )
+    })
+  })
+
   describe('discoveryHtml', () => {
     it('always includes shop and omits empty quote/post/book sections', () => {
       const html = discoveryHtml({})
@@ -109,6 +142,8 @@ describe('newsletter', () => {
       expect(mail.html).toContain('Browse quotes')
       expect(mail.html).toContain('/brand/fav.png')
       expect(mail.html).toContain('subscribed at BeBetterYou')
+      expect(mail.html).toContain('instagram.com/be__better__you')
+      expect(mail.html).toContain('YouTube')
       expect(mail.html).toContain('/shop')
       expect(mail.html).toContain('fonts.googleapis.com')
       expect(mail.html).toContain('Jost')
@@ -130,11 +165,13 @@ describe('newsletter', () => {
       expect(mail.html).toContain('Latest cards')
       expect(mail.html).toContain('/quotes/bby-20')
       expect(mail.html).toContain('/q20.jpg')
+      expect(mail.html).toContain('padding:12px 10px')
       expect(mail.html).not.toContain('Be yourself.')
       expect(mail.html).toContain('/quotes')
       expect(mail.html).toContain('/shop')
       expect(mail.html).toContain('Iceberg')
       expect(mail.html).toContain('Jost')
+      expect(mail.html).toContain('instagram.com')
     })
 
     it('builds a quote email with centered 65% card image and discovery', () => {

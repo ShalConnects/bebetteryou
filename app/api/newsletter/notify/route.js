@@ -14,7 +14,7 @@ import { readQuotes } from '@/libs/quotes-store'
 import { newsletterNotifySchema, validateSchema } from '@/libs/validation-schemas'
 
 /** Sequential Resend fan-out for quote/blog/book/digest drops. */
-export const maxDuration = 60
+export const maxDuration = 300
 
 async function handlePost(request) {
   try {

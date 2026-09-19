@@ -12,6 +12,7 @@ function applyResults(posts, results) {
       url: r.ok ? r.url || next[r.id]?.url || '' : next[r.id]?.url || '',
       privacy: r.ok ? r.privacy || '' : next[r.id]?.privacy || '',
       channel: r.ok ? r.channel || '' : next[r.id]?.channel || '',
+      thumbnailError: r.ok ? r.thumbnailError || '' : next[r.id]?.thumbnailError || '',
     }
   }
   return next
@@ -238,6 +239,7 @@ export default function SocialPost({ slug }) {
             const url = (ok ? r.url : saved?.url) || saved?.url
             const privacy = ok ? r.privacy || saved?.privacy : saved?.privacy
             const channel = ok ? r.channel || saved?.channel : saved?.channel
+            const thumbErr = ok ? r.thumbnailError || saved?.thumbnailError : saved?.thumbnailError
             return (
               <li key={r.id} className={ok ? 'text-body' : 'text-red-400'}>
                 {r.label || r.id}:{' '}
@@ -254,6 +256,7 @@ export default function SocialPost({ slug }) {
                         </a>
                       </>
                     ) : null}
+                    {thumbErr ? <span className="text-quiet"> — thumbnail: {thumbErr}</span> : null}
                   </>
                 ) : (
                   <>

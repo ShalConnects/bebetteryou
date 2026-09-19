@@ -60,15 +60,17 @@ async function youtubeError(res) {
 }
 
 async function setThumbnail(token, videoId, jpeg) {
-  if (!jpeg?.length || !videoId) return
-  await fetch(
+  if (!jpeg?.length || !videoId) return { ok: false, error: 'Thumbnail missing' }
+  const res = await fetch(
     `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURIComponent(videoId)}&uploadType=media`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'image/jpeg' },
       body: new Uint8Array(jpeg),
     }
-  ).catch(() => {})
+  )
+  if (!res.ok) return { ok: false, error: await youtubeError(res) }
+  return { ok: true }
 }
 
 /** Upload a quote as a YouTube Short (official videos.insert). */
@@ -117,7 +119,7 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
   if (!put.ok || !posted.id) {
     throw new Error(posted.error?.message || `YouTube upload failed (${put.status})`)
   }
-  await setThumbnail(token, posted.id, poster)
+  const thumb = await setThumbnail(token, posted.id, poster)
 
   const watch = `https://www.youtube.com/watch?v=${posted.id}`
   const meta = await fetch(
@@ -132,5 +134,7 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
     url: watch,
     privacy: item?.status?.privacyStatus || youtubePrivacy(),
     channel: item?.snippet?.channelTitle || '',
+    thumbnail: thumb.ok,
+    ...(thumb.ok ? {} : { thumbnailError: thumb.error }),
   }
 }

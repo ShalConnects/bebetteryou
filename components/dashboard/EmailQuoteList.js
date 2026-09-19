@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-/** Optional: email one quote. Prefer the 6-card digest on Subscribers. */
+/** Optional: email one quote to a random batch of 100 (30-day cooldown). */
 export default function EmailQuoteList({ slug }) {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState('')
@@ -11,7 +11,13 @@ export default function EmailQuoteList({ slug }) {
   if (!slug) return null
 
   async function onSend() {
-    if (!window.confirm('Email this single card to all quote subscribers? Prefer the digest for roundups.')) return
+    if (
+      !window.confirm(
+        'Email this card to up to 100 quote subscribers who have not gotten quote mail in 30 days?'
+      )
+    ) {
+      return
+    }
     setBusy(true)
     setError('')
     setResult('')
@@ -23,7 +29,10 @@ export default function EmailQuoteList({ slug }) {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
-      setResult(`Email ${data.sent} of ${data.total} sent`)
+      const bits = [`Sent ${data.sent} of ${data.total}`]
+      if (data.failed) bits.push(`${data.failed} failed (still on cooldown)`)
+      if (data.eligible != null) bits.push(`${data.eligible} were eligible`)
+      setResult(bits.join(' · '))
     } catch (err) {
       setError(err.message)
     } finally {

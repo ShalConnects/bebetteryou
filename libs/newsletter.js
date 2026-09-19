@@ -4,15 +4,19 @@ import { readBooks } from '@/libs/books-store'
 import { logError } from '@/libs/logger'
 import { connectDB } from '@/libs/mongo'
 import Lead from '@/models/Lead'
+import NewsletterSendFailure from '@/models/NewsletterSendFailure'
+import {
+  QUOTE_EMAIL_BATCH_SIZE,
+  eligibleQuoteSubscriberFilter,
+} from '@/libs/newsletter-quote-batch'
 import { pickNewsletterExtras, pickQuoteDigest } from '@/libs/newsletter-picks'
 import { readQuotes } from '@/libs/quotes-store'
-import { sendEmail } from '@/libs/resend'
+import { sendEmail, formatEmailError } from '@/libs/resend'
 import {
   NEWSLETTER_IMPORT_MAX,
   parseNewsletterImportCsv,
 } from '@/libs/newsletter-import'
 import {
-  DEFAULT_NEWSLETTER_PREFS,
   buildBlogEmail,
   buildBookEmail,
   buildQuoteDigestEmail,
@@ -30,6 +34,13 @@ export {
   buildWelcomeEmail,
   normalizePrefs,
 } from '@/libs/newsletter-email'
+
+export {
+  QUOTE_EMAIL_BATCH_SIZE,
+  QUOTE_EMAIL_COOLDOWN_DAYS,
+  eligibleQuoteSubscriberFilter,
+  quoteEmailCooldownCutoff,
+} from '@/libs/newsletter-quote-batch'
 
 export function newUnsubscribeToken() {
   return crypto.randomBytes(24).toString('hex')
@@ -101,10 +112,10 @@ async function activeSubscribers(prefKey) {
 async function sendSoft(to, payload) {
   try {
     await sendEmail({ to, ...payload })
-    return true
+    return { ok: true }
   } catch (error) {
     logError('Newsletter send failed', error, { to, subject: payload.subject })
-    return false
+    return { ok: false, error: formatEmailError(error) }
   }
 }
 
@@ -113,12 +124,12 @@ export async function sendWelcomeIfNeeded(lead) {
   const prefs = normalizePrefs(lead.prefs)
   const extras = await pickNewsletterExtras()
   const payload = buildWelcomeEmail({ token: lead.unsubscribeToken, prefs, extras })
-  const ok = await sendSoft(lead.email, payload)
-  if (ok) {
+  const result = await sendSoft(lead.email, payload)
+  if (result.ok) {
     lead.welcomeSentAt = new Date()
     await lead.save()
   }
-  return ok
+  return result.ok
 }
 
 /** Admin test — one recipient; does not change welcomeSentAt or fan out. */
@@ -132,8 +143,8 @@ export async function sendTestNewsletter({ email, type, slug }) {
   if (type === 'welcome') {
     const extras = await pickNewsletterExtras()
     const payload = buildWelcomeEmail({ token, prefs, extras })
-    const ok = await sendSoft(lead.email, payload)
-    return ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
+    const result = await sendSoft(lead.email, payload)
+    return result.ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
   }
 
   if (type === 'quote') {
@@ -141,8 +152,8 @@ export async function sendTestNewsletter({ email, type, slug }) {
     if (!quote?.src) return { ok: false, error: 'Quote not found' }
     const extras = await pickNewsletterExtras({ excludeQuoteSlug: quote.slug })
     const payload = buildQuoteEmail({ quote, token, extras })
-    const ok = await sendSoft(lead.email, payload)
-    return ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
+    const result = await sendSoft(lead.email, payload)
+    return result.ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
   }
 
   if (type === 'blog') {
@@ -150,8 +161,8 @@ export async function sendTestNewsletter({ email, type, slug }) {
     if (!post) return { ok: false, error: 'Post not found' }
     const extras = await pickNewsletterExtras({ excludePostSlug: post.slug })
     const payload = buildBlogEmail({ post, token, extras })
-    const ok = await sendSoft(lead.email, payload)
-    return ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
+    const result = await sendSoft(lead.email, payload)
+    return result.ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
   }
 
   if (type === 'book') {
@@ -159,8 +170,8 @@ export async function sendTestNewsletter({ email, type, slug }) {
     if (!book) return { ok: false, error: 'Book not found' }
     const extras = await pickNewsletterExtras({ excludeBookSlug: book.slug })
     const payload = buildBookEmail({ book, token, extras })
-    const ok = await sendSoft(lead.email, payload)
-    return ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
+    const result = await sendSoft(lead.email, payload)
+    return result.ok ? { ok: true, type } : { ok: false, error: 'Send failed' }
   }
 
   return { ok: false, error: 'Unknown template' }
@@ -176,27 +187,118 @@ async function fanOut(prefKey, build) {
   let sent = 0
   for (const row of rows) {
     const payload = build(row)
-    if (await sendSoft(row.email, payload)) sent += 1
+    if ((await sendSoft(row.email, payload)).ok) sent += 1
   }
   return { total: rows.length, sent }
 }
 
+/**
+ * Claim up to `limit` eligible leads for a quote/digest send.
+ * Sets lastQuoteEmailedAt immediately so concurrent clicks / crashes cannot double-mail.
+ */
+async function claimQuoteEmailBatch(limit = QUOTE_EMAIL_BATCH_SIZE) {
+  await connectDB()
+  const size = Math.max(0, Math.min(Number(limit) || QUOTE_EMAIL_BATCH_SIZE, QUOTE_EMAIL_BATCH_SIZE))
+  if (!size) return { rows: [], eligible: 0, claimedAt: null }
+
+  const filter = eligibleQuoteSubscriberFilter()
+  const eligible = await Lead.countDocuments(filter)
+  if (!eligible) return { rows: [], eligible: 0, claimedAt: null }
+
+  const sampled = await Lead.aggregate([
+    { $match: filter },
+    { $sample: { size: Math.min(size, eligible) } },
+    { $project: { _id: 1 } },
+  ])
+  if (!sampled.length) return { rows: [], eligible, claimedAt: null }
+
+  const ids = sampled.map((r) => r._id)
+  const claimedAt = new Date()
+  const claimId = crypto.randomBytes(12).toString('hex')
+  // Re-check eligibility in the update so a concurrent claim cannot win the same lead.
+  const claimResult = await Lead.updateMany(
+    { _id: { $in: ids }, ...filter },
+    { $set: { lastQuoteEmailedAt: claimedAt, lastQuoteClaimId: claimId, updatedAt: claimedAt } }
+  )
+
+  if (!claimResult.modifiedCount) {
+    return { rows: [], eligible, claimedAt }
+  }
+
+  const rows = await Lead.find({ lastQuoteClaimId: claimId })
+    .select({ email: 1, unsubscribeToken: 1 })
+    .lean()
+
+  return { rows, eligible, claimedAt }
+}
+
+/**
+ * Send quote/digest to up to 100 eligible subscribers.
+ * Claims (stamps lastQuoteEmailedAt) before Resend so failures / crashes still count
+ * toward the 30-day cooldown. Failures are logged for the dashboard.
+ */
+async function fanOutQuoteBatch(build, { kind, slug }) {
+  const { rows, eligible, claimedAt } = await claimQuoteEmailBatch(QUOTE_EMAIL_BATCH_SIZE)
+  if (!rows.length) {
+    return { total: 0, sent: 0, failed: 0, eligible, batchSize: QUOTE_EMAIL_BATCH_SIZE }
+  }
+
+  const recordedAt = claimedAt || new Date()
+  let sent = 0
+  const failures = []
+
+  for (const row of rows) {
+    const payload = build(row)
+    const result = await sendSoft(row.email, payload)
+    if (result.ok) {
+      sent += 1
+    } else {
+      failures.push({
+        email: row.email,
+        kind,
+        slug: slug || undefined,
+        subject: payload?.subject,
+        error: result.error || 'Send failed',
+        createdAt: recordedAt,
+      })
+    }
+  }
+
+  if (failures.length) {
+    try {
+      await NewsletterSendFailure.insertMany(failures, { ordered: false })
+    } catch (error) {
+      logError('Failed to record newsletter send failures', error, { count: failures.length })
+    }
+  }
+
+  return {
+    total: rows.length,
+    sent,
+    failed: failures.length,
+    eligible,
+    batchSize: QUOTE_EMAIL_BATCH_SIZE,
+  }
+}
+
 export async function notifyQuoteSubscribers(quote) {
   const extras = await pickNewsletterExtras({ excludeQuoteSlug: quote.slug })
-  return fanOut('quotes', (row) =>
-    buildQuoteEmail({ quote, token: row.unsubscribeToken, extras })
+  return fanOutQuoteBatch(
+    (row) => buildQuoteEmail({ quote, token: row.unsubscribeToken, extras }),
+    { kind: 'quote', slug: quote.slug }
   )
 }
 
 /** Manual roundup — newest public cards. Not called on quote create. */
 export async function notifyQuoteDigest(count = 6) {
   const quotes = await pickQuoteDigest(count)
-  if (!quotes.length) return { total: 0, sent: 0, quotes: 0 }
+  if (!quotes.length) return { total: 0, sent: 0, failed: 0, quotes: 0, eligible: 0 }
   const exclude = new Set(quotes.map((q) => q.slug))
   const extras = await pickNewsletterExtras({ quoteCount: 0 })
   extras.quotes = extras.quotes.filter((q) => !exclude.has(q.slug))
-  const result = await fanOut('quotes', (row) =>
-    buildQuoteDigestEmail({ quotes, token: row.unsubscribeToken, extras })
+  const result = await fanOutQuoteBatch(
+    (row) => buildQuoteDigestEmail({ quotes, token: row.unsubscribeToken, extras }),
+    { kind: 'digest', slug: quotes.map((q) => q.slug).join(',') }
   )
   return { ...result, quotes: quotes.length }
 }
@@ -216,6 +318,16 @@ export async function listNewsletterSubscribers() {
   return Lead.find({ source: 'newsletter' })
     .select('-unsubscribeToken')
     .sort({ createdAt: -1 })
+    .lean()
+}
+
+/** Recent Resend failures from quote/digest batches (for admin dashboard). */
+export async function listQuoteSendFailures(limit = 100) {
+  await connectDB()
+  const n = Math.min(Math.max(Number(limit) || 100, 1), 500)
+  return NewsletterSendFailure.find()
+    .sort({ createdAt: -1 })
+    .limit(n)
     .lean()
 }
 

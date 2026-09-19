@@ -1,4 +1,5 @@
 import { appConfig } from '@/config/app'
+import { practiceDiscoverable } from '@/config/practice'
 import { listQuotes } from '@/libs/content'
 import { listPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
@@ -45,7 +46,7 @@ export async function getSitemapEntries() {
   const base = appConfig.siteUrl.replace(/\/$/, '')
   const blog = appConfig.features.enableBlog
   const books = appConfig.features.enableBooks
-  const practice = appConfig.features.enablePractice
+  const practice = appConfig.features.enablePractice && practiceDiscoverable
   const paths = [
     '',
     '/quotes',

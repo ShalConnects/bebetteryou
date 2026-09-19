@@ -32,4 +32,11 @@ describe('resend from / reply-to', () => {
     const { resolveReplyTo } = await import('@/libs/resend')
     expect(resolveReplyTo()).toBe('bebetteryou.motivational@gmail.com')
   })
+
+  it('formatEmailError keeps Resend message text', async () => {
+    const { formatEmailError } = await import('@/libs/resend')
+    expect(formatEmailError({ message: 'Too many requests' })).toBe('Too many requests')
+    expect(formatEmailError('Rate limit exceeded')).toBe('Rate limit exceeded')
+    expect(formatEmailError(null)).toBe('Failed to send email')
+  })
 })

@@ -7,6 +7,15 @@
   "excerpt": "Focus isn't a mood. It's what you protect when the noise gets easy.",
   "date": "2026-09-17",
   "status": "published",
+  "tryThis": {
+    "itemId": "one-door",
+    "trigger": "I sit down at my desk",
+    "steps": [
+      "Pick one outcome for the next block.",
+      "Put the phone out of arm's reach.",
+      "Start before you feel ready — five minutes counts."
+    ]
+  },
   "blocks": [
     {
       "type": "p",

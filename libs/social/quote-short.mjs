@@ -3,7 +3,7 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { createCanvas, loadImage } from '@napi-rs/canvas'
-import { quoteShort } from '../../config/quote-card.js'
+import { quoteShort, quoteShortStyles } from '../../config/quote-card.js'
 import { renderQuoteCard } from '../quote-card.mjs'
 
 const CHUNK = 4
@@ -57,9 +57,9 @@ export function quotePhrases(text) {
 }
 
 /** First beat is a centered hook line; later beats accumulate. Last frame holds longer. */
-export function shortBeats(text) {
+export function shortBeats(text, card = quoteShort) {
   const phrases = quotePhrases(text)
-  const { beat, hold, hook, maxSeconds } = quoteShort
+  const { beat, hold, hook, maxSeconds } = card
   const times = phrases.map((_, i) => (i === phrases.length - 1 ? beat + hold : beat) + (i === 0 ? hook : 0))
   const total = times.reduce((sum, t) => sum + t, 0)
   const scale = total > maxSeconds ? maxSeconds / total : 1
@@ -72,10 +72,10 @@ export function shortBeats(text) {
 }
 
 /** 9:16 JPEG of the quote card covering the Short canvas (no-text fallback). */
-export async function renderShortFrame(imageBuffer) {
+export async function renderShortFrame(imageBuffer, card = quoteShort) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   const img = await loadImage(imageBuffer)
-  const { width, height, bg } = quoteShort
+  const { width, height, bg } = card
   const canvas = createCanvas(width, height)
   const ctx = canvas.getContext('2d')
   ctx.fillStyle = bg
@@ -122,8 +122,8 @@ function stillInputs(files, seconds, fps) {
   return files.flatMap((file, i) => ['-loop', '1', '-framerate', String(fps), '-t', String(seconds[i]), '-i', file])
 }
 
-function xfadeGraph(seconds, transitions) {
-  const { width, height, fps } = quoteShort
+function xfadeGraph(seconds, transitions, card = quoteShort) {
+  const { width, height, fps } = card
   const prep = (i, out) => `[${i}:v]scale=${width}:${height},setsar=1,fps=${fps},format=yuv420p[${out}]`
   if (seconds.length < 2) return prep(0, 'v')
   const parts = seconds.map((_, i) => prep(i, `s${i}`))
@@ -158,21 +158,65 @@ export function listShortBeds() {
   }
 }
 
-function tagSeed(tags) {
-  const key = [...new Set((tags || []).map((t) => String(t).trim()).filter(Boolean))].sort().join('|')
+function tagSeed(tags, salt = '', fallback = '') {
+  const key =
+    [...new Set((tags || []).map((t) => String(t).trim()).filter(Boolean))].sort().join('|') ||
+    String(fallback ?? '').trim()
   if (!key) return null
+  const body = salt ? `${salt}|${key}` : key
   let h = 2166136261
-  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619)
+  for (let i = 0; i < body.length; i++) h = Math.imul(h ^ body.charCodeAt(i), 16777619)
   return h >>> 0
 }
 
-/** Stable bed from quote tags. Pass `random` when untagged (tests). */
-export function pickShortBed(random = Math.random, tags) {
+function pickIndex(length, random, tags, salt = '', fallback = '') {
+  if (!length) return -1
+  const seed = tagSeed(tags, salt, fallback)
+  return seed == null ? Math.floor(random() * length) : seed % length
+}
+
+/** Stable bed from quote tags (or slug fallback). Pass `random` when neither is set. */
+export function pickShortBed(random = Math.random, tags, seed = '') {
   const beds = listShortBeds()
   if (!beds.length) return ''
-  const seed = tagSeed(tags)
-  const i = seed == null ? Math.floor(random() * beds.length) : seed % beds.length
-  return beds[i]
+  return beds[pickIndex(beds.length, random, tags, 'bed', seed)]
+}
+
+/** Merge a style preset onto the base Short layout. */
+export function resolveShortStyle(style = {}) {
+  const { id = 'classic', quote, layers, ...rest } = style
+  return {
+    ...quoteShort,
+    ...rest,
+    id,
+    quote: quote ? { ...quoteShort.quote, ...quote } : quoteShort.quote,
+    layers: layers ? { ...quoteShort.layers, ...layers } : quoteShort.layers,
+  }
+}
+
+/** Punch type shrinks toward classic when the quote is long (avoids overflow). */
+export function fitShortStyle(card, text) {
+  if (card?.id !== 'punch') return card
+  const raw = String(text ?? '')
+  const long = raw.length > 90 || quotePhrases(raw).length > 3
+  if (!long) return card
+  return {
+    ...card,
+    padX: quoteShort.padX,
+    quote: {
+      ...quoteShort.quote,
+      size: Math.round(quoteShort.quote.size * 1.06),
+      firstCharSize: Math.round(quoteShort.quote.firstCharSize * 1.08),
+      lineHeight: 1.34,
+    },
+  }
+}
+
+/** Stable Short style from tags (or slug). Salt differs from beds. */
+export function pickShortStyle(random = Math.random, tags, seed = '') {
+  const list = quoteShortStyles
+  const i = pickIndex(list.length, random, tags, 'style', seed)
+  return resolveShortStyle(list[i < 0 ? 0 : i])
 }
 
 function musicInput(seconds, file = pickShortBed()) {
@@ -188,43 +232,45 @@ function musicInput(seconds, file = pickShortBed()) {
 }
 
 /** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
-export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
+export async function encodeQuoteShort(imageBuffer, quote, { music, style } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
   if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
 
+  const seed = quote?.slug || (quote?.n != null ? `bby-${quote.n}` : '')
+  const card = fitShortStyle(style || pickShortStyle(Math.random, quote?.tags, seed), quote?.text)
   const quoteBeats = hasQuoteText(quote)
     ? await Promise.all(
-        shortBeats(quote.text).map(async (beat) => ({
+        shortBeats(quote.text, card).map(async (beat) => ({
           seconds: beat.seconds,
           jpg: await renderQuoteCard({
             n: quote.n,
             text: beat.text,
             author: quote.author || '',
-            card: quoteShort,
+            card,
             reveal: beat.reveal,
           }),
         }))
       )
-    : [{ seconds: quoteShort.fallbackSeconds, jpg: await renderShortFrame(imageBuffer) }]
+    : [{ seconds: card.fallbackSeconds, jpg: await renderShortFrame(imageBuffer, card) }]
   const poster = quoteBeats[quoteBeats.length - 1].jpg
   const beats =
-    hasQuoteText(quote) && quoteShort.end
+    hasQuoteText(quote) && card.end
       ? [
           ...quoteBeats,
           {
-            seconds: quoteShort.end,
+            seconds: card.end,
             jpg: await renderQuoteCard({
               n: quote.n,
-              text: quoteShort.endText,
+              text: card.endText,
               author: '',
-              card: quoteShort,
+              card,
             }),
           },
         ]
       : quoteBeats
 
   const seconds = beats.map((b) => b.seconds)
-  const transitions = shortTransitions(seconds, quoteBeats.length)
+  const transitions = shortTransitions(seconds, quoteBeats.length, card)
   const duration = seconds.reduce((sum, t) => sum + t, 0) - transitions.reduce((sum, x) => sum + x.d, 0)
   const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'bby-short-'))
   const mp4 = path.join(dir, 'short.mp4')
@@ -239,12 +285,12 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
     const audioFade = Math.max(0, duration - 1)
     await run(ffmpeg, [
       '-y',
-      ...stillInputs(files, seconds, quoteShort.fps),
-      ...musicInput(duration, music ?? pickShortBed(Math.random, quote?.tags)),
+      ...stillInputs(files, seconds, card.fps),
+      ...musicInput(duration, music ?? pickShortBed(Math.random, quote?.tags, seed)),
       '-t',
       String(duration),
       '-filter_complex',
-      xfadeGraph(seconds, transitions),
+      xfadeGraph(seconds, transitions, card),
       '-map',
       '[v]',
       '-map',
@@ -259,10 +305,10 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
       '-b:a',
       '96k',
       '-af',
-      `afade=t=in:d=0.3,afade=t=out:st=${audioFade}:d=1,volume=0.55`,
+      `afade=t=in:d=0.3,afade=t=out:st=${audioFade}:d=1,volume=0.75`,
       mp4,
     ])
-    return { video: await fs.promises.readFile(mp4), poster }
+    return { video: await fs.promises.readFile(mp4), poster, style: card.id }
   } finally {
     await fs.promises.rm(dir, { recursive: true, force: true })
   }

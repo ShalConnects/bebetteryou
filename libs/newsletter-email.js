@@ -1,5 +1,5 @@
 import { appConfig, getUrl } from '@/config/app'
-import { brand } from '@/config/site'
+import { brand, socials } from '@/config/site'
 import { postHref } from '@/libs/blog-url'
 import { booksHref } from '@/libs/books-url'
 
@@ -42,16 +42,16 @@ function sectionLabel(text) {
   return `<p style="margin:28px 0 12px;font-family:${FONT_DISPLAY};font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:#7a9e86;">${escapeHtml(text)}</p>`
 }
 
-/** Email-safe 2×2 quote card grid; renders only real cards. */
+/** Email-safe 2×N quote card grid; renders only real cards. */
 function quoteGridHtml(quotes = [], heading = 'More cards') {
   const cards = quotes.filter((q) => q?.src && q?.slug)
   if (!cards.length) return ''
 
   const cell = (q) => {
-    if (!q) return '<td style="width:50%;padding:4px;"></td>'
+    if (!q) return '<td style="width:50%;padding:12px 10px;"></td>'
     const href = getUrl(`/quotes/${q.slug}`)
     const src = getUrl(q.src)
-    return `<td style="width:50%;padding:4px;vertical-align:top;">
+    return `<td style="width:50%;padding:12px 10px;vertical-align:top;">
       <a href="${href}" style="display:block;text-decoration:none;">
         <img src="${escapeHtml(src)}" alt="Quote #${q.n || ''}" width="260" style="width:100%;max-width:260px;height:auto;border:1px solid rgba(168,255,200,0.25);display:block;" />
       </a>
@@ -65,7 +65,7 @@ function quoteGridHtml(quotes = [], heading = 'More cards') {
 
   return `
     ${sectionLabel(heading)}
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;">
       ${rows.join('')}
     </table>
   `
@@ -119,6 +119,24 @@ export function discoveryHtml(extras = {}) {
   return `${quoteGridHtml(quotes)}${postsListHtml(posts)}${bookPickHtml(book)}${shopHtml()}`
 }
 
+function socialLinksHtml() {
+  const links = socials
+    .map(
+      (s) =>
+        `<a href="${escapeHtml(s.href)}" style="font-family:${FONT_BODY};color:#34d399;text-decoration:none;">${escapeHtml(s.label)}</a>`
+    )
+    .join(` <span style="color:#5f7f6c;">·</span> `)
+  return `<p style="margin:14px 0 0;font-family:${FONT_BODY};font-size:12px;color:#7a9e86;line-height:1.75;">${links}</p>`
+}
+
+function socialLinksText() {
+  return socials.map((s) => `${s.label}: ${s.href}`).join('\n')
+}
+
+function emailTextFooter(token) {
+  return `Manage: ${manageUrl(token)}\n\n${socialLinksText()}`
+}
+
 function emailShell({ title, bodyHtml, token }) {
   const manage = token ? manageUrl(token) : getUrl('/')
   const home = getUrl('/')
@@ -147,6 +165,7 @@ function emailShell({ title, bodyHtml, token }) {
         <a href="${manage}" style="font-family:${FONT_BODY};color:#34d399;">Manage preferences</a>
         · You’re getting this because you subscribed at ${escapeHtml(brand.name)}.
       </p>
+      ${socialLinksHtml()}
     </div>
   `
 }
@@ -168,7 +187,7 @@ export function buildWelcomeEmail({ token, prefs, extras = {} }) {
   return {
     subject: `You’re in — ${brand.name}`,
     html: emailShell({ title: 'Welcome', bodyHtml, token }),
-    text: `You’re on the ${brand.name} list. Browse quotes: ${getUrl('/')}\nShop: ${getUrl('/shop')}\nManage: ${manageUrl(token)}`,
+    text: `You’re on the ${brand.name} list. Browse quotes: ${getUrl('/')}\nShop: ${getUrl('/shop')}\n\n${emailTextFooter(token)}`,
   }
 }
 
@@ -196,7 +215,7 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
   return {
     subject: `New quote #${quote.n} — ${brand.name}`,
     html: emailShell({ title: `Quote #${quote.n}`, bodyHtml, token }),
-    text: `“${quote.text}”${author}\n${pageUrl}\n\nManage: ${manageUrl(token)}`,
+    text: `“${quote.text}”${author}\n${pageUrl}\n\n${emailTextFooter(token)}`,
   }
 }
 
@@ -218,7 +237,7 @@ export function buildQuoteDigestEmail({ quotes = [], token, extras = {} }) {
     html: emailShell({ title: 'Quote cards', bodyHtml, token }),
     text: `Fresh cards from ${brand.name}: ${nums}\n\n${cards
       .map((q) => `#${q.n}\n${String(q.text || '').replace(/\n/g, ' ')}\n${getUrl(`/quotes/${q.slug}`)}`)
-      .join('\n\n')}\n\nManage: ${manageUrl(token)}`,
+      .join('\n\n')}\n\n${emailTextFooter(token)}`,
   }
 }
 
@@ -228,10 +247,10 @@ function digestGridHtml(quotes = []) {
   if (!cards.length) return ''
 
   const cell = (q) => {
-    if (!q) return '<td style="width:50%;padding:4px;"></td>'
+    if (!q) return '<td style="width:50%;padding:12px 10px;"></td>'
     const href = getUrl(`/quotes/${q.slug}`)
     const src = getUrl(q.src)
-    return `<td style="width:50%;padding:4px;vertical-align:top;">
+    return `<td style="width:50%;padding:12px 10px;vertical-align:top;">
       <a href="${href}" style="display:block;text-decoration:none;">
         <img src="${escapeHtml(src)}" alt="Quote #${q.n || ''}" width="260" style="width:100%;max-width:260px;height:auto;border:1px solid rgba(168,255,200,0.25);display:block;" />
       </a>
@@ -245,7 +264,7 @@ function digestGridHtml(quotes = []) {
 
   return `
     ${sectionLabel('Latest cards')}
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;">
       ${rows.join('')}
     </table>
   `
@@ -314,7 +333,7 @@ export function buildBlogEmail({ post, token, extras = {} }) {
   return {
     subject: `${post.title} — ${brand.name}`,
     html: emailShell({ title: 'New on the blog', bodyHtml, token }),
-    text: `${post.title}\n\n${parts.join('\n\n')}\n\n${pageUrl}\n\nManage: ${manageUrl(token)}`,
+    text: `${post.title}\n\n${parts.join('\n\n')}\n\n${pageUrl}\n\n${emailTextFooter(token)}`,
   }
 }
 
@@ -331,6 +350,6 @@ export function buildBookEmail({ book, token, extras = {} }) {
   return {
     subject: `Book pick: ${book.title} — ${brand.name}`,
     html: emailShell({ title: 'New book pick', bodyHtml, token }),
-    text: `${book.title}${book.author ? ` — ${book.author}` : ''}\n\n${parts.join('\n\n')}\n\n${catalogUrl}\n\nManage: ${manageUrl(token)}`,
+    text: `${book.title}${book.author ? ` — ${book.author}` : ''}\n\n${parts.join('\n\n')}\n\n${catalogUrl}\n\n${emailTextFooter(token)}`,
   }
 }

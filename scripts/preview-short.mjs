@@ -6,14 +6,32 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { encodeQuoteShort, pickShortBed, quoteHook } from '../libs/social/quote-short.mjs'
+import { encodeQuoteShort, pickShortBed, pickShortStyle, quoteHook } from '../libs/social/quote-short.mjs'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const envFile = path.join(root, '.env.local')
 if (fs.existsSync(envFile)) {
   for (const line of fs.readFileSync(envFile, 'utf8').split('\n')) {
-    if (line.startsWith('SITE_URL=') && !process.env.SITE_URL) process.env.SITE_URL = line.slice(9).trim()
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const eq = trimmed.indexOf('=')
+    if (eq < 1) continue
+    const key = trimmed.slice(0, eq)
+    let val = trimmed.slice(eq + 1).trim()
+    if (
+      (val.startsWith('"') && val.endsWith('"')) ||
+      (val.startsWith("'") && val.endsWith("'"))
+    ) {
+      val = val.slice(1, -1)
+    }
+    if (key && !process.env[key]) process.env[key] = val
   }
+}
+
+// Footer host is stamped from SITE_URL; defaulting would brand Shorts localhost.
+if (!process.env.SITE_URL) {
+  console.error('SITE_URL is required — it is printed on every Short. Aborting.')
+  process.exit(1)
 }
 
 function arg(name, fallback) {
@@ -29,13 +47,17 @@ if (!quote) {
   process.exit(1)
 }
 
-const music = pickShortBed(Math.random, quote.tags)
+const seed = quote.slug || `bby-${quote.n}`
+const music = pickShortBed(Math.random, quote.tags, seed)
+const style = pickShortStyle(Math.random, quote.tags, seed)
 const out = path.resolve(root, arg('out', 'tmp/bby-short-preview.mp4'))
 fs.mkdirSync(path.dirname(out), { recursive: true })
-const { video, poster } = await encodeQuoteShort(null, quote, { music })
+const { video, poster } = await encodeQuoteShort(null, quote, { music, style })
 fs.writeFileSync(out, video)
 const posterPath = out.replace(/\.mp4$/i, '.jpg')
 if (poster?.length) fs.writeFileSync(posterPath, poster)
 console.log(`Wrote ${path.relative(root, out)}`)
 if (poster?.length) console.log(`Poster ${path.relative(root, posterPath)}`)
-console.log(`Quote #${quote.n} · ${quoteHook(quote.text) || quote.slug} · ${music ? path.basename(music) : 'drone'}`)
+console.log(
+  `Quote #${quote.n} · ${quoteHook(quote.text) || quote.slug} · ${style.id} · ${music ? path.basename(music) : 'drone'}`
+)

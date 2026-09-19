@@ -3,6 +3,7 @@
     "id": "enough-for-today",
     "title": "Enough for today",
     "thought": "You don't need to fix your whole life today. Start with one thing.",
+    "context": "When the to-do list feels like a verdict.",
     "action": "Work on the thing you've been avoiding for 5 minutes.",
     "question": "What is one thing you've been avoiding because it feels too big?",
     "category": "Starting Over",
@@ -14,6 +15,7 @@
     "id": "before-ready",
     "title": "Start before ready",
     "thought": "Waiting to feel ready is often just waiting.",
+    "context": "Useful when you keep rearranging the start line.",
     "action": "Open the task and do the first visible step only.",
     "question": "What is the smallest next step you can see without planning the whole project?",
     "category": "Procrastination",
@@ -25,6 +27,7 @@
     "id": "one-door",
     "title": "Close one door",
     "thought": "Focus is less about willpower and more about fewer exits.",
+    "context": "For noisy environments and easy escapes.",
     "action": "Put your phone in another room for one short work block.",
     "question": "Which distraction is easiest to remove for the next 25 minutes?",
     "category": "Focus",
@@ -58,10 +61,22 @@
     "id": "name-the-load",
     "title": "Name the load",
     "thought": "Overwhelm shrinks when the next move has a name.",
+    "context": "When everything feels urgent and nothing feels clear.",
     "action": "Write three tasks, circle one, ignore the rest for now.",
     "question": "Which one task would make the rest feel lighter?",
-    "category": "Focus",
+    "category": "Overwhelm",
     "estimatedMinutes": 5,
+    "isOriginal": true,
+    "reset": true
+  },
+  {
+    "id": "one-breath-lane",
+    "title": "One breath, one lane",
+    "thought": "You can't carry twelve priorities at full speed. Pick a lane.",
+    "action": "Choose one lane for the next hour and park the rest on paper.",
+    "question": "What can wait until tomorrow without real cost?",
+    "category": "Overwhelm",
+    "estimatedMinutes": 10,
     "isOriginal": true
   },
   {
@@ -117,7 +132,7 @@
   {
     "id": "failure-next",
     "title": "After a miss",
-    "thought": "Failure is a stop, not a identity. The next action is the exit.",
+    "thought": "Failure is a stop, not an identity. The next action is the exit.",
     "action": "Name the miss in one line, then take a 5-minute recovery step.",
     "question": "What recovery step would your future self thank you for?",
     "category": "Failure",
@@ -142,6 +157,16 @@
     "question": "Which tiny mess is stealing the most attention?",
     "category": "Starting Over",
     "estimatedMinutes": 10,
+    "isOriginal": true
+  },
+  {
+    "id": "single-tab",
+    "title": "Single tab",
+    "thought": "Deep work starts when competing tabs lose the vote.",
+    "action": "Close every tab except the one for this task.",
+    "question": "Which open loop is pretending to be urgent?",
+    "category": "Focus",
+    "estimatedMinutes": 5,
     "isOriginal": true
   }
 ]

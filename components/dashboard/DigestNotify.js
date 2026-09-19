@@ -2,14 +2,20 @@
 
 import { useState } from 'react'
 
-/** Send the newest 6 public cards to quote subscribers. */
+/** Send the newest 6 public cards to a random batch of 100 (30-day cooldown). */
 export default function DigestNotify() {
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState('')
   const [error, setError] = useState('')
 
   async function onSend() {
-    if (!window.confirm('Email the latest 6 cards to all quote subscribers?')) return
+    if (
+      !window.confirm(
+        'Email the latest 6 cards to up to 100 quote subscribers who have not gotten quote mail in 30 days?'
+      )
+    ) {
+      return
+    }
     setBusy(true)
     setError('')
     setResult('')
@@ -21,9 +27,12 @@ export default function DigestNotify() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
-      setResult(
-        `Digest (${data.quotes || 0} cards): emailed ${data.sent} of ${data.total} subscriber${data.total === 1 ? '' : 's'}.`
-      )
+      const bits = [
+        `Digest (${data.quotes || 0} cards): sent ${data.sent} of ${data.total}`,
+      ]
+      if (data.failed) bits.push(`${data.failed} failed (still on cooldown)`)
+      if (data.eligible != null) bits.push(`${data.eligible} were eligible`)
+      setResult(bits.join(' · '))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -34,8 +43,8 @@ export default function DigestNotify() {
   return (
     <div className="space-y-3">
       <p className="text-sm text-quiet">
-        Prefer this over emailing every new card. For Resend Broadcasts, paste the same six cards into an Audience
-        campaign — this button uses the site list via Resend transactional mail.
+        Random batch of up to 100 eligible subscribers (shared 30-day cooldown with single-card sends). Failures
+        still count toward cooldown and appear below.
       </p>
       <button type="button" className="btn disabled:opacity-50" disabled={busy} onClick={onSend}>
         {busy ? 'Sending…' : 'Send 6-card digest'}
