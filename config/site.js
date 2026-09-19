@@ -68,4 +68,6 @@ export const copy = {
   homePrintTitle: 'Want one on a tee or mug?',
   homePrintSub: 'Print a quote when you order — nothing sitting in a warehouse.',
   homePrintCta: 'Browse the shop',
+  notFoundTitle: 'Wrong turn.',
+  notFoundSub: 'Here’s a card while you’re here. Still counts as moving.',
 }
