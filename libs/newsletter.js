@@ -7,7 +7,10 @@ import Lead from '@/models/Lead'
 import NewsletterSendFailure from '@/models/NewsletterSendFailure'
 import {
   QUOTE_EMAIL_BATCH_SIZE,
+  RESEND_RATE_LIMIT_RETRY_MS,
+  RESEND_SEND_GAP_MS,
   eligibleQuoteSubscriberFilter,
+  isResendRateLimitError,
 } from '@/libs/newsletter-quote-batch'
 import { pickNewsletterExtras, pickQuoteDigest } from '@/libs/newsletter-picks'
 import { readQuotes } from '@/libs/quotes-store'
@@ -38,7 +41,9 @@ export {
 export {
   QUOTE_EMAIL_BATCH_SIZE,
   QUOTE_EMAIL_COOLDOWN_DAYS,
+  RESEND_SEND_GAP_MS,
   eligibleQuoteSubscriberFilter,
+  isResendRateLimitError,
   quoteEmailCooldownCutoff,
 } from '@/libs/newsletter-quote-batch'
 
@@ -119,6 +124,18 @@ async function sendSoft(to, payload) {
   }
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+/** One Resend send with optional single retry on rate-limit. */
+async function sendSoftPaced(to, payload) {
+  const first = await sendSoft(to, payload)
+  if (first.ok || !isResendRateLimitError(first.error)) return first
+  await sleep(RESEND_RATE_LIMIT_RETRY_MS)
+  return sendSoft(to, payload)
+}
+
 export async function sendWelcomeIfNeeded(lead) {
   if (lead.welcomeSentAt) return false
   const prefs = normalizePrefs(lead.prefs)
@@ -185,9 +202,10 @@ export async function sendTestWelcome(email) {
 async function fanOut(prefKey, build) {
   const rows = await activeSubscribers(prefKey)
   let sent = 0
-  for (const row of rows) {
-    const payload = build(row)
-    if ((await sendSoft(row.email, payload)).ok) sent += 1
+  for (let i = 0; i < rows.length; i++) {
+    if (i > 0) await sleep(RESEND_SEND_GAP_MS)
+    const payload = build(rows[i])
+    if ((await sendSoftPaced(rows[i].email, payload)).ok) sent += 1
   }
   return { total: rows.length, sent }
 }
@@ -247,9 +265,11 @@ async function fanOutQuoteBatch(build, { kind, slug }) {
   let sent = 0
   const failures = []
 
-  for (const row of rows) {
+  for (let i = 0; i < rows.length; i++) {
+    if (i > 0) await sleep(RESEND_SEND_GAP_MS)
+    const row = rows[i]
     const payload = build(row)
-    const result = await sendSoft(row.email, payload)
+    const result = await sendSoftPaced(row.email, payload)
     if (result.ok) {
       sent += 1
     } else {

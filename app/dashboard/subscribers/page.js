@@ -1,5 +1,6 @@
 import DigestNotify from '@/components/dashboard/DigestNotify'
 import ImportSubscribers from '@/components/dashboard/ImportSubscribers'
+import NewsletterDeliveryEvents from '@/components/dashboard/NewsletterDeliveryEvents'
 import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
 import QuoteSendFailures from '@/components/dashboard/QuoteSendFailures'
 import SubscriberTable from '@/components/dashboard/SubscriberTable'
@@ -14,6 +15,7 @@ import {
   listNewsletterTestEmails,
   listQuoteSendFailures,
 } from '@/libs/newsletter'
+import { listNewsletterDeliveryEvents } from '@/libs/resend-webhook'
 import { readQuotes } from '@/libs/quotes-store'
 
 export const metadata = { title: 'Subscribers' }
@@ -40,6 +42,7 @@ export default async function AdminSubscribersPage({ searchParams }) {
 
   let list = []
   let failures = []
+  let deliveryEvents = []
   let testEmails = []
   let pageMeta = {
     page: 1,
@@ -54,10 +57,11 @@ export default async function AdminSubscribersPage({ searchParams }) {
   let dbError = ''
 
   try {
-    const [paged, failureRows, emails] = await Promise.all([
+    const [paged, failureRows, emails, deliveryRows] = await Promise.all([
       listNewsletterSubscribersPage({ page, pageSize: PAGE_SIZE, status }),
       listQuoteSendFailures(100),
       listNewsletterTestEmails(100),
+      listNewsletterDeliveryEvents(100),
     ])
     pageMeta = {
       page: paged.page,
@@ -80,6 +84,15 @@ export default async function AdminSubscribersPage({ searchParams }) {
       email: row.email,
       kind: row.kind,
       error: row.error || 'Send failed',
+      createdAt: row.createdAt ? String(row.createdAt) : null,
+    }))
+    deliveryEvents = deliveryRows.map((row) => ({
+      id: String(row._id),
+      email: row.email,
+      type: row.type,
+      message: row.message || '',
+      bounceType: row.bounceType || '',
+      bounceSubType: row.bounceSubType || '',
       createdAt: row.createdAt ? String(row.createdAt) : null,
     }))
     testEmails = emails
@@ -153,6 +166,16 @@ export default async function AdminSubscribersPage({ searchParams }) {
           Resend failures from quote/digest batches. These addresses still sit in the 30-day cooldown.
         </p>
         <QuoteSendFailures failures={failures} />
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
+          Bounces & spam ({deliveryEvents.length})
+        </h2>
+        <p className="text-sm text-quiet">
+          From Resend webhooks. Those addresses are auto-unsubscribed so we stop mailing them.
+        </p>
+        <NewsletterDeliveryEvents events={deliveryEvents} />
       </section>
 
       <section className="space-y-4">

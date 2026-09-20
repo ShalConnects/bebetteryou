@@ -17,6 +17,7 @@ import {
   QUOTE_EMAIL_BATCH_SIZE,
   QUOTE_EMAIL_COOLDOWN_DAYS,
   eligibleQuoteSubscriberFilter,
+  isResendRateLimitError,
   quoteEmailCooldownCutoff,
 } from '@/libs/newsletter-quote-batch'
 
@@ -77,6 +78,15 @@ describe('newsletter', () => {
     it('uses 100 / 30-day defaults', () => {
       expect(QUOTE_EMAIL_BATCH_SIZE).toBe(100)
       expect(QUOTE_EMAIL_COOLDOWN_DAYS).toBe(30)
+    })
+
+    it('detects Resend rate-limit errors', () => {
+      expect(
+        isResendRateLimitError(
+          'Too many requests. You can only make 10 requests per second.'
+        )
+      ).toBe(true)
+      expect(isResendRateLimitError('Invalid API key')).toBe(false)
     })
 
     it('cutoff is 30 days before now', () => {

@@ -32,6 +32,7 @@
     "redis": "^4.7.0",
     "resend": "^4.1.1",
     "stripe": "^17.5.0",
+    "svix": "^2.5.0",
     "swagger-jsdoc": "^6.3.0",
     "swagger-ui-react": "^5.32.14",
     "zod": "^3.24.1"
