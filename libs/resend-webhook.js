@@ -2,18 +2,34 @@ import { Webhook } from 'svix'
 import { connectDB } from '@/libs/mongo'
 import { logError, logInfo } from '@/libs/logger'
 import { unsubscribeNewsletterSubscriber } from '@/libs/newsletter'
-import { recipientFromResendData } from '@/libs/resend-webhook-parse'
+import {
+  recipientFromResendData,
+  resendEventData,
+  resolveResendEventType,
+} from '@/libs/resend-webhook-parse'
 import NewsletterDeliveryEvent from '@/models/NewsletterDeliveryEvent'
 
-export { recipientFromResendData } from '@/libs/resend-webhook-parse'
+export {
+  recipientFromResendData,
+  resendEventData,
+  resolveResendEventType,
+} from '@/libs/resend-webhook-parse'
 
 export function verifyResendWebhook(payload, headers, secret) {
   const wh = new Webhook(secret)
-  return wh.verify(payload, {
+  let event = wh.verify(payload, {
     'svix-id': headers.id || headers['svix-id'] || '',
     'svix-timestamp': headers.timestamp || headers['svix-timestamp'] || '',
     'svix-signature': headers.signature || headers['svix-signature'] || '',
   })
+  if (typeof event === 'string') {
+    try {
+      event = JSON.parse(event)
+    } catch {
+      /* keep string; handler will ignore */
+    }
+  }
+  return event
 }
 
 /**
@@ -21,16 +37,26 @@ export function verifyResendWebhook(payload, headers, secret) {
  * Idempotent on (emailId, type) when Resend retries the webhook.
  */
 export async function handleResendWebhookEvent(event) {
-  const type = event?.type
+  const type = resolveResendEventType(event)
   if (type !== 'email.bounced' && type !== 'email.complained') {
-    return { handled: false, reason: 'ignored' }
+    logInfo('Resend webhook ignored', {
+      receivedType: event?.type ?? null,
+      resolvedType: type || null,
+      hasBounce: Boolean(event?.data?.bounce || event?.bounce),
+    })
+    return {
+      handled: false,
+      reason: 'ignored',
+      receivedType: event?.type ?? null,
+      resolvedType: type || null,
+    }
   }
 
-  const data = event.data || {}
+  const data = resendEventData(event)
   const email = recipientFromResendData(data)
   if (!email) {
     logInfo('Resend webhook missing recipient', { type })
-    return { handled: false, reason: 'no_email' }
+    return { handled: false, reason: 'no_email', resolvedType: type }
   }
 
   const kind = type === 'email.bounced' ? 'bounced' : 'complained'

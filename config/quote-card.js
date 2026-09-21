@@ -77,54 +77,6 @@ export const quoteShort = {
   musicDir: 'assets/shorts',
 }
 
-/**
- * Short presentation presets. Encode merges one onto `quoteShort`.
- * Same tags → same style (seeded); untagged → slug seed. Music uses a different salt.
- * Differences are intentionally loud (type + timing) so feeds don’t look identical.
- */
-export const quoteShortStyles = [
-  { id: 'classic' },
-  {
-    id: 'punch',
-    hook: 1.4,
-    beat: 0.9,
-    hold: 2.8,
-    end: 0.9,
-    crossfade: 0.2,
-    lineFade: 0.1,
-    padX: Math.round(quoteShort.padX * 0.9),
-    quote: {
-      size: Math.round(quoteShort.quote.size * 1.15),
-      firstCharSize: Math.round(quoteShort.quote.firstCharSize * 1.18),
-      lineHeight: 1.3,
-    },
-    layers: {
-      ...quoteShort.layers,
-      bgOverlay: 0.45,
-      bgOverlayColor: '#0f3d28',
-    },
-  },
-  {
-    id: 'soft',
-    hook: 0.45,
-    beat: 1.35,
-    hold: 5,
-    end: 1.8,
-    crossfade: 0.5,
-    lineFade: 0.25,
-    padX: Math.round(quoteShort.padX * 1.1),
-    quote: {
-      size: Math.round(quoteShort.quote.size * 0.82),
-      firstCharSize: Math.round(quoteShort.quote.firstCharSize * 0.85),
-      lineHeight: 1.5,
-    },
-    layers: {
-      ...quoteShort.layers,
-      grainOpacity: 0.48,
-    },
-  },
-]
-
 /** next/image sizes — tuned to grid / hero scatter / detail layouts. */
 export const quoteImageSizes = {
   grid: '(max-width:399px) 100vw, (max-width:768px) 50vw, 33vw',

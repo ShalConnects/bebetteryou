@@ -15,14 +15,11 @@ import { quoteCaption } from '@/libs/social'
 import { hasYoutubeKeys, youtubeDescription, youtubeTitle } from '@/libs/social/providers/youtube'
 import {
   coverRect,
-  fitShortStyle,
   letterboxRect,
   listShortBeds,
   pickShortBed,
-  pickShortStyle,
   quoteHook,
   quotePhrases,
-  resolveShortStyle,
   shortBeats,
   shortTransitions,
 } from '@/libs/social/quote-short'
@@ -214,25 +211,6 @@ describe('social', () => {
     expect(pickShortBed(() => 0.999)).toBe(beds[beds.length - 1])
     expect(pickShortBed(() => 0, ['Love'])).toBe(pickShortBed(() => 0.999, ['Love']))
     expect(pickShortBed(() => 0, [], 'bby-1')).toBe(pickShortBed(() => 0.999, [], 'bby-1'))
-  })
-
-  it('rotates Short styles from tags or slug', () => {
-    const a = pickShortStyle(() => 0, ['Love'])
-    const b = pickShortStyle(() => 0.999, ['Love'])
-    expect(a.id).toBe(b.id)
-    expect(['classic', 'punch', 'soft']).toContain(a.id)
-    expect(pickShortStyle(() => 0).id).toBe('classic')
-    expect(pickShortStyle(() => 0.999).id).toBe('soft')
-    expect(pickShortStyle(() => 0, [], 'bby-1').id).toBe(pickShortStyle(() => 0.999, [], 'bby-1').id)
-  })
-
-  it('shrinks punch type for long Short quotes', () => {
-    const punch = resolveShortStyle({
-      id: 'punch',
-      quote: { size: 100, firstCharSize: 120 },
-    })
-    expect(fitShortStyle(punch, 'Keep going.').quote.size).toBe(100)
-    expect(fitShortStyle(punch, 'x'.repeat(100)).quote.size).toBeLessThan(100)
   })
 
   it('builds the live-site YouTube callback URL from the request host', () => {

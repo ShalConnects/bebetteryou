@@ -3,7 +3,7 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 import { createCanvas, loadImage } from '@napi-rs/canvas'
-import { quoteShort, quoteShortStyles } from '../../config/quote-card.js'
+import { quoteShort } from '../../config/quote-card.js'
 import { renderQuoteCard } from '../quote-card.mjs'
 
 const CHUNK = 4
@@ -182,43 +182,6 @@ export function pickShortBed(random = Math.random, tags, seed = '') {
   return beds[pickIndex(beds.length, random, tags, 'bed', seed)]
 }
 
-/** Merge a style preset onto the base Short layout. */
-export function resolveShortStyle(style = {}) {
-  const { id = 'classic', quote, layers, ...rest } = style
-  return {
-    ...quoteShort,
-    ...rest,
-    id,
-    quote: quote ? { ...quoteShort.quote, ...quote } : quoteShort.quote,
-    layers: layers ? { ...quoteShort.layers, ...layers } : quoteShort.layers,
-  }
-}
-
-/** Punch type shrinks toward classic when the quote is long (avoids overflow). */
-export function fitShortStyle(card, text) {
-  if (card?.id !== 'punch') return card
-  const raw = String(text ?? '')
-  const long = raw.length > 90 || quotePhrases(raw).length > 3
-  if (!long) return card
-  return {
-    ...card,
-    padX: quoteShort.padX,
-    quote: {
-      ...quoteShort.quote,
-      size: Math.round(quoteShort.quote.size * 1.06),
-      firstCharSize: Math.round(quoteShort.quote.firstCharSize * 1.08),
-      lineHeight: 1.34,
-    },
-  }
-}
-
-/** Stable Short style from tags (or slug). Salt differs from beds. */
-export function pickShortStyle(random = Math.random, tags, seed = '') {
-  const list = quoteShortStyles
-  const i = pickIndex(list.length, random, tags, 'style', seed)
-  return resolveShortStyle(list[i < 0 ? 0 : i])
-}
-
 function musicInput(seconds, file = pickShortBed()) {
   if (file && fs.existsSync(file)) return ['-stream_loop', '-1', '-i', file]
   return [
@@ -232,12 +195,12 @@ function musicInput(seconds, file = pickShortBed()) {
 }
 
 /** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
-export async function encodeQuoteShort(imageBuffer, quote, { music, style } = {}) {
+export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
   if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
 
   const seed = quote?.slug || (quote?.n != null ? `bby-${quote.n}` : '')
-  const card = fitShortStyle(style || pickShortStyle(Math.random, quote?.tags, seed), quote?.text)
+  const card = quoteShort
   const quoteBeats = hasQuoteText(quote)
     ? await Promise.all(
         shortBeats(quote.text, card).map(async (beat) => ({
@@ -308,7 +271,7 @@ export async function encodeQuoteShort(imageBuffer, quote, { music, style } = {}
       `afade=t=in:d=0.3,afade=t=out:st=${audioFade}:d=1,volume=0.75`,
       mp4,
     ])
-    return { video: await fs.promises.readFile(mp4), poster, style: card.id }
+    return { video: await fs.promises.readFile(mp4), poster }
   } finally {
     await fs.promises.rm(dir, { recursive: true, force: true })
   }
