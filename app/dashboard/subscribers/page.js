@@ -5,6 +5,7 @@ import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
 import QuoteSendFailures from '@/components/dashboard/QuoteSendFailures'
 import SubscriberTable from '@/components/dashboard/SubscriberTable'
 import TestNewsletterMail from '@/components/dashboard/TestNewsletterMail'
+import { DashSection } from '@/components/dashboard/ui'
 import { PageIntro } from '@/components/site/ui'
 import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
@@ -127,7 +128,7 @@ export default async function AdminSubscribersPage({ searchParams }) {
     }))
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       <PageIntro title="Subscribers">
         Quote and digest sends go to a random 100 people who have not received quote mail in 30 days. Failed
         Resend deliveries still count toward that cooldown and are listed below.
@@ -135,60 +136,10 @@ export default async function AdminSubscribersPage({ searchParams }) {
 
       {dbError ? <p className="text-sm text-red-400">{dbError}</p> : null}
 
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Import opted-in CSV</h2>
-        <ImportSubscribers />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Send test email</h2>
-        <TestNewsletterMail emails={testEmails} quotes={quotes} posts={posts} books={books} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Quote digest</h2>
-        <DigestNotify />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — one quote</h2>
-        <NotifySubscribers type="quote" options={quotes} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — blog</h2>
-        <NotifySubscribers type="blog" options={posts} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — books</h2>
-        <NotifySubscribers type="book" options={books} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-          Failed quote sends ({failures.length})
-        </h2>
-        <p className="text-sm text-quiet">
-          Resend failures from quote/digest batches. These addresses still sit in the 30-day cooldown.
-        </p>
-        <QuoteSendFailures failures={failures} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-          Bounces & spam ({deliveryEvents.length})
-        </h2>
-        <p className="text-sm text-quiet">
-          From Resend webhooks. Those addresses are auto-unsubscribed so we stop mailing them.
-        </p>
-        <NewsletterDeliveryEvents events={deliveryEvents} />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-          List ({pageMeta.totalCount})
-        </h2>
+      <DashSection
+        title={`List (${pageMeta.totalCount})`}
+        description="Browse, filter, and unsubscribe. Active vs unsubscribed stay on the list."
+      >
         <SubscriberTable
           subscribers={list}
           page={pageMeta.page}
@@ -200,7 +151,56 @@ export default async function AdminSubscribersPage({ searchParams }) {
           unsubscribedCount={pageMeta.unsubscribedCount}
           totalCount={pageMeta.totalCount}
         />
-      </section>
+      </DashSection>
+
+      <DashSection
+        title="Send & import"
+        description="CSV import, test mail, digest, and notify tools."
+        defaultOpen={false}
+      >
+        <div className="space-y-10">
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Import opted-in CSV</h3>
+            <ImportSubscribers />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Send test email</h3>
+            <TestNewsletterMail emails={testEmails} quotes={quotes} posts={posts} books={books} />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Quote digest</h3>
+            <DigestNotify />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — one quote</h3>
+            <NotifySubscribers type="quote" options={quotes} />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — blog</h3>
+            <NotifySubscribers type="blog" options={posts} />
+          </div>
+          <div className="space-y-4">
+            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — books</h3>
+            <NotifySubscribers type="book" options={books} />
+          </div>
+        </div>
+      </DashSection>
+
+      <DashSection
+        title={`Failed quote sends (${failures.length})`}
+        description="Resend failures from quote/digest batches. These addresses still sit in the 30-day cooldown."
+        defaultOpen={false}
+      >
+        <QuoteSendFailures failures={failures} />
+      </DashSection>
+
+      <DashSection
+        title={`Bounces & spam (${deliveryEvents.length})`}
+        description="From Resend webhooks. Those addresses are auto-unsubscribed so we stop mailing them."
+        defaultOpen={false}
+      >
+        <NewsletterDeliveryEvents events={deliveryEvents} />
+      </DashSection>
     </div>
   )
 }
