@@ -381,7 +381,7 @@ export async function listNewsletterSubscribersPage({
 
   const rows = await Lead.find(filter)
     .select('-unsubscribeToken')
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })
     .skip(skip)
     .limit(size)
     .lean()

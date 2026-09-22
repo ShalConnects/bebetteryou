@@ -21,7 +21,7 @@ import { readQuotes } from '@/libs/quotes-store'
 export const metadata = { title: 'Subscribers' }
 export const dynamic = 'force-dynamic'
 
-const PAGE_SIZE = 50
+const DEFAULT_PAGE_SIZE = 50
 
 function parsePage(value) {
   const n = Number.parseInt(String(value || '1'), 10)
@@ -33,12 +33,19 @@ function parseStatus(value) {
   return s === 'active' || s === 'unsubscribed' ? s : 'all'
 }
 
+function parsePageSize(value) {
+  const n = Number.parseInt(String(value || String(DEFAULT_PAGE_SIZE)), 10)
+  if (!Number.isFinite(n)) return DEFAULT_PAGE_SIZE
+  return Math.min(Math.max(n, 10), 200)
+}
+
 export default async function AdminSubscribersPage({ searchParams }) {
   await requireAdminPage()
 
   const params = (await searchParams) || {}
   const page = parsePage(params.page)
   const status = parseStatus(params.status)
+  const pageSize = parsePageSize(params.pageSize)
 
   let list = []
   let failures = []
@@ -46,7 +53,7 @@ export default async function AdminSubscribersPage({ searchParams }) {
   let testEmails = []
   let pageMeta = {
     page: 1,
-    pageSize: PAGE_SIZE,
+    pageSize: DEFAULT_PAGE_SIZE,
     totalPages: 1,
     filteredTotal: 0,
     status: 'all',
@@ -58,7 +65,7 @@ export default async function AdminSubscribersPage({ searchParams }) {
 
   try {
     const [paged, failureRows, emails, deliveryRows] = await Promise.all([
-      listNewsletterSubscribersPage({ page, pageSize: PAGE_SIZE, status }),
+      listNewsletterSubscribersPage({ page, pageSize, status }),
       listQuoteSendFailures(100),
       listNewsletterTestEmails(100),
       listNewsletterDeliveryEvents(100),
@@ -183,7 +190,6 @@ export default async function AdminSubscribersPage({ searchParams }) {
           List ({pageMeta.totalCount})
         </h2>
         <SubscriberTable
-          key={`${pageMeta.status}-${pageMeta.page}`}
           subscribers={list}
           page={pageMeta.page}
           pageSize={pageMeta.pageSize}

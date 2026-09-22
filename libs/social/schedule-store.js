@@ -221,3 +221,43 @@ export async function finishSchedule(id, { ok, results, error = '' }) {
   writeLocal(rows)
   return publicRow(rows[i])
 }
+
+/** UTC day bounds for schedule matching (email cron aligns with social cron day). */
+export function utcDayRange(now = new Date()) {
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
+  const end = new Date(start.getTime() + 24 * 60 * 60 * 1000)
+  return { start, end }
+}
+
+/**
+ * Earliest successful social schedule for the given UTC calendar day.
+ * Used by the newsletter cron so email matches today's social card.
+ */
+export async function findEarliestDoneScheduleForUtcDay(now = new Date()) {
+  const { start, end } = utcDayRange(now)
+  try {
+    if (mongoUri()) {
+      const SocialSchedule = await model()
+      const row = await SocialSchedule.findOne({
+        status: 'done',
+        runAt: { $gte: start, $lt: end },
+      })
+        .sort({ runAt: 1 })
+        .lean()
+      return publicRow(row)
+    }
+    if (process.env.VERCEL) return null
+
+    const rows = readLocal()
+      .filter((row) => {
+        if (row.status !== 'done') return false
+        const t = new Date(row.runAt).getTime()
+        return t >= start.getTime() && t < end.getTime()
+      })
+      .sort((a, b) => new Date(a.runAt) - new Date(b.runAt))
+    return rows[0] ? publicRow(rows[0]) : null
+  } catch (error) {
+    logError('Find done social schedule for day failed', error)
+    return null
+  }
+}
