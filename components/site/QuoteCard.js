@@ -9,11 +9,13 @@ import { isPrintableQuote, quoteAlt, quoteLabel } from '@/libs/quote-text'
 import { shareOrCopy } from '@/libs/share'
 import { useTradition } from './TraditionProvider'
 
-/** Mobile: compact icon hits. md+: text labels like before. */
-const chrome =
-  'inline-flex h-7 w-7 items-center justify-center text-paper drop-shadow md:h-auto md:min-h-10 md:w-auto md:px-2 md:text-[11px] md:uppercase md:tracking-[0.2em]'
+/** Mobile: compact icon hits. md+: text labels — unless `compact` (icon-only everywhere). */
+const chromeBase =
+  'inline-flex h-7 w-7 items-center justify-center text-paper drop-shadow'
+const chromeExpand =
+  'md:h-auto md:min-h-10 md:w-auto md:px-2 md:text-[11px] md:uppercase md:tracking-[0.2em]'
 
-function Icon({ children }) {
+function Icon({ compact, children }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -23,23 +25,25 @@ function Icon({ children }) {
       stroke="currentColor"
       strokeWidth="1.5"
       aria-hidden
-      className="md:hidden"
+      className={compact ? undefined : 'md:hidden'}
     >
       {children}
     </svg>
   )
 }
 
-function Label({ children }) {
+function Label({ compact, children }) {
+  if (compact) return null
   return <span className="hidden md:inline">{children}</span>
 }
 
-export default function QuoteCard({ quote, priority, className = '' }) {
+export default function QuoteCard({ quote, priority, compact = false, className = '' }) {
   const { tagThemesMap } = useTradition()
   const href = `/quotes/${quote.slug}`
   const label = quoteLabel(quote)
   const showPassage = quoteShowsScripture(quote.tags, quote.theme, tagThemesMap)
   const canPrint = appConfig.features.enablePrintShop && isPrintableQuote(quote)
+  const chrome = compact ? chromeBase : `${chromeBase} ${chromeExpand}`
 
   async function onShare(e) {
     e.preventDefault()
@@ -79,7 +83,7 @@ export default function QuoteCard({ quote, priority, className = '' }) {
           aria-label="Related passage"
           title="Related passage"
         >
-          <Icon>
+          <Icon compact={compact}>
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" strokeLinecap="round" strokeLinejoin="round" />
             <path
               d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
@@ -88,7 +92,7 @@ export default function QuoteCard({ quote, priority, className = '' }) {
             />
             <path d="M12 7v6M9 10h6" strokeLinecap="round" />
           </Icon>
-          <Label>+ passage</Label>
+          <Label compact={compact}>+ passage</Label>
         </span>
       ) : null}
 
@@ -99,13 +103,13 @@ export default function QuoteCard({ quote, priority, className = '' }) {
           className={`quote-card-share pointer-events-auto ${chrome}`}
           aria-label={`Share quote #${quote.n}`}
         >
-          <Icon>
+          <Icon compact={compact}>
             <circle cx="18" cy="5" r="2.5" />
             <circle cx="6" cy="12" r="2.5" />
             <circle cx="18" cy="19" r="2.5" />
             <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" strokeLinecap="round" />
           </Icon>
-          <Label>Share</Label>
+          <Label compact={compact}>Share</Label>
         </button>
         {canPrint ? (
           <Link
@@ -113,7 +117,7 @@ export default function QuoteCard({ quote, priority, className = '' }) {
             className={`quote-card-print pointer-events-auto ${chrome}`}
             aria-label={`Print quote #${quote.n}`}
           >
-            <Icon>
+            <Icon compact={compact}>
               <path
                 d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
                 strokeLinecap="round"
@@ -121,7 +125,7 @@ export default function QuoteCard({ quote, priority, className = '' }) {
               />
               <path d="M6 14h12v7H6z" strokeLinecap="round" strokeLinejoin="round" />
             </Icon>
-            <Label>Print</Label>
+            <Label compact={compact}>Print</Label>
           </Link>
         ) : null}
       </div>

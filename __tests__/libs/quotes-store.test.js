@@ -21,16 +21,17 @@ describe('overlayQuote', () => {
     expect(merged.rev).toBeUndefined()
   })
 
-  it('drops Mongo document fields so quote cards can render on the client', () => {
+  it('drops Mongo document fields but keeps createdAt as ISO for week review', () => {
+    const when = new Date('2026-09-20T12:00:00.000Z')
     const merged = overlayQuote(undefined, {
       _id: { buffer: Buffer.from('1') },
       slug: 'bby-221',
       n: 221,
       text: 'New',
-      createdAt: new Date(),
+      createdAt: when,
     })
     expect(merged._id).toBeUndefined()
-    expect(merged.createdAt).toBeUndefined()
+    expect(merged.createdAt).toBe(when.toISOString())
     expect(merged.slug).toBe('bby-221')
   })
 })

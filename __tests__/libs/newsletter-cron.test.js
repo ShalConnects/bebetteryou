@@ -3,7 +3,6 @@
  */
 
 jest.mock('@/libs/content', () => ({
-  listQuotes: jest.fn(),
   getQuote: jest.fn(),
 }))
 
@@ -20,13 +19,9 @@ jest.mock('@/libs/social/schedule-store', () => ({
   findEarliestDoneScheduleForUtcDay: jest.fn(),
 }))
 
-import { getQuote, listQuotes } from '@/libs/content'
+import { getQuote } from '@/libs/content'
 import { notifyQuoteSubscribers } from '@/libs/newsletter'
-import {
-  pickLatestPublicQuote,
-  pickQuoteForEmailCron,
-  runQuoteEmailCron,
-} from '@/libs/newsletter-cron'
+import { pickQuoteForEmailCron, runQuoteEmailCron } from '@/libs/newsletter-cron'
 import { findEarliestDoneScheduleForUtcDay } from '@/libs/social/schedule-store'
 
 describe('newsletter cron', () => {
@@ -34,24 +29,13 @@ describe('newsletter cron', () => {
     jest.clearAllMocks()
   })
 
-  it('picks the highest card number with slug+src', async () => {
-    listQuotes.mockResolvedValue([
-      { n: 10, slug: 'bby-10', src: '/a.jpg' },
-      { n: 22, slug: 'bby-22', src: '/b.jpg' },
-      { n: 21, slug: 'bby-21' },
-    ])
-    const quote = await pickLatestPublicQuote()
-    expect(quote.slug).toBe('bby-22')
-  })
-
-  it('prefers today social schedule slug over latest public', async () => {
+  it('uses today social schedule slug when done', async () => {
     findEarliestDoneScheduleForUtcDay.mockResolvedValue({
       slug: 'bby-5',
       status: 'done',
       runAt: '2026-09-21T14:00:00.000Z',
     })
     getQuote.mockResolvedValue({ n: 5, slug: 'bby-5', src: '/5.jpg', text: 'Five' })
-    listQuotes.mockResolvedValue([{ n: 20, slug: 'bby-20', src: '/20.jpg' }])
 
     const picked = await pickQuoteForEmailCron(new Date('2026-09-21T15:00:00.000Z'))
     expect(picked).toEqual({
@@ -61,34 +45,17 @@ describe('newsletter cron', () => {
     expect(getQuote).toHaveBeenCalledWith('bby-5')
   })
 
-  it('falls back to latest public when no social schedule today', async () => {
+  it('skips when no successful social send today', async () => {
     findEarliestDoneScheduleForUtcDay.mockResolvedValue(null)
-    listQuotes.mockResolvedValue([
-      { n: 5, slug: 'bby-5', src: '/5.jpg' },
-      { n: 20, slug: 'bby-20', src: '/20.jpg' },
-    ])
-
-    const picked = await pickQuoteForEmailCron(new Date('2026-09-21T15:00:00.000Z'))
-    expect(picked.source).toBe('latest_public')
-    expect(picked.quote.slug).toBe('bby-20')
+    await expect(pickQuoteForEmailCron(new Date('2026-09-21T15:00:00.000Z'))).resolves.toBeNull()
+    await expect(runQuoteEmailCron()).resolves.toEqual({ skipped: true, reason: 'no_social_send' })
+    expect(notifyQuoteSubscribers).not.toHaveBeenCalled()
   })
 
-  it('falls back when social slug is not a usable public quote', async () => {
+  it('skips when social slug is not a usable public quote', async () => {
     findEarliestDoneScheduleForUtcDay.mockResolvedValue({ slug: 'bby-5', status: 'done' })
     getQuote.mockResolvedValue(null)
-    listQuotes.mockResolvedValue([{ n: 20, slug: 'bby-20', src: '/20.jpg' }])
-
-    const picked = await pickQuoteForEmailCron()
-    expect(picked).toEqual({
-      source: 'latest_public',
-      quote: expect.objectContaining({ slug: 'bby-20' }),
-    })
-  })
-
-  it('skips when no public quote', async () => {
-    findEarliestDoneScheduleForUtcDay.mockResolvedValue(null)
-    listQuotes.mockResolvedValue([])
-    await expect(runQuoteEmailCron()).resolves.toEqual({ skipped: true, reason: 'no_quote' })
+    await expect(pickQuoteForEmailCron()).resolves.toBeNull()
     expect(notifyQuoteSubscribers).not.toHaveBeenCalled()
   })
 

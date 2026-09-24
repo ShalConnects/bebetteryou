@@ -77,7 +77,7 @@ export async function postQuote(slug, networkIds) {
   const status = Object.fromEntries(statusList.map((n) => [n.id, n]))
   const caption = await quoteCaption(quote)
   const imageUrl = absoluteImageUrl(quote.src)
-  const imageBuffer = await resolveImageBuffer(quote.src)
+  const imageBuffer = await resolveQuoteImageBuffer(quote.src)
 
   const targets = networkIds?.length
     ? networkIds
@@ -118,11 +118,12 @@ export async function postQuote(slug, networkIds) {
 export async function previewQuoteShort(slug) {
   const quote = (await readQuotes()).find((q) => q.slug === slug)
   if (!quote) throw new Error('Quote not found')
-  const imageBuffer = await resolveImageBuffer(quote.src)
+  const imageBuffer = await resolveQuoteImageBuffer(quote.src)
   return encodeQuoteShort(imageBuffer, quote)
 }
 
-async function resolveImageBuffer(src) {
+/** Load a quote card JPEG from local public/ or fetch from its public URL. */
+export async function resolveQuoteImageBuffer(src) {
   const local = localImagePath(src)
   if (!src.startsWith('http') && fs.existsSync(local)) return fs.readFileSync(local)
   const url = absoluteImageUrl(src)

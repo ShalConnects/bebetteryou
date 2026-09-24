@@ -1,9 +1,15 @@
-/** Visible focusables inside root (skips display:none). */
+/** Visible focusables inside root (skips display:none / zero-box). */
 export function focusables(root) {
   if (!root) return []
-  return [...root.querySelectorAll('a[href], button:not([disabled])')].filter(
-    (el) => el.offsetParent != null
-  )
+  return [
+    ...root.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled])'
+    ),
+  ].filter((el) => {
+    if (el.getAttribute('aria-hidden') === 'true') return false
+    // offsetParent is null for position:fixed, so use layout boxes instead.
+    return el.getClientRects().length > 0
+  })
 }
 
 /** Escape → onEscape; Tab cycles within root. Returns cleanup. */

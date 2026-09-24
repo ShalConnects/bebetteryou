@@ -25,6 +25,7 @@ export async function createQuote({ text, author = '', tags = [], theme = '' }) 
     author: credit,
     tags: tags.filter((t) => catalog.includes(t)),
     rev: cardRevision,
+    createdAt: new Date().toISOString(),
     ...(known ? { theme: known } : {}),
   }
   await appendQuote(quote)

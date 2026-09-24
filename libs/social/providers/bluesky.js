@@ -77,7 +77,7 @@ async function createSession({ handle, password, pds }) {
 }
 
 /** Bluesky: upload JPEG blob, then create a feed post. Works on localhost. */
-export async function postBluesky({ imageBuffer, quote }) {
+export async function postBluesky({ imageBuffer, quote, caption, aspectRatio }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   if (imageBuffer.length > BLOB_MAX) throw new Error('Bluesky images must be under 1 MB')
   const keys = blueskyKeys()
@@ -96,8 +96,9 @@ export async function postBluesky({ imageBuffer, quote }) {
     throw new Error(blobData.message || blobData.error || 'Bluesky image upload failed')
   }
 
-  const text = blueskyCaption(quote)
+  const text = caption != null ? clipBlueskyText(String(caption)) : blueskyCaption(quote)
   const facets = linkFacets(text)
+  const ratio = aspectRatio || { width: quoteCard.width, height: quoteCard.height }
   const record = {
     $type: 'app.bsky.feed.post',
     text,
@@ -106,9 +107,9 @@ export async function postBluesky({ imageBuffer, quote }) {
       $type: 'app.bsky.embed.images',
       images: [
         {
-          alt: clipBlueskyText(quoteAlt(quote || {}), ALT_MAX),
+          alt: clipBlueskyText(caption || quoteAlt(quote || {}), ALT_MAX),
           image: blobData.blob,
-          aspectRatio: { width: quoteCard.width, height: quoteCard.height },
+          aspectRatio: ratio,
         },
       ],
     },

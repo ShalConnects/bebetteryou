@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import ScrollLink from '@/components/site/ScrollLink'
 import BookCard from '@/components/site/BookCard'
@@ -142,15 +143,26 @@ export function BlogList({ posts }) {
     <ul className="divide-y divide-line">
       {posts.map((post) => (
         <li key={post.slug} className="py-8 first:pt-0 last:pb-0">
-          <article>
-            <Link href={postHref(post.slug)} className="group block">
-              <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
-              <h2 className="mt-2 text-lg text-paper transition-opacity group-hover:opacity-70">
-                {post.title}
-              </h2>
-              <p className="mt-2 text-sm text-body/70">{post.excerpt}</p>
-            </Link>
-          </article>
+          <Link
+            href={postHref(post.slug)}
+            className="group flex items-center justify-between gap-4 sm:gap-6"
+          >
+            <span className="flex min-w-0 items-center gap-4 sm:gap-6">
+              {post.image ? (
+                <span className="relative block aspect-[16/9] w-24 shrink-0 overflow-hidden bg-ink sm:w-32">
+                  <Image src={post.image} alt="" fill sizes="128px" className="object-cover" />
+                </span>
+              ) : null}
+              <span className="min-w-0">
+                <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
+                <h2 className="mt-2 text-lg text-paper transition-opacity group-hover:opacity-70">
+                  {post.title}
+                </h2>
+                <p className="mt-2 text-sm text-body/70">{post.excerpt}</p>
+              </span>
+            </span>
+            <span className="shrink-0 text-sm font-semibold text-accent">Read post</span>
+          </Link>
         </li>
       ))}
     </ul>

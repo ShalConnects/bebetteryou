@@ -8,7 +8,8 @@
     { "id": "consistency", "label": "Consistency", "tag": "Growth" },
     { "id": "confidence", "label": "Confidence", "tag": "Yourself" },
     { "id": "focus", "label": "Focus", "tag": "Mindset" },
-    { "id": "connection", "label": "Connection", "tag": "Love" }
+    { "id": "connection", "label": "Connection", "tag": "Love" },
+    { "id": "screen-time", "label": "Screen time", "tag": "Mindset" }
   ],
   "modifiers": [
     { "id": "for-students", "label": "for students" },

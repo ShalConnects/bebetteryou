@@ -75,6 +75,9 @@ export default async function Shop({ searchParams }) {
                   <ShopQuoteThumb quote={quote} />
                   <span className="min-w-0">
                     <p className="whitespace-pre-line text-lg text-paper">{quote.text}</p>
+                    {quote.n != null ? (
+                      <p className="mt-2 text-sm text-quiet">#{quote.n}</p>
+                    ) : null}
                     {creditForAuthor(quote.author).id === 'on' ? (
                       <p className="mt-2 text-sm text-quiet">{quote.author}</p>
                     ) : null}
@@ -85,7 +88,7 @@ export default async function Shop({ searchParams }) {
                     <Link
                       key={product.id}
                       href={printHref(quote.slug, { productId: product.id })}
-                      className="tag font-semibold"
+                      className="tag font-semibold text-accent hover:text-paper"
                     >
                       {product.name}
                     </Link>
@@ -127,7 +130,7 @@ export default async function Shop({ searchParams }) {
           </label>
           <span className="flex flex-wrap justify-center gap-4 sm:justify-start">
             {publicPrintProducts.map((product) => (
-              <button key={product.id} type="submit" name="product" value={product.id} className="tag font-semibold">
+              <button key={product.id} type="submit" name="product" value={product.id} className="tag font-semibold text-accent hover:text-paper">
                 {product.name}
               </button>
             ))}

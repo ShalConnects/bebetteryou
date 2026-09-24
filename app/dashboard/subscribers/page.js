@@ -130,7 +130,8 @@ export default async function AdminSubscribersPage({ searchParams }) {
   return (
     <div className="space-y-12">
       <PageIntro title="Subscribers">
-        Quote and digest sends go to a random 100 people who have not received quote mail in 30 days. Failed
+        Quote sends (cron or manual) go to a random 100 people who have not received quote mail in 30 days.
+        The daily email cron only runs when a social schedule or immediate Post succeeds that UTC day. Failed
         Resend deliveries still count toward that cooldown and are listed below.
       </PageIntro>
 

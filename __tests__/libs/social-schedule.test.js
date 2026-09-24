@@ -58,4 +58,29 @@ describe('social schedule store (local)', () => {
     const canceled = await store.cancelSchedule(created.id)
     expect(canceled.status).toBe('canceled')
   })
+
+  it('records an immediate successful post as done for the email cron', async () => {
+    const now = new Date('2026-09-21T12:00:00.000Z')
+    const recorded = await store.recordDoneSocialSend({
+      slug: 'bby-9',
+      networks: ['telegram'],
+      results: [{ id: 'telegram', ok: true }],
+      runAt: now,
+    })
+    expect(recorded.status).toBe('done')
+    expect(recorded.slug).toBe('bby-9')
+
+    const found = await store.findEarliestDoneScheduleForUtcDay(now)
+    expect(found.slug).toBe('bby-9')
+    expect(found.status).toBe('done')
+  })
+
+  it('does not record immediate post when every network failed', async () => {
+    const recorded = await store.recordDoneSocialSend({
+      slug: 'bby-10',
+      results: [{ id: 'x', ok: false, error: 'fail' }],
+      runAt: new Date(),
+    })
+    expect(recorded).toBeNull()
+  })
 })

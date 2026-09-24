@@ -28,7 +28,8 @@ function sortByN(quotes) {
 }
 
 /** Mongo wins by slug, but keep a local `rev` when Atlas never stored one.
- *  Mongo-only cards (created on Vercel) default to the current card revision. */
+ *  Mongo-only cards (created on Vercel) default to the current card revision.
+ *  Keep `createdAt` as ISO for week-in-review; drop other Mongo doc fields. */
 export function overlayQuote(local, remote) {
   if (!remote) return local
   const next = { ...local, ...remote }
@@ -36,8 +37,9 @@ export function overlayQuote(local, remote) {
   if (next.rev == null && !local) next.rev = cardRevision
   delete next._id
   delete next.__v
-  delete next.createdAt
   delete next.updatedAt
+  if (next.createdAt) next.createdAt = new Date(next.createdAt).toISOString()
+  else delete next.createdAt
   return next
 }
 
@@ -50,7 +52,9 @@ export async function readQuotes() {
     const { connectDB } = await import('./mongo')
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
-    const remote = asList(await Quote.find().select('slug n src text author tags theme related rev').lean())
+    const remote = asList(
+      await Quote.find().select('slug n src text author tags theme related rev createdAt').lean()
+    )
     if (!remote.length) return local
 
     const map = new Map(local.map((q) => [q.slug, q]))

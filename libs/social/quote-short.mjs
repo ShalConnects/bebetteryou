@@ -194,6 +194,103 @@ function musicInput(seconds, file = pickShortBed()) {
   ]
 }
 
+/** Week-in-review Short: one full 9:16 card render per quote (no edge crop), fadeblack between. */
+export async function encodeWeekShort(items = [], { music } = {}) {
+  const ffmpeg = (await import('ffmpeg-static')).default
+  if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
+
+  const rows = items.filter((row) => row?.quote?.text || row?.imageBuffer?.length)
+  if (!rows.length) throw new Error('No quote frames for week Short')
+
+  const card = quoteShort
+  const hold = Math.min(4.2, Math.max(2.4, card.hold))
+  const frames = await Promise.all(
+    rows.map(async (row) => {
+      const quote = row.quote
+      const jpg =
+        quote?.text != null && String(quote.text).trim()
+          ? await renderQuoteCard({
+              n: quote.n,
+              text: quote.text,
+              author: quote.author || '',
+              card,
+            })
+          : await renderShortFrameLetterbox(row.imageBuffer, card)
+      return { seconds: hold, jpg }
+    })
+  )
+  if (card.end) {
+    frames.push({
+      seconds: card.end,
+      jpg: await renderQuoteCard({
+        n: rows[0].quote?.n || 0,
+        text: card.endText,
+        author: '',
+        card,
+      }),
+    })
+  }
+
+  const seconds = frames.map((b) => b.seconds)
+  const transitions = shortTransitions(seconds, rows.length, card)
+  const duration = seconds.reduce((sum, t) => sum + t, 0) - transitions.reduce((sum, x) => sum + x.d, 0)
+  const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'bby-week-short-'))
+  const mp4 = path.join(dir, 'short.mp4')
+  const seed = rows.map((r) => r.quote?.slug).filter(Boolean).join('|')
+  try {
+    const files = await Promise.all(
+      frames.map(async (b, i) => {
+        const file = path.join(dir, `${i}.jpg`)
+        await fs.promises.writeFile(file, b.jpg)
+        return file
+      })
+    )
+    const audioFade = Math.max(0, duration - 1)
+    await run(ffmpeg, [
+      '-y',
+      ...stillInputs(files, seconds, card.fps),
+      ...musicInput(duration, music ?? pickShortBed(Math.random, rows[0].quote?.tags, seed)),
+      '-t',
+      String(duration),
+      '-filter_complex',
+      xfadeGraph(seconds, transitions, card),
+      '-map',
+      '[v]',
+      '-map',
+      `${files.length}:a`,
+      ...videoOut,
+      '-c:a',
+      'aac',
+      '-ac',
+      '2',
+      '-ar',
+      '44100',
+      '-b:a',
+      '96k',
+      '-af',
+      `afade=t=in:d=0.3,afade=t=out:st=${audioFade}:d=1,volume=0.75`,
+      mp4,
+    ])
+    return { video: await fs.promises.readFile(mp4), poster: frames[0].jpg }
+  } finally {
+    await fs.promises.rm(dir, { recursive: true, force: true })
+  }
+}
+
+/** Fit the whole quote card into 9:16 with letterbox bars (no side crop). */
+export async function renderShortFrameLetterbox(imageBuffer, card = quoteShort) {
+  if (!imageBuffer?.length) throw new Error('Image file missing')
+  const img = await loadImage(imageBuffer)
+  const { width, height, bg } = card
+  const canvas = createCanvas(width, height)
+  const ctx = canvas.getContext('2d')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, width, height)
+  const r = letterboxRect(img.width, img.height, width, height)
+  ctx.drawImage(img, r.x, r.y, r.w, r.h)
+  return canvas.toBuffer('image/jpeg', 92)
+}
+
 /** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
 export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default

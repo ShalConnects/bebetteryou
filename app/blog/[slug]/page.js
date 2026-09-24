@@ -18,7 +18,12 @@ export async function generateMetadata({ params }) {
   if (!post) return buildMetadata({ title: 'Post' })
   const url = getUrl(postHref(post.slug))
   return {
-    ...buildMetadata({ title: post.title, description: post.description, url }),
+    ...buildMetadata({
+      title: post.title,
+      description: post.description,
+      url,
+      image: post.image,
+    }),
     alternates: { canonical: url },
   }
 }

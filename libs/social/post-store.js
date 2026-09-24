@@ -74,6 +74,57 @@ export async function readPosts(slug) {
   }
 }
 
+/**
+ * Unique quote slugs with at least one successful social post.
+ * Optional `since`/`until` filter on post time. Excludes `week-*` review jobs.
+ * Returns `{ slug, at }[]` newest-first.
+ */
+export async function listPostedQuoteSlugs({ since, until } = {}) {
+  const start = since ? new Date(since).getTime() : null
+  const end = until ? new Date(until).getTime() : null
+
+  function inRange(at) {
+    const t = new Date(at).getTime()
+    if (!Number.isFinite(t)) return false
+    if (start != null && t < start) return false
+    if (end != null && t > end) return false
+    return true
+  }
+
+  try {
+    let rows = []
+    if (mongoUri()) {
+      const { connectDB } = await import('@/libs/mongo')
+      const SocialPost = (await import('@/models/SocialPost')).default
+      await connectDB()
+      const q = { ok: true, slug: { $not: /^week-/ } }
+      if (start != null || end != null) {
+        q.at = {}
+        if (start != null) q.at.$gte = new Date(start)
+        if (end != null) q.at.$lte = new Date(end)
+      }
+      rows = await SocialPost.find(q).select('slug at').lean()
+    } else if (!process.env.VERCEL) {
+      rows = readLocal().filter(
+        (row) => row.ok && row.slug && !String(row.slug).startsWith('week-') && inRange(row.at)
+      )
+    }
+
+    const best = new Map()
+    for (const row of rows) {
+      const slug = String(row.slug || '').trim()
+      if (!slug) continue
+      const at = row.at ? new Date(row.at).toISOString() : null
+      const prev = best.get(slug)
+      if (!prev || (at && (!prev.at || at > prev.at))) best.set(slug, { slug, at })
+    }
+    return [...best.values()].sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))
+  } catch (error) {
+    logError('Social post slug list failed', error)
+    return []
+  }
+}
+
 export async function recordPost(slug, result) {
   const key = String(slug || '').trim()
   const network = result?.id

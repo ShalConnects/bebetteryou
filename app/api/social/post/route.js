@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { postQuote, readyNetworks } from '@/libs/social'
 import { readPosts } from '@/libs/social/post-store'
+import { recordDoneSocialSend } from '@/libs/social/schedule-store'
 
 /** Encode + YouTube upload can exceed the default serverless window. */
 export const maxDuration = 60
@@ -27,6 +28,13 @@ export async function POST(req) {
 
   try {
     const results = await postQuote(slug, body?.networks)
+    if (results.some((r) => r.ok)) {
+      await recordDoneSocialSend({
+        slug,
+        networks: body?.networks,
+        results,
+      })
+    }
     return NextResponse.json({ results })
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Failed' }, { status: 400 })

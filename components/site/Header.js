@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { brand, nav } from '@/config/site'
 import { bindFocusTrap, focusables } from '@/libs/focus-trap'
 import BrandLogo from './BrandLogo'
+import SiteSearch from './SiteSearch'
 
 function isActive(href, path) {
   return path === href || path.startsWith(`${href}/`)
@@ -53,7 +54,10 @@ export default function Header() {
     const undo = bindFocusTrap(root, { onEscape: close })
     focusables(root).find((el) => el.closest('[data-mobile-nav]'))?.focus()
     return () => {
-      document.body.style.overflow = ''
+      // Search may have opened in the same paint — don't unlock scroll under it.
+      if (!document.getElementById('site-search-dialog')) {
+        document.body.style.overflow = ''
+      }
       undo()
     }
   }, [open])
@@ -65,30 +69,32 @@ export default function Header() {
     >
       <div className="inset-x-page">
         <div className="shell-inner flex h-14 items-center justify-between md:h-16">
-        <Link href="/" onClick={close} aria-label={brand.name} className="shrink-0">
-          <BrandLogo />
-        </Link>
+          <Link href="/" onClick={close} aria-label={brand.name} className="shrink-0">
+            <BrandLogo />
+          </Link>
 
-        <Links className="hidden items-center gap-8 md:flex" />
-
-        <button
-          type="button"
-          className="inline-flex min-h-10 min-w-10 items-center justify-center text-quiet transition-colors hover:text-paper md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          ) : (
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          )}
-        </button>
+          <div className="flex items-center gap-1 md:gap-8">
+            <Links className="hidden items-center gap-8 md:flex" />
+            <SiteSearch onOpen={close} />
+            <button
+              type="button"
+              className="inline-flex min-h-10 min-w-10 items-center justify-center text-quiet transition-colors hover:text-paper md:hidden"
+              aria-expanded={open}
+              aria-controls="mobile-nav"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+                  <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

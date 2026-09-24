@@ -220,8 +220,8 @@ export function buildQuoteEmail({ quote, token, extras = {} }) {
 }
 
 /** Roundup of several cards — for manual / Broadcast-style digests, not per-create mail. */
-export function buildQuoteDigestEmail({ quotes = [], token, extras = {} }) {
-  const cards = quotes.filter((q) => q?.slug && q?.src).slice(0, 6)
+export function buildQuoteDigestEmail({ quotes = [], token, extras = {}, limit = 6 }) {
+  const cards = quotes.filter((q) => q?.slug && q?.src).slice(0, limit)
   const grid = digestGridHtml(cards)
   const bodyHtml = `
     <p style="margin:0 0 16px;font-family:${FONT_BODY};line-height:1.6;">

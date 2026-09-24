@@ -4,7 +4,7 @@ import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
 
-/** Vercel Cron — email latest public quote to up to 100 eligible subscribers. */
+/** Vercel Cron — email today's successful social quote to up to 100 eligible subscribers. */
 export const maxDuration = 300
 
 function authorized(req) {

@@ -32,7 +32,7 @@ async function waitForContainer(id, token, { attempts = 12, ms = 2000 } = {}) {
   throw new Error('Threads media timed out before publish')
 }
 
-export async function postThreads({ imageUrl, caption }) {
+export async function postThreads({ imageUrl, caption, replyToId }) {
   if (!imageUrl || /localhost|127\.0\.0\.1/i.test(imageUrl)) {
     throw new Error('Threads needs a public image URL (set SITE_URL to your live domain)')
   }
@@ -41,15 +41,18 @@ export async function postThreads({ imageUrl, caption }) {
   if (!hasThreadsKeys({ token, userId })) throw new Error('Threads not configured')
 
   const text = clipThreadsText(caption)
+  const payload = {
+    media_type: 'IMAGE',
+    image_url: imageUrl,
+    text,
+    access_token: token,
+  }
+  if (replyToId) payload.reply_to_id = replyToId
+
   const create = await fetch(`${GRAPH}/${userId}/threads`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      media_type: 'IMAGE',
-      image_url: imageUrl,
-      text,
-      access_token: token,
-    }),
+    body: JSON.stringify(payload),
   })
   const created = await create.json()
   if (!create.ok || !created.id) {
@@ -76,4 +79,29 @@ export async function postThreads({ imageUrl, caption }) {
     id: published.id,
     url: permalink.permalink || null,
   }
+}
+
+/** Root post + replies (each reply_to_id = root). Sequential — API needs published ids. */
+export async function postThreadsThread(items = []) {
+  const posts = items.filter((item) => item?.imageUrl)
+  if (!posts.length) throw new Error('No Threads items')
+
+  const ids = []
+  let rootId = null
+  let rootUrl = null
+
+  for (let i = 0; i < posts.length; i++) {
+    const posted = await postThreads({
+      imageUrl: posts[i].imageUrl,
+      caption: posts[i].caption,
+      replyToId: rootId || undefined,
+    })
+    ids.push(posted.id)
+    if (!rootId) {
+      rootId = posted.id
+      rootUrl = posted.url
+    }
+  }
+
+  return { id: rootId, url: rootUrl, ids }
 }

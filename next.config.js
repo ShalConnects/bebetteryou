@@ -31,6 +31,8 @@ const shortEncode = [...renderAssets, './node_modules/ffmpeg-static/**/*', './as
 const staticMedia = [
   './public/quotes/**/*',
   './public/books/**/*',
+  './public/blog/**/*',
+  './public/apps/**/*',
   './public/print/**/*',
   './public/print-products/**/*',
 ]
@@ -45,6 +47,7 @@ const nextConfig = {
     // YouTube Short encode — not oauth connect/callback.
     '/api/social/post': shortEncode,
     '/api/social/preview': shortEncode,
+    '/api/quotes/week-review': shortEncode,
     '/api/cron/social': shortEncode,
   },
   outputFileTracingExcludes: {

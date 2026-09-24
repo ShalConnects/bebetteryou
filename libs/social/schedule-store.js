@@ -222,6 +222,49 @@ export async function finishSchedule(id, { ok, results, error = '' }) {
   return publicRow(rows[i])
 }
 
+/**
+ * Record an immediate dashboard "Post" so the newsletter cron can match today's card.
+ * No-op when nothing succeeded.
+ */
+export async function recordDoneSocialSend({ slug, networks, results, runAt = new Date() } = {}) {
+  const key = String(slug || '').trim()
+  const when = new Date(runAt)
+  const nets = [...new Set((networks || []).map(String).filter(Boolean))]
+  const okResults = (results || []).filter((r) => r?.ok)
+  if (!key || !okResults.length || Number.isNaN(when.getTime())) return null
+
+  const row = {
+    slug: key,
+    networks: nets.length ? nets : okResults.map((r) => r.id).filter(Boolean),
+    runAt: when,
+    status: 'done',
+    error: '',
+    results: results || [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }
+
+  if (mongoUri()) {
+    const SocialSchedule = await model()
+    const saved = await SocialSchedule.create(row)
+    return publicRow(saved.toObject())
+  }
+  if (process.env.VERCEL) return null
+
+  const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+  const local = {
+    ...row,
+    id,
+    runAt: when.toISOString(),
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  }
+  const rows = readLocal()
+  rows.push(local)
+  writeLocal(rows)
+  return publicRow(local)
+}
+
 /** UTC day bounds for schedule matching (email cron aligns with social cron day). */
 export function utcDayRange(now = new Date()) {
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))

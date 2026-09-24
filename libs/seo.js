@@ -85,6 +85,7 @@ export async function getSitemapEntries() {
 /** Article (+ FAQ when the row has one) structured data for a generated post. */
 export function postJsonLd(post, url) {
   const faq = post.blocks?.find((b) => b.type === 'faq' && b.items?.length)
+  const baseUrl = appConfig.siteUrl.replace(/\/$/, '')
   const article = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -95,6 +96,9 @@ export function postJsonLd(post, url) {
     author: { '@type': 'Organization', name: appConfig.metadata.author },
     publisher: { '@type': 'Organization', name: appConfig.name },
     mainEntityOfPage: url,
+  }
+  if (post.image) {
+    article.image = post.image.startsWith('http') ? post.image : `${baseUrl}${post.image}`
   }
   if (!faq) return article
   return [

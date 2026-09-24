@@ -1,0 +1,77 @@
+{
+  "slug": "doom-scrolling-and-screen-time",
+  "topic": "screen-time",
+  "tag": "Mindset",
+  "title": "Doom Scrolling and Screen Time: How to Stop the Slide",
+  "description": "Doom scrolling isn't a character flaw. It's a design that wins the ninety-second negotiation. Here's a practical way to notice it, cut it short, and take your evening back.",
+  "excerpt": "You don't need more willpower. You need fewer easy exits into the feed.",
+  "image": "/blog/doom-scrolling-and-screen-time.jpg",
+  "date": "2026-09-23",
+  "status": "published",
+  "blocks": [
+    {
+      "type": "p",
+      "text": "Doom scrolling usually doesn't start as a decision. It starts as a check. One notification. One \"quick look.\" Twenty minutes later you're still there, a bit flatter than when you unlocked the phone, and somehow later than you meant to be. Here's the simple answer: this isn't mainly about discipline. It's about an environment that makes the soft option too easy."
+    },
+    {
+      "type": "section",
+      "heading": "What's actually happening",
+      "text": "Your brain isn't broken. The feed is built to remove stopping points. There's always one more post, one more video, one more thread. Tired evenings are the worst, because tired people don't negotiate well. So you get the loop: open phone for a reason → lose the reason → keep going because stopping feels like effort."
+    },
+    {
+      "type": "section",
+      "heading": "The main problem isn't \"more motivation\"",
+      "text": "People try to fix this with guilt. That rarely works. Guilt arrives after the scroll. What you need is friction before the scroll, and a clearer \"done\" signal while you're in it. In practice, awareness beats self-lectures."
+    },
+    {
+      "type": "section",
+      "heading": "Things that actually help",
+      "items": [
+        "Name the check before you open the app. \"I'm checking the time\" or \"I'm replying to one message.\" If you can't name it, you're already shopping for a spiral.",
+        "Put a hard edge on the session. Ten minutes, then phone face down. A timer you can see beats a promise you forget.",
+        "Move the easy apps off the home screen. One extra tap is often enough to break the autopilot.",
+        "Charge the phone outside the bedroom if nights are the weak spot. Late doom scrolling is usually boredom plus a bed.",
+        "Replace the first reflex. Water, a short walk, one page of a book. You're not becoming a monk. You're giving your hands something else to do for sixty seconds."
+      ]
+    },
+    {
+      "type": "quotes",
+      "heading": "Cards for the ninety-second negotiation"
+    },
+    {
+      "type": "section",
+      "heading": "Make time visible",
+      "text": "One thing people usually overlook is how invisible screen time feels while it's happening. Minutes don't announce themselves. If you can see how long you've been in an app, the spell breaks sooner. That alone won't fix everything, but it turns a foggy habit into a number you can react to."
+    },
+    {
+      "type": "link",
+      "text": "Screen Time (Android) — a simple overlay that shows how long you've been in the app.",
+      "href": "https://play.google.com/store/apps/details?id=com.screentime.overlay",
+      "icon": "/apps/screen-time.png",
+      "note": "We make this. It's a tool, not a personality makeover. Use it if a visible timer would help you catch the slide earlier."
+    },
+    {
+      "type": "section",
+      "heading": "What \"better\" looks like",
+      "text": "You're not aiming for zero phone use. You're aiming for intentional use. Check what you came to check. Leave. Keep the evenings that used to disappear. That doesn't mean you'll never scroll again. It means the scroll stops being the default ending to every empty minute."
+    },
+    {
+      "type": "faq",
+      "heading": "Common questions",
+      "items": [
+        {
+          "q": "Is doom scrolling the same as addiction?",
+          "a": "Not always. A lot of it is just a designed loop meeting a tired brain. If it's wrecking sleep, mood, or work, treat it seriously and shrink access. You don't need a dramatic label to change the setup."
+        },
+        {
+          "q": "What if I need social apps for work?",
+          "a": "Then separate work checks from open-ended scrolling. Batch the work windows. Remove infinite feeds from the same thumb path when you can. Availability doesn't require an all-night timeline."
+        },
+        {
+          "q": "Will an app alone fix this?",
+          "a": "No. An app can make time visible and add friction. You still choose the next move. Tools help. They don't replace the decision."
+        }
+      ]
+    }
+  ]
+}

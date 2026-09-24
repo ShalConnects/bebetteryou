@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import QuoteCard from '@/components/site/QuoteCard'
@@ -80,7 +81,7 @@ function Block({ block, quotes, tag, topic, slug }) {
         <Heading>{heading}</Heading>
         <div className="mt-4 grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4">
           {quotes.map((quote) => (
-            <QuoteCard key={quote.slug} quote={quote} />
+            <QuoteCard key={quote.slug} quote={quote} compact />
           ))}
         </div>
         <ThemeLinks tag={tag} topic={topic} />
@@ -89,6 +90,27 @@ function Block({ block, quotes, tag, topic, slug }) {
   }
 
   if (type === 'scripture') return <Scripture tag={tag} slug={slug} heading={heading} />
+
+  if (type === 'link' && block.href && block.text) {
+    return (
+      <a
+        href={block.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-6 flex items-start gap-4 border border-line p-4 transition-colors hover:border-paper/30 md:p-5"
+      >
+        {block.icon ? (
+          <span className="relative mt-0.5 block h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-ink">
+            <Image src={block.icon} alt="" width={48} height={48} className="h-full w-full object-cover" />
+          </span>
+        ) : null}
+        <span className="min-w-0">
+          <span className="block text-sm leading-relaxed text-paper">{block.text}</span>
+          {block.note ? <span className="mt-2 block text-sm text-quiet">{block.note}</span> : null}
+        </span>
+      </a>
+    )
+  }
 
   if (type === 'faq') {
     return (
@@ -120,6 +142,19 @@ export default function BlogArticle({ post, quotes = [], related = [], books = [
           <h1 className="heading mt-3">{post.heading || post.title}</h1>
           {post.excerpt ? <p className="lede">{post.excerpt}</p> : null}
         </header>
+
+        {post.image ? (
+          <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden bg-ink">
+            <Image
+              src={post.image}
+              alt={post.title}
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 42rem"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
 
         {post.blocks?.map((block, i) => (
           <Block key={i} block={block} quotes={quotes} tag={tag} topic={post.topic} slug={post.slug} />

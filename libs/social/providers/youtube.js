@@ -73,19 +73,22 @@ async function setThumbnail(token, videoId, jpeg) {
   return { ok: true }
 }
 
-/** Upload a quote as a YouTube Short (official videos.insert). */
-export async function postYouTube({ caption, imageBuffer, quote }) {
+/** Upload a quote as a YouTube Short (official videos.insert). Pass `video`+`poster` to skip encode. */
+export async function postYouTube({ caption, imageBuffer, quote, video, poster, title }) {
   const keys = await youtubeKeys()
   if (!hasYoutubeKeys(keys)) throw new Error('YouTube not configured')
 
-  const { video, poster } = await encodeQuoteShort(imageBuffer, quote)
+  const encoded =
+    video && poster
+      ? { video, poster }
+      : await encodeQuoteShort(imageBuffer, quote)
   const token = await accessToken(keys)
   const metadata = {
     snippet: {
-      title: youtubeTitle(quote),
+      title: title || youtubeTitle(quote),
       description: youtubeDescription(quote, caption),
       categoryId: '22',
-      tags: ['BeBetterYou', 'motivation', 'Shorts', ...(quote?.tags || [])].slice(0, 15),
+      tags: ['BeBetterYou', 'motivation', 'Shorts', 'WeekInReview', ...(quote?.tags || [])].slice(0, 15),
     },
     status: {
       privacyStatus: youtubePrivacy(),
@@ -98,7 +101,7 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json; charset=UTF-8',
-      'X-Upload-Content-Length': String(video.length),
+      'X-Upload-Content-Length': String(encoded.video.length),
       'X-Upload-Content-Type': 'video/mp4',
     },
     body: JSON.stringify(metadata),
@@ -111,15 +114,15 @@ export async function postYouTube({ caption, imageBuffer, quote }) {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'video/mp4',
-      'Content-Length': String(video.length),
+      'Content-Length': String(encoded.video.length),
     },
-    body: new Uint8Array(video),
+    body: new Uint8Array(encoded.video),
   })
   const posted = await put.json().catch(() => ({}))
   if (!put.ok || !posted.id) {
     throw new Error(posted.error?.message || `YouTube upload failed (${put.status})`)
   }
-  const thumb = await setThumbnail(token, posted.id, poster)
+  const thumb = await setThumbnail(token, posted.id, encoded.poster)
 
   const watch = `https://www.youtube.com/watch?v=${posted.id}`
   const meta = await fetch(

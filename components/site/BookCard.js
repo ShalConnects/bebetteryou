@@ -28,10 +28,10 @@ export default function BookCard({ book }) {
           {book.blurb ? <p className="mt-2 line-clamp-2 text-sm text-body/70">{book.blurb}</p> : null}
         </span>
       </span>
-      <span className="shrink-0 text-sm text-accent">
+      <span className="shrink-0 text-sm font-semibold text-accent">
         {book.price || 'View on Amazon'}
         {book.priceWas ? (
-          <span className="ml-2 text-quiet line-through">{book.priceWas}</span>
+          <span className="ml-2 font-normal text-quiet line-through">{book.priceWas}</span>
         ) : null}
       </span>
     </a>

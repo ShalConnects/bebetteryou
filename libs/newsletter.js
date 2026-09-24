@@ -309,15 +309,23 @@ export async function notifyQuoteSubscribers(quote) {
   )
 }
 
-/** Manual roundup — newest public cards. Not called on quote create. */
-export async function notifyQuoteDigest(count = 6) {
-  const quotes = await pickQuoteDigest(count)
+/** Manual roundup — newest public cards, or a provided quote list (week in review). */
+export async function notifyQuoteDigest(countOrQuotes = 6) {
+  const quotes = Array.isArray(countOrQuotes)
+    ? countOrQuotes.filter((q) => q?.slug && q?.src)
+    : await pickQuoteDigest(countOrQuotes)
   if (!quotes.length) return { total: 0, sent: 0, failed: 0, quotes: 0, eligible: 0 }
   const exclude = new Set(quotes.map((q) => q.slug))
   const extras = await pickNewsletterExtras({ quoteCount: 0 })
   extras.quotes = extras.quotes.filter((q) => !exclude.has(q.slug))
   const result = await fanOutQuoteBatch(
-    (row) => buildQuoteDigestEmail({ quotes, token: row.unsubscribeToken, extras }),
+    (row) =>
+      buildQuoteDigestEmail({
+        quotes,
+        token: row.unsubscribeToken,
+        extras,
+        limit: quotes.length,
+      }),
     { kind: 'digest', slug: quotes.map((q) => q.slug).join(',') }
   )
   return { ...result, quotes: quotes.length }
