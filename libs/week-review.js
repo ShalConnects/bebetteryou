@@ -3,7 +3,7 @@ import { shuffle } from '@/libs/sample'
 import { listPostedQuoteSlugs } from '@/libs/social/post-store'
 
 /** Collage networks for week-in-review (one JPG of all cards). */
-export const WEEK_COLLAGE_NETWORKS = ['instagram', 'facebook', 'bluesky', 'telegram']
+export const WEEK_COLLAGE_NETWORKS = ['instagram', 'facebook', 'bluesky', 'telegram', 'pinterest']
 
 /**
  * Friday publish window: that Friday’s past Saturday 00:00 UTC → Thursday 23:59:59 UTC.

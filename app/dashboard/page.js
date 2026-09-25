@@ -6,6 +6,7 @@ import { connectDB } from '@/libs/mongo'
 import User from '@/models/User'
 import ButtonCheckout from '@/components/ButtonCheckout'
 import { appConfig } from '@/config/app'
+import { socials } from '@/config/site'
 import { adminOverview } from '@/libs/dashboard'
 import { readQuotes } from '@/libs/quotes-store'
 import AnalyticsBoard from '@/components/dashboard/AnalyticsBoard'
@@ -14,6 +15,8 @@ import { PageIntro } from '@/components/site/ui'
 
 /** Overview hosts live analytics; avoid a stale cached snapshot. */
 export const dynamic = 'force-dynamic'
+
+const socialHref = Object.fromEntries(socials.map((s) => [s.id, s.href]))
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions)
@@ -69,22 +72,36 @@ export default async function Dashboard({ searchParams }) {
         <DashPanel title="Social">
           {ytNote ? <p className="mb-4 text-sm text-paper">{ytNote}</p> : null}
           <ul className="space-y-2">
-            {social.map(({ id, label, ready, pending, connectable }) => (
-              <li key={id} className="flex items-center justify-between text-sm">
-                <span className="text-body">{label}</span>
-                {ready ? (
-                  <span className="text-paper">Ready</span>
-                ) : pending ? (
-                  <span className="text-quiet">Pending approval</span>
-                ) : connectable ? (
-                  <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
-                    Connect
-                  </a>
-                ) : (
-                  <span className="text-quiet">Not configured</span>
-                )}
-              </li>
-            ))}
+            {social.map(({ id, label, ready, pending, connectable }) => {
+              const href = socialHref[id]
+              return (
+                <li key={id} className="flex items-center justify-between text-sm">
+                  {href ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-body underline-offset-2 hover:underline"
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <span className="text-body">{label}</span>
+                  )}
+                  {ready ? (
+                    <span className="text-paper">Ready</span>
+                  ) : pending ? (
+                    <span className="text-quiet">Pending approval</span>
+                  ) : connectable ? (
+                    <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
+                      Connect
+                    </a>
+                  ) : (
+                    <span className="text-quiet">Not configured</span>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         </DashPanel>
 

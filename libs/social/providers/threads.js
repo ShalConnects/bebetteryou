@@ -1,6 +1,9 @@
 /** Threads: create container → wait ready → publish. Needs a public imageUrl. */
 const GRAPH = 'https://graph.threads.net/v1.0'
 
+/** Gap between root and each reply — Meta’s reply pipeline needs settle time. */
+const THREAD_GAP_MS = 12_000
+
 export function threadsKeys() {
   return {
     token: process.env.THREADS_ACCESS_TOKEN,
@@ -19,7 +22,11 @@ export function clipThreadsText(text, max = 500) {
   return `${s.slice(0, max - 1).trimEnd()}…`
 }
 
-async function waitForContainer(id, token, { attempts = 12, ms = 2000 } = {}) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+async function waitForContainer(id, token, { attempts = 20, ms = 1500 } = {}) {
   for (let i = 0; i < attempts; i++) {
     const res = await fetch(`${GRAPH}/${id}?fields=status,error_message&access_token=${token}`)
     const data = await res.json()
@@ -27,7 +34,7 @@ async function waitForContainer(id, token, { attempts = 12, ms = 2000 } = {}) {
     if (data.status === 'ERROR' || data.status === 'EXPIRED') {
       throw new Error(data.error_message || data.error?.message || 'Threads media processing failed')
     }
-    await new Promise((r) => setTimeout(r, ms))
+    await sleep(ms)
   }
   throw new Error('Threads media timed out before publish')
 }
@@ -81,26 +88,49 @@ export async function postThreads({ imageUrl, caption, replyToId }) {
   }
 }
 
-/** Root post + replies (each reply_to_id = root). Sequential — API needs published ids. */
-export async function postThreadsThread(items = []) {
+/**
+ * Root + replies chained in order (each reply_to_id = previous post).
+ * Waits between items so the reply pipeline can settle — without this, Threads
+ * often accepts only the first reply and rejects the rest.
+ */
+export async function postThreadsThread(items = [], { gapMs = THREAD_GAP_MS } = {}) {
   const posts = items.filter((item) => item?.imageUrl)
   if (!posts.length) throw new Error('No Threads items')
 
   const ids = []
   let rootId = null
   let rootUrl = null
+  let prevId = null
+  const errors = []
 
   for (let i = 0; i < posts.length; i++) {
-    const posted = await postThreads({
-      imageUrl: posts[i].imageUrl,
-      caption: posts[i].caption,
-      replyToId: rootId || undefined,
-    })
-    ids.push(posted.id)
-    if (!rootId) {
-      rootId = posted.id
-      rootUrl = posted.url
+    if (i > 0 && gapMs > 0) await sleep(gapMs)
+    try {
+      const posted = await postThreads({
+        imageUrl: posts[i].imageUrl,
+        caption: posts[i].caption,
+        replyToId: prevId || undefined,
+      })
+      ids.push(posted.id)
+      if (!rootId) {
+        rootId = posted.id
+        rootUrl = posted.url
+      }
+      prevId = posted.id
+    } catch (err) {
+      errors.push(`${i + 1}/${posts.length}: ${err.message || 'Failed'}`)
+      break
     }
+  }
+
+  if (!ids.length) {
+    throw new Error(errors[0] || 'Threads thread failed')
+  }
+
+  if (ids.length < posts.length) {
+    const err = new Error(`Threads posted ${ids.length}/${posts.length} — ${errors.join('; ')}`)
+    err.partial = { id: rootId, url: rootUrl, ids }
+    throw err
   }
 
   return { id: rootId, url: rootUrl, ids }

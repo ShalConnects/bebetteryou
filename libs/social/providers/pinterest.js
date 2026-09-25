@@ -30,13 +30,13 @@ export function pinterestTitle(quote) {
 }
 
 /** Pinterest pin via API v5. Uploads the JPEG (works on localhost). */
-export async function postPinterest({ caption, imageBuffer, quote }) {
+export async function postPinterest({ caption, imageBuffer, quote, title, link: linkOverride, altText }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   const { token, boardId } = pinterestKeys()
   if (!hasPinterestKeys({ token, boardId })) throw new Error('Pinterest not configured')
 
   const slug = quote?.slug
-  const link = slug ? `${getSiteUrl()}/quotes/${slug}` : getSiteUrl()
+  const link = linkOverride || (slug ? `${getSiteUrl()}/quotes/${slug}` : getSiteUrl())
   const res = await fetch(`${pinterestApiBase()}/v5/pins`, {
     method: 'POST',
     headers: {
@@ -45,9 +45,9 @@ export async function postPinterest({ caption, imageBuffer, quote }) {
     },
     body: JSON.stringify({
       board_id: boardId,
-      title: pinterestTitle(quote),
+      title: clipPinText(title || pinterestTitle(quote), 100),
       description: clipPinText(caption, 800),
-      alt_text: clipPinText(quoteAlt(quote || {}), 500),
+      alt_text: clipPinText(altText || quoteAlt(quote || {}), 500),
       link,
       media_source: {
         source_type: 'image_base64',

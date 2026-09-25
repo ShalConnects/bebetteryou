@@ -8,6 +8,7 @@ import { postInstagram } from '@/libs/social/providers/instagram'
 import { postFacebook } from '@/libs/social/providers/facebook'
 import { postBluesky, clipBlueskyText } from '@/libs/social/providers/bluesky'
 import { postTelegram } from '@/libs/social/providers/telegram'
+import { postPinterest } from '@/libs/social/providers/pinterest'
 import { postThreadsThread } from '@/libs/social/providers/threads'
 import { postYouTube } from '@/libs/social/providers/youtube'
 import { encodeWeekShort } from '@/libs/social/quote-short'
@@ -151,7 +152,7 @@ export async function previewWeekReview(now = new Date(), { encodeShort = true }
 }
 
 /**
- * Manual Friday publish: collage → IG/FB/Bluesky/Telegram, Short → YT,
+ * Manual Friday publish: collage → IG/FB/Bluesky/Telegram/Pinterest, Short → YT,
  * Threads reply chain, digest email. Skips when the Sat–Thu window is empty.
  */
 export async function publishWeekReview(now = new Date()) {
@@ -188,6 +189,15 @@ export async function publishWeekReview(now = new Date()) {
         aspectRatio: { width: collage.width, height: collage.height },
       }),
     telegram: () => postTelegram({ caption, imageBuffer: collage.buffer }),
+    pinterest: () =>
+      postPinterest({
+        caption,
+        imageBuffer: collage.buffer,
+        quote: quotes[0],
+        title: `Week in review · ${quotes.map((q) => `#${q.n}`).join(' ')}`,
+        link: site,
+        altText: `Week in review collage: ${quotes.map((q) => `#${q.n}`).join(', ')}`,
+      }),
   }
 
   const results = []
@@ -269,10 +279,20 @@ export async function publishWeekReview(now = new Date()) {
       }
       await recordPost(slug, row)
       results.push(row)
-      logInfo('Week review publish: Threads ok', { url: row.url, count: row.count })
+      logInfo('Week review publish: Threads ok', { url: row.url, count: row.count, ids: thread?.ids })
     } catch (err) {
-      logError('Week review publish: Threads failed', err)
-      const row = { id: 'threads', label: status.threads.label, ok: false, error: err.message || 'Failed' }
+      logError('Week review publish: Threads failed', err, {
+        partial: err.partial?.ids?.length || 0,
+        expected: quotes.length,
+      })
+      const row = {
+        id: 'threads',
+        label: status.threads.label,
+        ok: false,
+        error: err.message || 'Failed',
+        url: err.partial?.url || null,
+        count: err.partial?.ids?.length || 0,
+      }
       await recordPost(slug, row)
       results.push(row)
     }

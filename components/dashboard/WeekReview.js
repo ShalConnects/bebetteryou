@@ -99,7 +99,7 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
         : ''
     if (
       !window.confirm(
-        `Publish week in review for ${quotes.length} card(s) (${from} → ${to})?\n\nCollage → IG/FB/Bluesky/Telegram\nShort → YouTube\nThread → Threads\nDigest → email${recentNote}`
+        `Publish week in review for ${quotes.length} card(s) (${from} → ${to})?\n\nCollage → IG/FB/Bluesky/Telegram/Pinterest\nShort → YouTube\nThread → Threads\nDigest → email${recentNote}`
       )
     ) {
       return
@@ -191,7 +191,7 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
                 <a href={preview.collage} className="text-paper underline" target="_blank" rel="noreferrer">
                   {preview.collage}
                 </a>{' '}
-                ({preview.quotes?.length || 0} cards in a grid — this is what IG/FB/Bluesky/Telegram get)
+                ({preview.quotes?.length || 0} cards in a grid — this is what IG/FB/Bluesky/Telegram/Pinterest get)
               </p>
               <img
                 src={`${preview.collage}?t=${Date.now()}`}
