@@ -49,15 +49,72 @@ export async function readyNetworks() {
   })
 }
 
-export async function quoteCaption(quote) {
+export async function quoteCaption(quote, networkId) {
   const body = quoteOneLine(quote.text) || `Quote #${quote.n}`
-  const base = getSiteUrl()
   const credit = quote.author?.trim()
-  const core = credit
-    ? `${body}\n\n— ${credit}\n${base}/quotes/${quote.slug}`
-    : `${body}\n\n${base}/quotes/${quote.slug}`
+  const head = credit ? `${body}\n\n— ${credit}` : body
   const tags = hashtagsForTags(quote.tags, await readTags())
+  const network = networkId || null
+
+  /** No network → keep legacy caption (quote + site URL + tags). */
+  if (!network) {
+    const url = quotePageUrl(quote)
+    const core = `${head}\n\n${url}`
+    return tags ? `${core}\n\n${tags}` : core
+  }
+
+  /** Meta + X: no outbound URL — protect reach; soft CTA instead. */
+  if (network === 'instagram' || network === 'threads' || network === 'facebook') {
+    const core = `${head}\n\n${softCta(quote)}`
+    return tags ? `${core}\n\n${tags}` : core
+  }
+
+  if (network === 'x') {
+    const core = credit ? `${body} — ${credit}` : body
+    return tags ? `${core}\n\n${tags}` : core
+  }
+
+  if (network === 'linkedin') {
+    const core = `${head}\n\n${softCta(quote)}`
+    return tags ? `${core}\n\n${tags}` : core
+  }
+
+  /** Pinterest / Telegram / YouTube / Bluesky: keep site URL (+ UTM where useful). */
+  if (network === 'pinterest' || network === 'telegram' || network === 'youtube') {
+    const core = `${head}\n\n${quotePageUrl(quote, network)}`
+    return tags ? `${core}\n\n${tags}` : core
+  }
+
+  if (network === 'bluesky') {
+    return `${head}\n\n${quotePageUrl(quote, 'bluesky')}`
+  }
+
+  const url = quotePageUrl(quote, network)
+  const core = `${head}\n\n${url}`
   return tags ? `${core}\n\n${tags}` : core
+}
+
+const SOFT_CTAS = [
+  'Save this for a hard day.',
+  'Which line hits you today?',
+  'Follow for a daily push.',
+  'Share with someone who needs this.',
+]
+
+function softCta(quote) {
+  const seed = String(quote?.slug || quote?.n || '0')
+  let h = 0
+  for (let i = 0; i < seed.length; i++) h = (h + seed.charCodeAt(i) * (i + 1)) % 997
+  return SOFT_CTAS[h % SOFT_CTAS.length]
+}
+
+function quotePageUrl(quote, networkId) {
+  const base = getSiteUrl()
+  const path = quote?.slug ? `${base}/quotes/${quote.slug}` : base
+  if (networkId === 'telegram' || networkId === 'youtube' || networkId === 'pinterest' || networkId === 'bluesky') {
+    return `${path}?utm_source=${networkId}&utm_medium=social`
+  }
+  return path
 }
 
 function absoluteImageUrl(src) {
@@ -75,7 +132,6 @@ export async function postQuote(slug, networkIds) {
 
   const statusList = await readyNetworks()
   const status = Object.fromEntries(statusList.map((n) => [n.id, n]))
-  const caption = await quoteCaption(quote)
   const imageUrl = absoluteImageUrl(quote.src)
   const imageBuffer = await resolveQuoteImageBuffer(quote.src)
 
@@ -91,6 +147,7 @@ export async function postQuote(slug, networkIds) {
       const post = providers[id]
       if (!post) return { id, label: meta.label, ok: false, error: 'Not implemented' }
       try {
+        const caption = await quoteCaption(quote, id)
         const posted = await post({ caption, imageUrl, imageBuffer, quote })
         const result = {
           id,

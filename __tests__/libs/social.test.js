@@ -48,6 +48,28 @@ describe('social', () => {
     expect(caption).toContain('/quotes/bby-1')
   })
 
+  it('omits site URL on Instagram and adds a soft CTA', async () => {
+    const caption = await quoteCaption(
+      { n: 1, slug: 'bby-1', text: 'Keep going.', author: 'Author' },
+      'instagram'
+    )
+    expect(caption).toContain('Keep going.')
+    expect(caption).not.toContain('/quotes/')
+    expect(caption).toMatch(/Save this|Which line|Follow for|Share with/)
+  })
+
+  it('keeps tracked site URL on Telegram', async () => {
+    const caption = await quoteCaption({ n: 1, slug: 'bby-1', text: 'Keep going.' }, 'telegram')
+    expect(caption).toContain('/quotes/bby-1')
+    expect(caption).toContain('utm_source=telegram')
+  })
+
+  it('omits site URL on X', async () => {
+    const caption = await quoteCaption({ n: 1, slug: 'bby-1', text: 'Keep going.' }, 'x')
+    expect(caption).toContain('Keep going.')
+    expect(caption).not.toContain('http')
+  })
+
   it('oauth1 header includes signature', () => {
     const keys = {
       consumerKey: 'ck',

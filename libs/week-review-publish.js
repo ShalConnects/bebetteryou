@@ -266,7 +266,7 @@ export async function publishWeekReview(now = new Date()) {
       const items = await Promise.all(
         quotes.map(async (quote) => ({
           imageUrl: absoluteImageUrl(quote.src),
-          caption: await quoteCaption(quote),
+          caption: await quoteCaption(quote, 'threads'),
         }))
       )
       const thread = await postThreadsThread(items)
