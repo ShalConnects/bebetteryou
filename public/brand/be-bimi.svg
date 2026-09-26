@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg version="1.2" baseProfile="tiny-ps" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
   <title>BeBetterYou</title>
-  <rect width="300" height="300" fill="#0a140e"/>
+  <rect width="300" height="300" fill="#0a2e1c"/>
   <g fill="#FFFFFF" transform="matrix(0.1 0 0 -0.1 0 300)">
     <path d="M675 2087c-3-12-5-52-3-87l3-65 73-5 73-5-61-60-60-59V890h605l78 78 77 77v471l-63 62-63 62h-77l42 45 41 45v215l-83 83-82 82H680l-5-23zm465-302v-145H996l-53-52-53-52v394h250v-145zm130-505v-210H890v420h380v-210zm492 447-82-82v-587l82-84 82-84 240 2 241 3v170l-222 3-223 2v120h285l83 83 82 82v290l-76 83-76 82h-333l-83-83zm368-227v-130h-92l-79-77-79-76v413h250v-130z"/>
   </g>
