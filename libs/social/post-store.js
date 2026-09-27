@@ -29,6 +29,7 @@ function publicRow(row) {
     url: row.url || '',
     privacy: row.privacy || '',
     channel: row.channel || '',
+    manual: Boolean(row.manual),
   }
 }
 
@@ -70,6 +71,37 @@ export async function readPosts(slug) {
     )
   } catch (error) {
     logError('Social post log read failed', error, { slug: key })
+    return {}
+  }
+}
+
+/** `{ [slug]: { [network]: publicRow } }` for many quotes (Failures resolution). */
+export async function readPostsBySlugs(slugs) {
+  const keys = [...new Set((slugs || []).map((s) => String(s || '').trim()).filter(Boolean))]
+  if (!keys.length) return {}
+  try {
+    if (mongoUri()) {
+      const { connectDB } = await import('@/libs/mongo')
+      const SocialPost = (await import('@/models/SocialPost')).default
+      await connectDB()
+      const rows = await SocialPost.find({ slug: { $in: keys } }).lean()
+      const out = Object.fromEntries(keys.map((k) => [k, {}]))
+      for (const row of rows) {
+        if (!out[row.slug]) out[row.slug] = {}
+        out[row.slug][row.network] = publicRow(row)
+      }
+      return out
+    }
+    if (process.env.VERCEL) return {}
+    const want = new Set(keys)
+    const out = Object.fromEntries(keys.map((k) => [k, {}]))
+    for (const row of readLocal()) {
+      if (!want.has(row.slug)) continue
+      out[row.slug][row.network] = publicRow(row)
+    }
+    return out
+  } catch (error) {
+    logError('Social post log batch read failed', error)
     return {}
   }
 }

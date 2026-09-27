@@ -10,6 +10,7 @@ const SocialPostSchema = new mongoose.Schema(
     url: { type: String, default: '' },
     privacy: { type: String, default: '' },
     channel: { type: String, default: '' },
+    manual: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

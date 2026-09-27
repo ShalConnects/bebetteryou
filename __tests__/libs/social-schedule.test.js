@@ -49,6 +49,26 @@ describe('social schedule store (local)', () => {
     expect(listed[0].status).toBe('done')
   })
 
+  it('keeps partial network failures on a done schedule', async () => {
+    const created = await store.createSchedule({
+      slug: 'bby-partial',
+      networks: ['bluesky', 'threads'],
+      runAt: new Date(Date.now() + 120_000).toISOString(),
+    })
+    await store.claimDueSchedules(new Date(Date.now() + 180_000), 5)
+    const done = await store.finishSchedule(created.id, {
+      ok: true,
+      results: [
+        { id: 'bluesky', ok: true },
+        { id: 'threads', ok: false, error: 'An unexpected error has occurred.' },
+      ],
+      error: 'threads: An unexpected error has occurred.',
+    })
+    expect(done.status).toBe('done')
+    expect(done.error).toContain('threads:')
+    expect(done.results.filter((r) => !r.ok)).toHaveLength(1)
+  })
+
   it('cancels a pending schedule', async () => {
     const created = await store.createSchedule({
       slug: 'bby-2',

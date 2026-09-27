@@ -9,7 +9,7 @@ export function RangeTabs({ active }) {
       {analyticsRanges.map(({ id, label }) => (
         <Link
           key={id}
-          href={`/dashboard?range=${id}`}
+          href={`/dashboard?range=${id}#analytics`}
           className={id === active ? 'tag-active' : 'tag'}
           aria-current={id === active ? 'page' : undefined}
         >

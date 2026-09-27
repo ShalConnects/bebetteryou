@@ -1,8 +1,10 @@
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { brand } from '@/config/site'
 import BrandLogo from '@/components/site/BrandLogo'
 import DashboardNav from './Nav'
 import LogoutButton from './LogoutButton'
+import { ToastHost } from './toast'
 
 export default function DashboardShell({ isAdmin, children }) {
   return (
@@ -25,7 +27,9 @@ export default function DashboardShell({ isAdmin, children }) {
           {isAdmin ? (
             <aside className="shrink-0 md:w-40 md:self-start">
               <p className="dash-label">Admin</p>
-              <DashboardNav className="pt-4" />
+              <Suspense fallback={null}>
+                <DashboardNav className="pt-4" />
+              </Suspense>
             </aside>
           ) : null}
           <main className={isAdmin ? 'dash-main min-w-0' : 'min-w-0 flex-1 overflow-y-auto'}>
@@ -33,6 +37,7 @@ export default function DashboardShell({ isAdmin, children }) {
           </main>
         </div>
       </div>
+      <ToastHost />
     </div>
   )
 }

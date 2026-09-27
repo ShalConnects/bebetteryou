@@ -33,7 +33,7 @@ import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { clipTelegramCaption, hasTelegramKeys } from '@/libs/social/providers/telegram'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
-import { alreadyPosted, defaultSelected, mergePostRecord } from '@/libs/social/post-log'
+import { alreadyPosted, defaultSelected, manualPostResults, mergePostRecord } from '@/libs/social/post-log'
 
 describe('social', () => {
   it('builds quote caption with link', async () => {
@@ -276,10 +276,32 @@ describe('social', () => {
       { id: 'instagram', ready: true },
       { id: 'bluesky', ready: true },
       { id: 'threads', ready: false },
+      { id: 'x', ready: false, pending: true },
     ]
     const posts = { instagram: { ok: true, url: 'https://instagram.com/p/1' } }
-    expect(defaultSelected(networks, posts)).toEqual(['bluesky'])
+    expect(defaultSelected(networks, posts)).toEqual(['bluesky', 'x'])
     expect(alreadyPosted(['instagram', 'bluesky'], posts)).toEqual(['instagram'])
+  })
+
+  it('builds manual mark-posted results without calling providers', () => {
+    const rows = manualPostResults('bby-3', ['x', 'linkedin'], { x: 'X', linkedin: 'LinkedIn' })
+    expect(rows).toEqual([
+      { id: 'x', label: 'X', slug: 'bby-3', ok: true, manual: true, url: null, error: '' },
+      {
+        id: 'linkedin',
+        label: 'LinkedIn',
+        slug: 'bby-3',
+        ok: true,
+        manual: true,
+        url: null,
+        error: '',
+      },
+    ])
+    const saved = mergePostRecord(null, rows[0])
+    expect(saved).toMatchObject({ network: 'x', ok: true, manual: true })
+    const viaApi = mergePostRecord(saved, { slug: 'bby-3', id: 'x', ok: true, url: 'https://x.com/1' })
+    expect(viaApi.manual).toBe(false)
+    expect(viaApi.url).toBe('https://x.com/1')
   })
 
   it('keeps the last success URL when a later post fails', () => {

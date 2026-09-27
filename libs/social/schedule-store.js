@@ -190,6 +190,13 @@ export async function claimDueSchedules(now = new Date(), limit = 5) {
 
 export async function finishSchedule(id, { ok, results, error = '' }) {
   const key = String(id || '').trim()
+  const list = Array.isArray(results) ? results : []
+  const failSummary = list
+    .filter((r) => r && !r.ok)
+    .map((r) => `${r.id || 'network'}: ${r.error || 'Failed'}`)
+    .join('; ')
+  /** Keep partial failures visible even when status is done (any network succeeded). */
+  const nextError = ok ? failSummary : String(error || failSummary || 'Failed')
   if (mongoUri()) {
     const SocialSchedule = await model()
     const row = await SocialSchedule.findByIdAndUpdate(
@@ -197,8 +204,8 @@ export async function finishSchedule(id, { ok, results, error = '' }) {
       {
         $set: {
           status: ok ? 'done' : 'failed',
-          results: results || [],
-          error: ok ? '' : String(error || 'Failed'),
+          results: list,
+          error: nextError,
           updatedAt: new Date(),
         },
       },
@@ -214,8 +221,8 @@ export async function finishSchedule(id, { ok, results, error = '' }) {
   rows[i] = {
     ...rows[i],
     status: ok ? 'done' : 'failed',
-    results: results || [],
-    error: ok ? '' : String(error || 'Failed'),
+    results: list,
+    error: nextError,
     updatedAt: new Date().toISOString(),
   }
   writeLocal(rows)

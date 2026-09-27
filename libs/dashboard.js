@@ -1,4 +1,11 @@
 import { readyNetworks } from '@/libs/social'
+import { readPostsBySlugs } from '@/libs/social/post-store'
+import { listAllSchedules } from '@/libs/social/schedule-store'
+import {
+  networkLastActivity,
+  scheduleFailures,
+  upcomingPending,
+} from '@/libs/dashboard-ops'
 import { nextQuoteN } from './quotes-store'
 import { readTags, tagNames } from './tags-store'
 
@@ -13,5 +20,22 @@ export async function quoteStats(quotes) {
 }
 
 export async function adminOverview(quotes) {
-  return { stats: await quoteStats(quotes), social: await readyNetworks() }
+  const [stats, social, schedules] = await Promise.all([
+    quoteStats(quotes),
+    readyNetworks(),
+    listAllSchedules({ limit: 100 }),
+  ])
+  const postsBySlug = await readPostsBySlugs(schedules.map((s) => s.slug))
+  const failures = scheduleFailures(schedules, { postsBySlug })
+  return {
+    stats,
+    social,
+    schedules,
+    networkActivity: networkLastActivity(schedules),
+    attention: {
+      failures,
+      upcoming: upcomingPending(schedules, 3),
+      pendingSocial: social.filter((n) => n.pending),
+    },
+  }
 }

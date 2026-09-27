@@ -9,6 +9,7 @@ import { useQuotePreview } from '@/components/site/useQuotePreview'
 import TagPicker from '@/components/site/TagPicker'
 import SocialPost from '@/components/site/SocialPost'
 import EmailQuoteList from '@/components/dashboard/EmailQuoteList'
+import { toast } from '@/components/dashboard/toast'
 
 const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
@@ -25,12 +26,21 @@ function formFromQuote(quote) {
   }
 }
 
-export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
+export default function QuoteManager({
+  quotes: initial,
+  tagOptions = [],
+  initialSlug = null,
+  initialRetry = [],
+}) {
   const [items, setItems] = useState(initial)
   const [q, setQ] = useState('')
   const [tag, setTag] = useState('')
-  const [slug, setSlug] = useState(null)
-  const [form, setForm] = useState(null)
+  const [slug, setSlug] = useState(initialSlug)
+  const [form, setForm] = useState(() => {
+    if (!initialSlug) return null
+    const quote = initial.find((x) => x.slug === initialSlug)
+    return quote ? formFromQuote(quote) : null
+  })
   const [busy, setBusy] = useState(false)
   const selectedRef = useRef(null)
   const { preview, previewing, error, setError } = useQuotePreview(form?.text || '', form?.author || '')
@@ -45,6 +55,14 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
     if (!slug || !selectedRef.current) return
     selectedRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [slug])
+
+  useEffect(() => {
+    if (!initialSlug) return
+    const quote = items.find((x) => x.slug === initialSlug)
+    if (!quote) return
+    setSlug(initialSlug)
+    setForm(formFromQuote(quote))
+  }, [initialSlug, items])
 
   function pick(quote) {
     if (slug === quote.slug) {
@@ -95,6 +113,7 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
       if (!res.ok) throw new Error(data.error || 'Failed')
       setItems((prev) => prev.map((x) => (x.slug === slug ? data : x)))
       setForm(formFromQuote(data))
+      toast(regenerate ? 'Saved & regenerated' : 'Saved')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -112,6 +131,7 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
       if (!res.ok) throw new Error(data.error || 'Failed')
       setItems((prev) => prev.filter((x) => x.slug !== slug))
       close()
+      toast('Quote deleted')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -121,6 +141,9 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
 
   return (
     <div className="space-y-6">
+      {!items.length ? (
+        <p className="text-sm text-quiet">No cards yet. Create one under New quote.</p>
+      ) : null}
       <div>
         <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Search</span>
         <div className="flex gap-3">
@@ -306,7 +329,7 @@ export default function QuoteManager({ quotes: initial, tagOptions = [] }) {
                       </button>
                     </div>
 
-                    <SocialPost slug={slug} />
+                    <SocialPost slug={slug} initialRetry={slug === initialSlug ? initialRetry : []} />
                     <EmailQuoteList slug={slug} />
                   </div>
                 ) : null}

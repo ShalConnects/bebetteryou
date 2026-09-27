@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { alreadyPosted, defaultSelected } from '@/libs/social/post-log'
+import { alreadyPosted, canSelectNetwork, defaultSelected } from '@/libs/social/post-log'
+import { toast } from '@/components/dashboard/toast'
 
 function applyResults(posts, results) {
   const next = { ...posts }
@@ -13,6 +14,7 @@ function applyResults(posts, results) {
       privacy: r.ok ? r.privacy || '' : next[r.id]?.privacy || '',
       channel: r.ok ? r.channel || '' : next[r.id]?.channel || '',
       thumbnailError: r.ok ? r.thumbnailError || '' : next[r.id]?.thumbnailError || '',
+      manual: r.ok ? Boolean(r.manual) : Boolean(next[r.id]?.manual),
     }
   }
   return next
@@ -35,7 +37,7 @@ function formatWhen(iso) {
   }
 }
 
-export default function SocialPost({ slug }) {
+export default function SocialPost({ slug, initialRetry = [] }) {
   const [networks, setNetworks] = useState([])
   const [posts, setPosts] = useState({})
   const [schedules, setSchedules] = useState([])
@@ -53,6 +55,8 @@ export default function SocialPost({ slug }) {
       .catch(() => setSchedules([]))
   }
 
+  const retryKey = (initialRetry || []).join(',')
+
   useEffect(() => {
     if (!slug) return
     fetch(`/api/social/post?slug=${encodeURIComponent(slug)}`)
@@ -62,7 +66,11 @@ export default function SocialPost({ slug }) {
         const log = d.posts || {}
         setNetworks(list)
         setPosts(log)
-        setSelected(defaultSelected(list, log))
+        const retry = retryKey
+          .split(',')
+          .filter(Boolean)
+          .filter((id) => list.some((n) => n.id === id && canSelectNetwork(n)))
+        setSelected(retry.length ? retry : defaultSelected(list, log))
         setResults(null)
         setError('')
         setPreviewUrl((prev) => {
@@ -72,7 +80,7 @@ export default function SocialPost({ slug }) {
       })
       .catch(() => {})
     loadSchedules(slug)
-  }, [slug])
+  }, [slug, retryKey])
 
   function toggle(id) {
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -100,7 +108,12 @@ export default function SocialPost({ slug }) {
   }
 
   async function onPost() {
-    const again = alreadyPosted(selected, posts)
+    const apiNets = selected.filter((id) => networks.find((n) => n.id === id)?.ready)
+    if (!apiNets.length) {
+      setError('Nothing API-ready selected. Use Mark posted for manual networks (e.g. X).')
+      return
+    }
+    const again = alreadyPosted(apiNets, posts)
     if (again.length) {
       const names = again.map((id) => networks.find((n) => n.id === id)?.label || id).join(', ')
       if (!window.confirm(`Already posted to ${names} — post again?`)) return
@@ -112,7 +125,7 @@ export default function SocialPost({ slug }) {
       const res = await fetch('/api/social/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, networks: selected }),
+        body: JSON.stringify({ slug, networks: apiNets }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
@@ -120,6 +133,35 @@ export default function SocialPost({ slug }) {
       setPosts(next)
       setSelected(defaultSelected(networks, next))
       setResults(data.results)
+      const failed = (data.results || []).filter((r) => !r.ok)
+      toast(failed.length ? `Posted with ${failed.length} failure(s)` : 'Posted')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function onMarkPosted() {
+    if (!selected.length) return
+    const names = selected.map((id) => networks.find((n) => n.id === id)?.label || id).join(', ')
+    if (!window.confirm(`Mark as posted manually on ${names}? (does not call any API)`)) return
+    setBusy(true)
+    setError('')
+    setResults(null)
+    try {
+      const res = await fetch('/api/social/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, networks: selected, manual: true }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      const next = applyResults(posts, data.results)
+      setPosts(next)
+      setSelected(defaultSelected(networks, next))
+      setResults(data.results)
+      toast('Marked as posted')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -128,7 +170,11 @@ export default function SocialPost({ slug }) {
   }
 
   async function onSchedule() {
-    if (!selected.length) return
+    const apiNets = selected.filter((id) => networks.find((n) => n.id === id)?.ready)
+    if (!apiNets.length) {
+      setError('Nothing API-ready selected to schedule.')
+      return
+    }
     setBusy(true)
     setError('')
     try {
@@ -137,13 +183,14 @@ export default function SocialPost({ slug }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           slug,
-          networks: selected,
+          networks: apiNets,
           runAt: new Date(runAt).toISOString(),
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to schedule')
       await loadSchedules(slug)
+      toast('Scheduled')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -160,6 +207,7 @@ export default function SocialPost({ slug }) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to cancel')
       await loadSchedules(slug)
+      toast('Schedule canceled')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -169,17 +217,26 @@ export default function SocialPost({ slug }) {
 
   if (!networks.length) return null
 
-  const ready = networks.filter((n) => n.ready)
+  const selectable = networks.filter(canSelectNetwork)
   const shown = results?.length
     ? results
     : networks.filter((n) => posts[n.id]).map((n) => ({ ...posts[n.id], id: n.id, label: n.label }))
   const pending = schedules.filter((s) => s.status === 'pending')
   const recent = schedules.filter((s) => s.status !== 'pending').slice(0, 3)
+  const readySelected = selected.filter((id) => networks.find((n) => n.id === id)?.ready)
+
+  function networkHint(n, log) {
+    if (log?.ok) return log.manual ? ' (posted · manual)' : ' (posted)'
+    if (log && !log.ok) return ' (failed)'
+    if (n.pending) return ' (pending)'
+    if (!n.ready) return ' (setup)'
+    return ''
+  }
 
   return (
     <div className="mt-8 space-y-4 border-t border-line pt-8">
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Post to social</p>
-      {ready.length === 0 ? (
+      {selectable.length === 0 ? (
         <p className="text-sm text-quiet">
           Add API keys in <code className="text-body">.env.local</code> (see env.example). Instagram and Threads
           need a public <code className="text-body">SITE_URL</code>. YouTube Shorts: Connect below, then Post.
@@ -188,28 +245,21 @@ export default function SocialPost({ slug }) {
       <div className="flex flex-wrap gap-4">
         {networks.map((n) => {
           const log = posts[n.id]
+          const pickable = canSelectNetwork(n)
           return (
             <label
               key={n.id}
-              className={`flex items-center gap-2 text-sm ${n.ready ? 'text-body' : 'text-quiet/50'}`}
+              className={`flex items-center gap-2 text-sm ${pickable ? 'text-body' : 'text-quiet/50'}`}
             >
               <input
                 type="checkbox"
-                disabled={!n.ready}
+                disabled={!pickable}
                 checked={selected.includes(n.id)}
                 onChange={() => toggle(n.id)}
                 className="accent-paper"
               />
               {n.label}
-              {!n.ready
-                ? n.pending
-                  ? ' (pending)'
-                  : ' (setup)'
-                : log?.ok
-                  ? ' (posted)'
-                  : log && !log.ok
-                    ? ' (failed)'
-                    : ''}
+              {networkHint(n, log)}
             </label>
           )
         })}
@@ -245,7 +295,7 @@ export default function SocialPost({ slug }) {
                 {r.label || r.id}:{' '}
                 {ok ? (
                   <>
-                    Posted
+                    {r.manual || saved?.manual ? 'Marked posted' : 'Posted'}
                     {privacy ? ` (${privacy})` : ''}
                     {channel ? ` on ${channel}` : ''}
                     {url ? (
@@ -288,11 +338,19 @@ export default function SocialPost({ slug }) {
         </button>
         <button
           type="button"
-          disabled={busy || !selected.length}
+          disabled={busy || !readySelected.length}
           onClick={onPost}
           className="btn disabled:opacity-50"
         >
           {busy ? 'Working…' : 'Post now'}
+        </button>
+        <button
+          type="button"
+          disabled={busy || !selected.length}
+          onClick={onMarkPosted}
+          className="btn disabled:opacity-50"
+        >
+          Mark posted
         </button>
         <label className="flex flex-col gap-1 text-sm text-quiet sm:flex-row sm:items-center sm:gap-2">
           <span className="sr-only">Schedule time</span>
@@ -305,7 +363,7 @@ export default function SocialPost({ slug }) {
         </label>
         <button
           type="button"
-          disabled={busy || !selected.length || !runAt}
+          disabled={busy || !readySelected.length || !runAt}
           onClick={onSchedule}
           className="btn disabled:opacity-50"
         >
@@ -313,9 +371,8 @@ export default function SocialPost({ slug }) {
         </button>
       </div>
       <p className="text-xs text-quiet">
-        Cron runs daily at 14:00 UTC on Vercel (≈10am US East / 8pm Bangladesh). Set{' '}
-        <code className="text-body">CRON_SECRET</code> in env. Pending jobs post on the next run after their
-        time.
+        Mark posted = you already shared it yourself (e.g. X). Cron runs daily at 14:00 UTC on Vercel
+        (≈10am US East / 8pm Bangladesh). Set <code className="text-body">CRON_SECRET</code> in env.
       </p>
 
       {pending.length ? (

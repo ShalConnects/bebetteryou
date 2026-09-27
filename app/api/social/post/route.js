@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { postQuote, readyNetworks } from '@/libs/social'
-import { readPosts } from '@/libs/social/post-store'
+import { manualPostResults } from '@/libs/social/post-log'
+import { readPosts, recordPost } from '@/libs/social/post-store'
 import { recordDoneSocialSend } from '@/libs/social/schedule-store'
 
 /** Encode + YouTube upload can exceed the default serverless window. */
@@ -26,12 +27,30 @@ export async function POST(req) {
   const slug = body?.slug?.trim()
   if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 })
 
+  const networks = [...new Set((body?.networks || []).map(String).filter(Boolean))]
+  if (!networks.length) return NextResponse.json({ error: 'networks required' }, { status: 400 })
+
   try {
-    const results = await postQuote(slug, body?.networks)
+    /** Admin posted outside the app (e.g. X while API credits are depleted). */
+    if (body?.manual) {
+      const statusList = await readyNetworks()
+      const known = new Set(statusList.map((n) => n.id))
+      const invalid = networks.filter((id) => !known.has(id))
+      if (invalid.length) {
+        return NextResponse.json({ error: `Unknown network: ${invalid.join(', ')}` }, { status: 400 })
+      }
+      const labels = Object.fromEntries(statusList.map((n) => [n.id, n.label]))
+      const results = manualPostResults(slug, networks, labels)
+      for (const row of results) await recordPost(slug, row)
+      await recordDoneSocialSend({ slug, networks, results })
+      return NextResponse.json({ results })
+    }
+
+    const results = await postQuote(slug, networks)
     if (results.some((r) => r.ok)) {
       await recordDoneSocialSend({
         slug,
-        networks: body?.networks,
+        networks,
         results,
       })
     }
