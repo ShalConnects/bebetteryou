@@ -65,7 +65,7 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
   const [theme, setTheme] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
-  const { preview, previewing, error, setError } = useQuotePreview(text, author)
+  const { preview, previewing, error, setError } = useQuotePreview(text, author, tags)
   const duplicate = useMemo(() => findDuplicateQuote(catalog, text), [catalog, text])
 
   async function onSubmit(e) {

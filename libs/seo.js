@@ -1,14 +1,17 @@
 import { appConfig } from '@/config/app'
 import { practiceDiscoverable } from '@/config/practice'
+import { sitePitch } from '@/config/pitch'
 import { listQuotes } from '@/libs/content'
 import { listPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
+
+export { sitePitch }
 
 /** Build Next.js metadata from central app config */
 export function buildMetadata({ title, description, image, url } = {}) {
   const baseUrl = appConfig.siteUrl.replace(/\/$/, '')
   const appName = appConfig.name
-  const desc = description || appConfig.description
+  const desc = description || sitePitch()
   const ogImage = image
     ? image.startsWith('http')
       ? image

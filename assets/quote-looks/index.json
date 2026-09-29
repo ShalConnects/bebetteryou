@@ -1,0 +1,182 @@
+[
+  {
+    "file": "01-motivation-brackets.jpg",
+    "tag": "Motivation",
+    "motif": "spark",
+    "geometry": "brackets",
+    "grainOpacity": 0.44,
+    "n": 100,
+    "text": "Keep going when it is hard."
+  },
+  {
+    "file": "02-motivation-arcs.jpg",
+    "tag": "Motivation",
+    "motif": "spark",
+    "geometry": "arcs",
+    "grainOpacity": 0.44,
+    "n": 101,
+    "text": "One more step still counts."
+  },
+  {
+    "file": "03-motivation-rules.jpg",
+    "tag": "Motivation",
+    "motif": "spark",
+    "geometry": "rules",
+    "grainOpacity": 0.44,
+    "n": 102,
+    "text": "Push once. Then push again."
+  },
+  {
+    "file": "04-motivation-ring.jpg",
+    "tag": "Motivation",
+    "motif": "spark",
+    "geometry": "ring",
+    "grainOpacity": 0.44,
+    "n": 103,
+    "text": "Fire first. Feel later."
+  },
+  {
+    "file": "05-mindset-brackets.jpg",
+    "tag": "Mindset",
+    "motif": "lens",
+    "geometry": "brackets",
+    "grainOpacity": 0.22,
+    "n": 104,
+    "text": "Clear the noise. Keep the signal."
+  },
+  {
+    "file": "06-mindset-arcs.jpg",
+    "tag": "Mindset",
+    "motif": "lens",
+    "geometry": "arcs",
+    "grainOpacity": 0.22,
+    "n": 105,
+    "text": "Think slow. Move clean."
+  },
+  {
+    "file": "07-mindset-rules.jpg",
+    "tag": "Mindset",
+    "motif": "lens",
+    "geometry": "rules",
+    "grainOpacity": 0.22,
+    "n": 106,
+    "text": "Protect the quiet mind."
+  },
+  {
+    "file": "08-mindset-ring.jpg",
+    "tag": "Mindset",
+    "motif": "lens",
+    "geometry": "ring",
+    "grainOpacity": 0.22,
+    "n": 107,
+    "text": "Focus is a kindness."
+  },
+  {
+    "file": "09-growth-brackets.jpg",
+    "tag": "Growth",
+    "motif": "sprout",
+    "geometry": "brackets",
+    "grainOpacity": 0.32,
+    "n": 108,
+    "text": "Level up one quiet day at a time."
+  },
+  {
+    "file": "10-growth-arcs.jpg",
+    "tag": "Growth",
+    "motif": "sprout",
+    "geometry": "arcs",
+    "grainOpacity": 0.32,
+    "n": 109,
+    "text": "Roots before the bloom."
+  },
+  {
+    "file": "11-growth-rules.jpg",
+    "tag": "Growth",
+    "motif": "sprout",
+    "geometry": "rules",
+    "grainOpacity": 0.32,
+    "n": 110,
+    "text": "Small reps. Big change."
+  },
+  {
+    "file": "12-growth-ring.jpg",
+    "tag": "Growth",
+    "motif": "sprout",
+    "geometry": "ring",
+    "grainOpacity": 0.32,
+    "n": 111,
+    "text": "Grow where you are planted."
+  },
+  {
+    "file": "13-love-brackets.jpg",
+    "tag": "Love",
+    "motif": "heart",
+    "geometry": "brackets",
+    "grainOpacity": 0.26,
+    "n": 112,
+    "text": "Soft landing still counts as progress."
+  },
+  {
+    "file": "14-love-arcs.jpg",
+    "tag": "Love",
+    "motif": "heart",
+    "geometry": "arcs",
+    "grainOpacity": 0.26,
+    "n": 113,
+    "text": "Be gentle and still be strong."
+  },
+  {
+    "file": "15-love-rules.jpg",
+    "tag": "Love",
+    "motif": "heart",
+    "geometry": "rules",
+    "grainOpacity": 0.26,
+    "n": 114,
+    "text": "Love is a daily practice."
+  },
+  {
+    "file": "16-love-ring.jpg",
+    "tag": "Love",
+    "motif": "heart",
+    "geometry": "ring",
+    "grainOpacity": 0.26,
+    "n": 115,
+    "text": "Hold them without losing you."
+  },
+  {
+    "file": "17-yourself-brackets.jpg",
+    "tag": "Yourself",
+    "motif": "figure",
+    "geometry": "brackets",
+    "grainOpacity": 0.46,
+    "n": 116,
+    "text": "Be the one who stays with you."
+  },
+  {
+    "file": "18-yourself-arcs.jpg",
+    "tag": "Yourself",
+    "motif": "figure",
+    "geometry": "arcs",
+    "grainOpacity": 0.46,
+    "n": 117,
+    "text": "You are not behind."
+  },
+  {
+    "file": "19-yourself-rules.jpg",
+    "tag": "Yourself",
+    "motif": "figure",
+    "geometry": "rules",
+    "grainOpacity": 0.46,
+    "n": 118,
+    "text": "Choose yourself without apology."
+  },
+  {
+    "file": "20-yourself-ring.jpg",
+    "tag": "Yourself",
+    "motif": "figure",
+    "geometry": "ring",
+    "grainOpacity": 0.46,
+    "n": 119,
+    "text": "Stay loyal to your own line."
+  }
+]

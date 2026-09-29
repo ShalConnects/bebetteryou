@@ -213,6 +213,7 @@ export async function encodeWeekShort(items = [], { music } = {}) {
               n: quote.n,
               text: quote.text,
               author: quote.author || '',
+              tags: quote.tags,
               card,
             })
           : await renderShortFrameLetterbox(row.imageBuffer, card)
@@ -306,6 +307,7 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
             n: quote.n,
             text: beat.text,
             author: quote.author || '',
+            tags: quote.tags,
             card,
             reveal: beat.reveal,
           }),
@@ -323,6 +325,7 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
               n: quote.n,
               text: card.endText,
               author: '',
+              tags: quote.tags,
               card,
             }),
           },

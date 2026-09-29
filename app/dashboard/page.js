@@ -120,7 +120,20 @@ export default async function Dashboard({ searchParams }) {
                     ) : null}
                   </span>
                   {ready ? (
-                    <span className="shrink-0 text-paper">Ready</span>
+                    <span className="shrink-0 text-paper">
+                      Ready
+                      {id === 'youtube' ? (
+                        <>
+                          {' · '}
+                          <a
+                            href="/api/social/youtube/connect"
+                            className="underline-offset-2 hover:underline"
+                          >
+                            Reconnect
+                          </a>
+                        </>
+                      ) : null}
+                    </span>
                   ) : pending ? (
                     <span className="shrink-0 text-quiet">Pending</span>
                   ) : connectable ? (

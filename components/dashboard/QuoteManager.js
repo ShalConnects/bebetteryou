@@ -43,7 +43,11 @@ export default function QuoteManager({
   })
   const [busy, setBusy] = useState(false)
   const selectedRef = useRef(null)
-  const { preview, previewing, error, setError } = useQuotePreview(form?.text || '', form?.author || '')
+  const { preview, previewing, error, setError } = useQuotePreview(
+    form?.text || '',
+    form?.author || '',
+    form?.tags || []
+  )
 
   const filtered = useMemo(() => filterQuotes(items, { q, tag }), [items, q, tag])
   const current = items.find((x) => x.slug === slug)

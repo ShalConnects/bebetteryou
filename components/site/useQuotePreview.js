@@ -5,10 +5,11 @@ import { useEffect, useState } from 'react'
 const delayMs = 500
 
 /** Debounced card preview — returns wrapped `lines` from the renderer. */
-export function useQuotePreview(text, author) {
+export function useQuotePreview(text, author, tags = []) {
   const [preview, setPreview] = useState(null)
   const [previewing, setPreviewing] = useState(false)
   const [error, setError] = useState('')
+  const tagKey = Array.isArray(tags) ? tags.join('\0') : ''
 
   useEffect(() => {
     const trimmed = text.trim()
@@ -25,7 +26,7 @@ export function useQuotePreview(text, author) {
         const res = await fetch('/api/quotes/preview', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text: trimmed, author }),
+          body: JSON.stringify({ text: trimmed, author, tags }),
           signal: ctrl.signal,
         })
         const data = await res.json()
@@ -43,7 +44,7 @@ export function useQuotePreview(text, author) {
       clearTimeout(timer)
       ctrl.abort()
     }
-  }, [text, author])
+  }, [text, author, tagKey])
 
   return { preview, previewing, error, setError }
 }

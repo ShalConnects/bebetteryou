@@ -14,7 +14,11 @@ export async function createQuote({ text, author = '', tags = [], theme = '' }) 
   const credit = normalizeAuthor(author)
   const tagRows = await readTags()
   const catalog = tagNames(tagRows)
-  const src = await saveQuoteImage(file, await renderQuoteCard({ n, text, author: credit }))
+  const knownTags = tags.filter((t) => catalog.includes(t))
+  const src = await saveQuoteImage(
+    file,
+    await renderQuoteCard({ n, text, author: credit, tags: knownTags })
+  )
   const known = resolveKnownTheme(theme, tagRows)
 
   const quote = {
@@ -23,7 +27,7 @@ export async function createQuote({ text, author = '', tags = [], theme = '' }) 
     src,
     text,
     author: credit,
-    tags: tags.filter((t) => catalog.includes(t)),
+    tags: knownTags,
     rev: cardRevision,
     createdAt: new Date().toISOString(),
     ...(known ? { theme: known } : {}),

@@ -1,4 +1,5 @@
 import appConfig from './app.js'
+import { heroLine, heroSub } from './pitch.js'
 
 /** Optional hosted storefront. Print-on-demand on /shop does not need this. */
 export const shop = {
@@ -44,7 +45,6 @@ export const socials = [
 const mark = '/brand/fav.png'
 
 export const brand = {
-  logo: '/brand/logo.png',
   mark,
   favicon: mark,
   // Literal, not appConfig.name — APP_NAME is server-only and would hydrate mismatched.
@@ -54,8 +54,8 @@ export const brand = {
 }
 
 export const copy = {
-  heroLine: 'Be better than yesterday.',
-  heroSub: 'Quote cards every day — for the moments you need a push.',
+  heroLine,
+  heroSub,
   aboutTeaser:
     'Quote cards every day on the site and where you follow us. Built for people who want to be better than yesterday.',
   aboutLead: 'Hey you — yeah, you.',

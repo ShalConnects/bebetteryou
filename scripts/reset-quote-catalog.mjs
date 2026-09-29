@@ -158,7 +158,7 @@ async function main() {
   for (let i = 0; i < keepers.length; i++) {
     const k = keepers[i]
     const n = i + 1
-    const buffer = await renderQuoteCard({ n, text: k.text, author: k.author })
+    const buffer = await renderQuoteCard({ n, text: k.text, author: k.author, tags: k.tags })
     fs.mkdirSync(quotesDir, { recursive: true })
     fs.writeFileSync(path.join(quotesDir, `bby${n}.jpg`), buffer)
     next.push({

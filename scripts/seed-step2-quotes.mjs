@@ -97,7 +97,7 @@ async function main() {
   for (const row of rows) {
     n += 1
     const author = String(row.author || '').trim()
-    const buffer = await renderQuoteCard({ n, text: row.text, author })
+    const buffer = await renderQuoteCard({ n, text: row.text, author, tags: row.tags })
     const file = `bby${n}.jpg`
     fs.writeFileSync(path.join(quotesDir, file), buffer)
     const quote = {

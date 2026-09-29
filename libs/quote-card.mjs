@@ -4,6 +4,7 @@ import { brand } from '../config/site.js'
 import { getSiteLabel } from '../libs/site-url.js'
 import { cardRevision, quoteCard } from '../config/quote-card.js'
 import { capitalizeFirstWord, measureContext, registerFonts, wrapLines } from './canvas-text.mjs'
+import { drawMotif, pickMotif } from './quote-motifs.mjs'
 
 export { cardRevision, quoteCard }
 
@@ -169,12 +170,12 @@ function drawQuoteBlock(ctx, w, h, sectionH, footerH, text, quote, padX, reveal)
 
 /**
  * Render a quote card to a JPEG buffer.
- * @param {{ n: number, text: string, author?: string, card?: typeof quoteCard, reveal?: number }} quote
+ * @param {{ n: number, text: string, author?: string, tags?: string[], card?: typeof quoteCard, reveal?: number }} quote
  */
-export async function renderQuoteCard({ n, text, author = '', card = quoteCard, reveal } = {}) {
+export async function renderQuoteCard({ n, text, author = '', tags = [], card = quoteCard, reveal } = {}) {
   registerFonts()
   const layers = await ensureLayers()
-  const { width: w, height: h, bg, padX, sectionH, footerH = sectionH, number, quote, meta } = card
+  const { width: w, height: h, bg, padX, sectionH, footerH = sectionH, number, quote, meta, motif } = card
   const site = getSiteLabel()
   const canvas = createCanvas(w, h)
   const ctx = canvas.getContext('2d')
@@ -182,6 +183,20 @@ export async function renderQuoteCard({ n, text, author = '', card = quoteCard, 
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, w, h)
   drawBackdrop(ctx, w, h, layers, card.layers || quoteCard.layers)
+
+  if (motif) {
+    const cx = w / 2
+    const cy = sectionH + (h - sectionH - footerH) / 2
+    const size = w * (motif.sizeRatio || 0.48)
+    const scale = w / quoteCard.width
+    ctx.save()
+    ctx.globalAlpha = motif.opacity ?? 0.11
+    ctx.strokeStyle = motif.color || quote.color
+    ctx.lineWidth = (motif.lineWidth || 3.5) * scale
+    drawMotif(ctx, pickMotif(tags, n), cx, cy, size)
+    ctx.restore()
+  }
+
   drawTopChrome(ctx, n, w, sectionH, padX, layers.mark, number)
   drawQuoteBlock(ctx, w, h, sectionH, footerH, text, quote, padX, reveal)
   drawMeta(ctx, w, h, sectionH, footerH, site, author, meta)

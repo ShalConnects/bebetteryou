@@ -5,15 +5,15 @@
  */
 
 import { getSiteUrl } from '../libs/site-url.js'
+import { sitePitch } from './pitch.js'
 
 const name = process.env.APP_NAME || 'BeBetterYou'
+const description = sitePitch()
 
 export const appConfig = {
   // App Information
   name,
-  description:
-    process.env.APP_DESCRIPTION ||
-    'Got the motivation? Now grow beyond impossible. Quote cards every day and a little fire.',
+  description,
   shortName: process.env.APP_SHORT_NAME || 'Be',
   
   // URLs
@@ -32,12 +32,10 @@ export const appConfig = {
   // Metadata
   metadata: {
     title: name,
-    description:
-      process.env.APP_DESCRIPTION ||
-      'Got the motivation? Now grow beyond impossible.',
+    description,
     keywords: process.env.APP_KEYWORDS || 'motivation, quotes, be better you',
     author: process.env.APP_AUTHOR || name,
-    ogImage: process.env.OG_IMAGE || '/brand/logo.png',
+    ogImage: process.env.OG_IMAGE || '/brand/og.png',
   },
   
   // Email Templates
@@ -97,7 +95,7 @@ export function getAppName() {
  * Get app description (with fallback)
  */
 export function getAppDescription() {
-  return appConfig.description
+  return sitePitch()
 }
 
 /**

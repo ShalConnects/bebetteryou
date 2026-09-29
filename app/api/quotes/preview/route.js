@@ -14,7 +14,8 @@ export async function POST(req) {
     const text = normalizeQuoteText(body?.text)
     const n = nextQuoteN(await readQuotes())
     const author = normalizeAuthor(body?.author)
-    const buffer = await renderQuoteCard({ n, text, author })
+    const tags = Array.isArray(body?.tags) ? body.tags.map(String) : []
+    const buffer = await renderQuoteCard({ n, text, author, tags })
 
     return NextResponse.json({
       n,

@@ -1,6 +1,6 @@
 /** Bump on every card redesign. The public site shows only quotes rendered at
     this revision, so restyled cards surface as they are re-rendered. */
-export const cardRevision = 2
+export const cardRevision = 6
 
 /** Quote card layout tokens (matches bby1–bby3: 600×750). */
 export const quoteCard = {
@@ -41,6 +41,14 @@ export const quoteCard = {
     size: 17,
     color: '#e4f7ec',
     lineHeight: 1.4,
+  },
+  /** Soft geometric artwork behind the quote (keyed by tag via quote-motifs). */
+  motif: {
+    color: '#e4f7ec',
+    opacity: 0.11,
+    /** Fraction of card width. */
+    sizeRatio: 0.48,
+    lineWidth: 3.5,
   },
 }
 

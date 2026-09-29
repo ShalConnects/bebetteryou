@@ -45,7 +45,12 @@ export async function updateQuote(slug, { text, author, tags, theme, related, re
     assertQuoteFits(next.text)
     next.src = await saveQuoteImage(
       cardFile(existing.n),
-      await renderQuoteCard({ n: existing.n, text: next.text, author: next.author })
+      await renderQuoteCard({
+        n: existing.n,
+        text: next.text,
+        author: next.author,
+        tags: next.tags,
+      })
     )
     next.rev = cardRevision
   }
