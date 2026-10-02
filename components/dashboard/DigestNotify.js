@@ -23,10 +23,19 @@ export default function DigestNotify() {
       const res = await fetch('/api/newsletter/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ type: 'digest' }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
+      const raw = await res.text()
+      let data = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        throw new Error(
+          raw?.trim()?.slice(0, 160) || `Request failed (${res.status}) — non-JSON response`
+        )
+      }
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
       const bits = [
         `Digest (${data.quotes || 0} cards): sent ${data.sent} of ${data.total}`,
       ]

@@ -4,7 +4,7 @@ import { readQuotes } from '@/libs/quotes-store'
 import { notifyQuoteDigest } from '@/libs/newsletter'
 import { logError, logInfo } from '@/libs/logger'
 import { readyNetworks, quoteCaption, resolveQuoteImageBuffer } from '@/libs/social'
-import { postInstagram } from '@/libs/social/providers/instagram'
+import { postInstagramCarousel } from '@/libs/social/providers/instagram'
 import { postFacebook } from '@/libs/social/providers/facebook'
 import { postBluesky, clipBlueskyText } from '@/libs/social/providers/bluesky'
 import { postTelegram } from '@/libs/social/providers/telegram'
@@ -26,7 +26,7 @@ function absoluteImageUrl(src) {
   return src.startsWith('http') ? src : `${getSiteUrl()}${src.startsWith('/') ? '' : '/'}${src}`
 }
 
-const WEEK_TARGETS = [...WEEK_COLLAGE_NETWORKS, 'youtube', 'threads']
+const WEEK_TARGETS = ['instagram', ...WEEK_COLLAGE_NETWORKS, 'youtube', 'threads']
 
 /** Shared pick + collage build. No network posts. */
 async function prepareWeekReview(now = new Date()) {
@@ -121,7 +121,9 @@ export async function previewWeekReview(now = new Date(), { encodeShort = true }
           ? 'short'
           : n.id === 'threads'
             ? 'thread'
-            : 'collage',
+            : n.id === 'instagram'
+              ? 'carousel'
+              : 'collage',
     }))
   logInfo('Week review preview: network plan', {
     plan: plan.map((p) => `${p.id}:${p.ready ? 'ready' : 'skip'}`),
@@ -152,8 +154,8 @@ export async function previewWeekReview(now = new Date(), { encodeShort = true }
 }
 
 /**
- * Manual Friday publish: collage → IG/FB/Bluesky/Telegram/Pinterest, Short → YT,
- * Threads reply chain, digest email. Skips when the Sat–Thu window is empty.
+ * Manual Friday publish: IG carousel, collage → FB/Bluesky/Telegram/Pinterest,
+ * Short → YT, Threads reply chain, digest email.
  */
 export async function publishWeekReview(now = new Date()) {
   logInfo('Week review publish: start')
@@ -177,9 +179,9 @@ export async function publishWeekReview(now = new Date()) {
   const blueskyText = `${clipBlueskyText(blueskyHead, Math.max(1, 300 - site.length - 2))}\n\n${site}`
   const statusList = await readyNetworks()
   const status = Object.fromEntries(statusList.map((n) => [n.id, n]))
+  const cardImageUrls = quotes.map((q) => absoluteImageUrl(q.src))
 
   const collageProviders = {
-    instagram: () => postInstagram({ imageUrl: collageUrl, caption }),
     facebook: () => postFacebook({ imageUrl: collageUrl, caption }),
     bluesky: () =>
       postBluesky({
@@ -201,6 +203,29 @@ export async function publishWeekReview(now = new Date()) {
   }
 
   const results = []
+
+  if (status.instagram?.ready) {
+    try {
+      logInfo('Week review publish: Instagram carousel', { slides: cardImageUrls.length })
+      const posted = await postInstagramCarousel({ imageUrls: cardImageUrls, caption })
+      const row = { id: 'instagram', label: status.instagram.label, ok: true, url: posted?.url || null }
+      await recordPost(slug, row)
+      results.push(row)
+      logInfo('Week review publish: Instagram ok', { url: row.url, slides: cardImageUrls.length })
+    } catch (err) {
+      logError('Week review publish: Instagram failed', err)
+      const row = { id: 'instagram', label: status.instagram.label, ok: false, error: err.message || 'Failed' }
+      await recordPost(slug, row)
+      results.push(row)
+    }
+  } else {
+    results.push({
+      id: 'instagram',
+      label: status.instagram?.label || 'Instagram',
+      ok: false,
+      error: 'Not configured',
+    })
+  }
 
   await Promise.all(
     WEEK_COLLAGE_NETWORKS.map(async (id) => {

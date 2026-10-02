@@ -31,6 +31,12 @@ const LeadSchema = new mongoose.Schema({
   lastQuoteEmailedAt: Date,
   /** Ephemeral claim id for the in-flight quote batch (prevents concurrent double-send). */
   lastQuoteClaimId: String,
+  /** Last blog notify attempt (success or fail). */
+  lastBlogEmailedAt: Date,
+  lastBlogClaimId: String,
+  /** Last book notify attempt (success or fail). */
+  lastBookEmailedAt: Date,
+  lastBookClaimId: String,
   status: {
     type: String,
     enum: ['new', 'contacted', 'qualified', 'converted', 'lost'],
@@ -49,6 +55,8 @@ const LeadSchema = new mongoose.Schema({
 LeadSchema.index({ email: 1, source: 1 }, { unique: true, partialFilterExpression: { source: 'newsletter' } })
 LeadSchema.index({ unsubscribeToken: 1 }, { unique: true, sparse: true })
 LeadSchema.index({ source: 1, 'prefs.quotes': 1, lastQuoteEmailedAt: 1 })
+LeadSchema.index({ source: 1, 'prefs.blog': 1, lastBlogEmailedAt: 1 })
+LeadSchema.index({ source: 1, 'prefs.books': 1, lastBookEmailedAt: 1 })
 
 LeadSchema.pre('save', function (next) {
   this.updatedAt = Date.now()

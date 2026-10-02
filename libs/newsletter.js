@@ -6,9 +6,11 @@ import { connectDB } from '@/libs/mongo'
 import Lead from '@/models/Lead'
 import NewsletterSendFailure from '@/models/NewsletterSendFailure'
 import {
-  QUOTE_EMAIL_BATCH_SIZE,
+  PREF_EMAIL_BATCH_SIZE,
   RESEND_RATE_LIMIT_RETRY_MS,
   RESEND_SEND_GAP_MS,
+  eligibleBlogSubscriberFilter,
+  eligibleBookSubscriberFilter,
   eligibleQuoteSubscriberFilter,
   isResendRateLimitError,
 } from '@/libs/newsletter-quote-batch'
@@ -39,12 +41,18 @@ export {
 } from '@/libs/newsletter-email'
 
 export {
+  PREF_EMAIL_BATCH_SIZE,
   QUOTE_EMAIL_BATCH_SIZE,
   QUOTE_EMAIL_COOLDOWN_DAYS,
+  PREF_EMAIL_COOLDOWN_DAYS,
   RESEND_SEND_GAP_MS,
+  eligibleBlogSubscriberFilter,
+  eligibleBookSubscriberFilter,
   eligibleQuoteSubscriberFilter,
+  eligiblePrefSubscriberFilter,
   isResendRateLimitError,
   quoteEmailCooldownCutoff,
+  prefEmailCooldownCutoff,
 } from '@/libs/newsletter-quote-batch'
 
 export function newUnsubscribeToken() {
@@ -104,22 +112,12 @@ export async function applyNewsletterManage({ token, prefs, unsubscribe }) {
   return lead
 }
 
-async function activeSubscribers(prefKey) {
-  await connectDB()
-  return Lead.find({
-    source: 'newsletter',
-    $or: [{ unsubscribedAt: null }, { unsubscribedAt: { $exists: false } }],
-    [`prefs.${prefKey}`]: true,
-    unsubscribeToken: { $exists: true, $ne: null },
-  }).lean()
-}
-
 async function sendSoft(to, payload) {
   try {
     await sendEmail({ to, ...payload })
     return { ok: true }
   } catch (error) {
-    logError('Newsletter send failed', error, { to, subject: payload.subject })
+    logError('Newsletter send failed', error, { to, subject: payload?.subject })
     return { ok: false, error: formatEmailError(error) }
   }
 }
@@ -199,27 +197,15 @@ export async function sendTestWelcome(email) {
   return sendTestNewsletter({ email, type: 'welcome' })
 }
 
-async function fanOut(prefKey, build) {
-  const rows = await activeSubscribers(prefKey)
-  let sent = 0
-  for (let i = 0; i < rows.length; i++) {
-    if (i > 0) await sleep(RESEND_SEND_GAP_MS)
-    const payload = build(rows[i])
-    if ((await sendSoftPaced(rows[i].email, payload)).ok) sent += 1
-  }
-  return { total: rows.length, sent }
-}
-
 /**
- * Claim up to `limit` eligible leads for a quote/digest send.
- * Sets lastQuoteEmailedAt immediately so concurrent clicks / crashes cannot double-mail.
+ * Claim up to `limit` eligible leads for a pref channel send.
+ * Stamps last*EmailedAt immediately so concurrent clicks / crashes cannot double-mail.
  */
-async function claimQuoteEmailBatch(limit = QUOTE_EMAIL_BATCH_SIZE) {
+async function claimPrefEmailBatch({ filter, lastField, claimField, limit = PREF_EMAIL_BATCH_SIZE }) {
   await connectDB()
-  const size = Math.max(0, Math.min(Number(limit) || QUOTE_EMAIL_BATCH_SIZE, QUOTE_EMAIL_BATCH_SIZE))
+  const size = Math.max(0, Math.min(Number(limit) || PREF_EMAIL_BATCH_SIZE, PREF_EMAIL_BATCH_SIZE))
   if (!size) return { rows: [], eligible: 0, claimedAt: null }
 
-  const filter = eligibleQuoteSubscriberFilter()
   const eligible = await Lead.countDocuments(filter)
   if (!eligible) return { rows: [], eligible: 0, claimedAt: null }
 
@@ -233,17 +219,16 @@ async function claimQuoteEmailBatch(limit = QUOTE_EMAIL_BATCH_SIZE) {
   const ids = sampled.map((r) => r._id)
   const claimedAt = new Date()
   const claimId = crypto.randomBytes(12).toString('hex')
-  // Re-check eligibility in the update so a concurrent claim cannot win the same lead.
   const claimResult = await Lead.updateMany(
     { _id: { $in: ids }, ...filter },
-    { $set: { lastQuoteEmailedAt: claimedAt, lastQuoteClaimId: claimId, updatedAt: claimedAt } }
+    { $set: { [lastField]: claimedAt, [claimField]: claimId, updatedAt: claimedAt } }
   )
 
   if (!claimResult.modifiedCount) {
     return { rows: [], eligible, claimedAt }
   }
 
-  const rows = await Lead.find({ lastQuoteClaimId: claimId })
+  const rows = await Lead.find({ [claimField]: claimId })
     .select({ email: 1, unsubscribeToken: 1 })
     .lean()
 
@@ -251,14 +236,18 @@ async function claimQuoteEmailBatch(limit = QUOTE_EMAIL_BATCH_SIZE) {
 }
 
 /**
- * Send quote/digest to up to 100 eligible subscribers.
- * Claims (stamps lastQuoteEmailedAt) before Resend so failures / crashes still count
- * toward the 30-day cooldown. Failures are logged for the dashboard.
+ * Send to up to 100 eligible subscribers for a channel.
+ * Claims before Resend so failures / crashes still count toward the 30-day cooldown.
  */
-async function fanOutQuoteBatch(build, { kind, slug }) {
-  const { rows, eligible, claimedAt } = await claimQuoteEmailBatch(QUOTE_EMAIL_BATCH_SIZE)
+async function fanOutPrefBatch(build, { kind, slug, filter, lastField, claimField }) {
+  const { rows, eligible, claimedAt } = await claimPrefEmailBatch({
+    filter,
+    lastField,
+    claimField,
+    limit: PREF_EMAIL_BATCH_SIZE,
+  })
   if (!rows.length) {
-    return { total: 0, sent: 0, failed: 0, eligible, batchSize: QUOTE_EMAIL_BATCH_SIZE }
+    return { total: 0, sent: 0, failed: 0, eligible, batchSize: PREF_EMAIL_BATCH_SIZE }
   }
 
   const recordedAt = claimedAt || new Date()
@@ -297,8 +286,18 @@ async function fanOutQuoteBatch(build, { kind, slug }) {
     sent,
     failed: failures.length,
     eligible,
-    batchSize: QUOTE_EMAIL_BATCH_SIZE,
+    batchSize: PREF_EMAIL_BATCH_SIZE,
   }
+}
+
+async function fanOutQuoteBatch(build, { kind, slug }) {
+  return fanOutPrefBatch(build, {
+    kind,
+    slug,
+    filter: eligibleQuoteSubscriberFilter(),
+    lastField: 'lastQuoteEmailedAt',
+    claimField: 'lastQuoteClaimId',
+  })
 }
 
 export async function notifyQuoteSubscribers(quote) {
@@ -333,12 +332,30 @@ export async function notifyQuoteDigest(countOrQuotes = 6) {
 
 export async function notifyBlogSubscribers(post) {
   const extras = await pickNewsletterExtras({ excludePostSlug: post.slug })
-  return fanOut('blog', (row) => buildBlogEmail({ post, token: row.unsubscribeToken, extras }))
+  return fanOutPrefBatch(
+    (row) => buildBlogEmail({ post, token: row.unsubscribeToken, extras }),
+    {
+      kind: 'blog',
+      slug: post.slug,
+      filter: eligibleBlogSubscriberFilter(),
+      lastField: 'lastBlogEmailedAt',
+      claimField: 'lastBlogClaimId',
+    }
+  )
 }
 
 export async function notifyBookSubscribers(book) {
   const extras = await pickNewsletterExtras({ excludeBookSlug: book.slug })
-  return fanOut('books', (row) => buildBookEmail({ book, token: row.unsubscribeToken, extras }))
+  return fanOutPrefBatch(
+    (row) => buildBookEmail({ book, token: row.unsubscribeToken, extras }),
+    {
+      kind: 'book',
+      slug: book.slug,
+      filter: eligibleBookSubscriberFilter(),
+      lastField: 'lastBookEmailedAt',
+      claimField: 'lastBookClaimId',
+    }
+  )
 }
 
 export async function listNewsletterSubscribers() {

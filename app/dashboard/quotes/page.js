@@ -67,7 +67,7 @@ export default async function AdminQuotesPage({ searchParams }) {
         id="section-week"
         persistKey="quotes-week"
         title="Week in review"
-        description="Friday publish: Sat–Thu cards as collage (IG/FB/Bluesky/Telegram/Pinterest), YouTube Short, Threads thread, and digest email."
+        description="Friday publish: Sat–Thu cards as Instagram carousel, collage (FB/Bluesky/Telegram/Pinterest), YouTube Short, Threads thread, and digest email."
         defaultOpen={openWeek}
       >
         <WeekReview quotes={weekQuotes} range={publicRange(range)} mode={weekMode} />

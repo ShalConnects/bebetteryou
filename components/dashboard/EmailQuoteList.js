@@ -25,10 +25,19 @@ export default function EmailQuoteList({ slug }) {
       const res = await fetch('/api/newsletter/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ type: 'quote', slug }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
+      const raw = await res.text()
+      let data = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        throw new Error(
+          raw?.trim()?.slice(0, 160) || `Request failed (${res.status}) — non-JSON response`
+        )
+      }
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
       const bits = [`Sent ${data.sent} of ${data.total}`]
       if (data.failed) bits.push(`${data.failed} failed (still on cooldown)`)
       if (data.eligible != null) bits.push(`${data.eligible} were eligible`)

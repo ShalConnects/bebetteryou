@@ -16,6 +16,8 @@ import {
 import {
   QUOTE_EMAIL_BATCH_SIZE,
   QUOTE_EMAIL_COOLDOWN_DAYS,
+  eligibleBlogSubscriberFilter,
+  eligibleBookSubscriberFilter,
   eligibleQuoteSubscriberFilter,
   isResendRateLimitError,
   quoteEmailCooldownCutoff,
@@ -105,6 +107,28 @@ describe('newsletter', () => {
           { lastQuoteEmailedAt: null },
           { lastQuoteEmailedAt: { $exists: false } },
           { lastQuoteEmailedAt: { $lt: quoteEmailCooldownCutoff(now) } },
+        ])
+      )
+    })
+
+    it('blog and book filters use separate cooldown fields', () => {
+      const now = new Date('2026-09-19T12:00:00.000Z')
+      const blog = eligibleBlogSubscriberFilter(now)
+      const book = eligibleBookSubscriberFilter(now)
+      expect(blog['prefs.blog']).toBe(true)
+      expect(book['prefs.books']).toBe(true)
+      expect(blog.$and[1].$or).toEqual(
+        expect.arrayContaining([
+          { lastBlogEmailedAt: null },
+          { lastBlogEmailedAt: { $exists: false } },
+          { lastBlogEmailedAt: { $lt: quoteEmailCooldownCutoff(now) } },
+        ])
+      )
+      expect(book.$and[1].$or).toEqual(
+        expect.arrayContaining([
+          { lastBookEmailedAt: null },
+          { lastBookEmailedAt: { $exists: false } },
+          { lastBookEmailedAt: { $lt: quoteEmailCooldownCutoff(now) } },
         ])
       )
     })

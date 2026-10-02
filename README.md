@@ -43,7 +43,7 @@ public/quotes/       # local card JPGs
 - **Local:** writes `public/quotes/` + `data/quotes.json`
 - **Vercel:** Mongo catalog + Blob images (`BLOB_READ_WRITE_TOKEN` required)
 
-Admin: `/dashboard/quotes` (sign in as `ADMIN_EMAIL`).
+Admin: `/dashboard` (sign in as `ADMIN_EMAIL`). Day-to-day steps: `DASHBOARD.md`.
 
 ## Print shop
 

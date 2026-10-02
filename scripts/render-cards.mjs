@@ -1,13 +1,15 @@
 /**
  * Re-render catalog cards at the current design revision and mark them live.
- * Usage: node scripts/render-cards.mjs --n 1,3,213
- *        node scripts/render-cards.mjs --all
+ * Also syncs `rev` (and catalog fields) to Mongo when MONGODB_URI is set.
+ * Usage: node --env-file=.env.local scripts/render-cards.mjs --n 1,3,213
+ *        node --env-file=.env.local scripts/render-cards.mjs --all
  */
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { cardRevision } from '../config/quote-card.js'
 import { renderQuoteCard } from '../libs/quote-card.mjs'
+import { mongoUri } from '../libs/mongo-uri.js'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const catalogFile = path.join(root, 'data/quotes.json')
@@ -47,4 +49,52 @@ for (const quote of targets) {
 }
 
 fs.writeFileSync(catalogFile, JSON.stringify(catalog, null, 2))
+
+if (mongoUri()) {
+  const { default: mongoose } = await import('mongoose')
+  await mongoose.connect(mongoUri(), { serverSelectionTimeoutMS: 8000 })
+  const Quote =
+    mongoose.models.Quote ||
+    mongoose.model(
+      'Quote',
+      new mongoose.Schema(
+        {
+          slug: String,
+          n: Number,
+          src: String,
+          text: String,
+          author: String,
+          tags: [String],
+          theme: String,
+          rev: Number,
+        },
+        { collection: 'quotes', strict: false }
+      )
+    )
+  let synced = 0
+  for (const quote of targets) {
+    if (!quote.text?.trim() || !quote.slug) continue
+    await Quote.updateOne(
+      { slug: quote.slug },
+      {
+        $set: {
+          n: quote.n,
+          src: quote.src,
+          text: quote.text,
+          author: quote.author || '',
+          tags: quote.tags || [],
+          ...(quote.theme ? { theme: quote.theme } : {}),
+          rev: quote.rev,
+        },
+      },
+      { upsert: true }
+    )
+    synced++
+  }
+  await mongoose.disconnect()
+  console.log(`Synced ${synced} docs to Mongo at revision ${cardRevision}.`)
+} else {
+  console.warn('MONGODB_URI unset — local JSON only; production may still filter by old rev.')
+}
+
 console.log(`Rendered ${rendered}/${targets.length} at revision ${cardRevision}.`)

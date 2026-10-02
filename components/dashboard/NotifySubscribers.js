@@ -2,20 +2,25 @@
 
 import { useState } from 'react'
 
+function channelLabel(type) {
+  if (type === 'blog') return 'blog'
+  if (type === 'book') return 'book'
+  return 'quote'
+}
+
 export default function NotifySubscribers({ type, options }) {
   const [slug, setSlug] = useState(options[0]?.slug || '')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState('')
   const [error, setError] = useState('')
 
-  const isQuote = type === 'quote'
+  const channel = channelLabel(type)
 
   async function onNotify() {
     if (!slug) return
     if (
-      isQuote &&
       !window.confirm(
-        'Email this card to up to 100 quote subscribers who have not gotten quote mail in 30 days?'
+        `Email this to up to 100 ${channel} subscribers who have not gotten ${channel} mail in 30 days?`
       )
     ) {
       return
@@ -27,18 +32,24 @@ export default function NotifySubscribers({ type, options }) {
       const res = await fetch('/api/newsletter/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ type, slug }),
       })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      if (isQuote) {
-        const bits = [`Sent ${data.sent} of ${data.total}`]
-        if (data.failed) bits.push(`${data.failed} failed (still on cooldown)`)
-        if (data.eligible != null) bits.push(`${data.eligible} were eligible`)
-        setResult(bits.join(' · '))
-      } else {
-        setResult(`Sent ${data.sent} of ${data.total} subscriber${data.total === 1 ? '' : 's'}.`)
+      const raw = await res.text()
+      let data = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        throw new Error(
+          raw?.trim()?.slice(0, 160) || `Request failed (${res.status}) — non-JSON response`
+        )
       }
+      if (!res.ok) throw new Error(data.error || `Failed (${res.status})`)
+
+      const bits = [`Sent ${data.sent} of ${data.total}`]
+      if (data.failed) bits.push(`${data.failed} failed (still on cooldown)`)
+      if (data.eligible != null) bits.push(`${data.eligible} were eligible`)
+      setResult(bits.join(' · '))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -52,11 +63,9 @@ export default function NotifySubscribers({ type, options }) {
 
   return (
     <div className="space-y-3">
-      {isQuote ? (
-        <p className="text-sm text-quiet">
-          Up to 100 random eligible subscribers per send (30-day cooldown shared with digests).
-        </p>
-      ) : null}
+      <p className="text-sm text-quiet">
+        Up to 100 random eligible subscribers per send (30-day cooldown for this channel).
+      </p>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <select
           value={slug}

@@ -188,8 +188,8 @@ export default async function AdminSubscribersPage({ searchParams }) {
       </DashSection>
 
       <DashSection
-        title={`Failed quote sends (${failures.length})`}
-        description="Resend failures from quote/digest batches. These addresses still sit in the 30-day cooldown."
+        title={`Failed batch sends (${failures.length})`}
+        description="Resend failures from quote/digest/blog/book batches. Those addresses still sit in that channel’s 30-day cooldown."
         defaultOpen={false}
       >
         <QuoteSendFailures failures={failures} />

@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 /** Failed Resend deliveries for quote batches (still counted toward 30-day cooldown). */
 const NewsletterSendFailureSchema = new mongoose.Schema({
   email: { type: String, required: true },
-  kind: { type: String, enum: ['quote', 'digest'], required: true },
+  kind: { type: String, enum: ['quote', 'digest', 'blog', 'book'], required: true },
   slug: String,
   subject: String,
   error: { type: String, default: 'Send failed' },
