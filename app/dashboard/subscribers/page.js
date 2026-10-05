@@ -1,3 +1,4 @@
+import CleanupSuppressions from '@/components/dashboard/CleanupSuppressions'
 import DigestNotify from '@/components/dashboard/DigestNotify'
 import ImportSubscribers from '@/components/dashboard/ImportSubscribers'
 import NewsletterDeliveryEvents from '@/components/dashboard/NewsletterDeliveryEvents'
@@ -200,6 +201,7 @@ export default async function AdminSubscribersPage({ searchParams }) {
         description="From Resend webhooks. Those addresses are auto-unsubscribed so we stop mailing them."
         defaultOpen={false}
       >
+        <CleanupSuppressions />
         <NewsletterDeliveryEvents events={deliveryEvents} />
       </DashSection>
     </div>

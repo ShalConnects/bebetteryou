@@ -455,11 +455,14 @@ export async function unsubscribeNewsletterSubscriber(email) {
   if (!normalized) return { ok: false }
   const lead = await Lead.findOne({ email: normalized, source: 'newsletter' })
   if (!lead) return { ok: false }
-  lead.prefs = { quotes: false, blog: false, books: false }
-  lead.unsubscribedAt = new Date()
-  lead.updatedAt = new Date()
-  await lead.save()
-  return { ok: true, lead }
+  const already = Boolean(lead.unsubscribedAt)
+  if (!already) {
+    lead.prefs = { quotes: false, blog: false, books: false }
+    lead.unsubscribedAt = new Date()
+    lead.updatedAt = new Date()
+    await lead.save()
+  }
+  return { ok: true, already, lead }
 }
 
 /** Hard-delete a newsletter lead only (never contact-form leads). */

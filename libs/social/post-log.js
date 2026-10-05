@@ -27,6 +27,11 @@ export function alreadyPosted(selected, posts) {
   return selected.filter((id) => posts?.[id]?.ok)
 }
 
+/** Cron / schedule: only networks that are not already ok in the post log. */
+export function networksNeedingPost(requested, posts) {
+  return [...new Set((requested || []).map(String).filter(Boolean))].filter((id) => !posts?.[id]?.ok)
+}
+
 /** Build ok results for admin “I posted this myself” (no provider call). */
 export function manualPostResults(slug, networkIds, labels = {}) {
   const key = String(slug || '').trim()

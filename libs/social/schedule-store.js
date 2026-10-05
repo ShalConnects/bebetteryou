@@ -103,6 +103,23 @@ export async function createSchedule({ slug, networks, runAt }) {
   if (Number.isNaN(when.getTime())) throw new Error('Invalid schedule time')
   if (when.getTime() < Date.now() - 60_000) throw new Error('Schedule time must be in the future')
 
+  if (mongoUri()) {
+    const SocialSchedule = await model()
+    const existing = await SocialSchedule.findOne({ slug: key, status: 'pending' }).lean()
+    if (existing) {
+      throw new Error(
+        `A pending schedule already exists for ${key} (${new Date(existing.runAt).toISOString()}). Cancel it first.`
+      )
+    }
+  } else if (!process.env.VERCEL) {
+    const existing = readLocal().find((r) => r.slug === key && r.status === 'pending')
+    if (existing) {
+      throw new Error(
+        `A pending schedule already exists for ${key} (${existing.runAt}). Cancel it first.`
+      )
+    }
+  }
+
   const row = {
     slug: key,
     networks: nets,

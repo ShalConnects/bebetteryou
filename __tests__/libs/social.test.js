@@ -33,7 +33,7 @@ import { clipThreadsText, hasThreadsKeys } from '@/libs/social/providers/threads
 import { blueskyCaption, clipBlueskyText, hasBlueskyKeys, linkFacets } from '@/libs/social/providers/bluesky'
 import { clipTelegramCaption, hasTelegramKeys } from '@/libs/social/providers/telegram'
 import { requestOrigin, youtubeRedirectUri } from '@/libs/social/youtube-oauth'
-import { alreadyPosted, defaultSelected, manualPostResults, mergePostRecord } from '@/libs/social/post-log'
+import { alreadyPosted, defaultSelected, manualPostResults, mergePostRecord, networksNeedingPost } from '@/libs/social/post-log'
 
 describe('social', () => {
   it('builds quote caption with link', async () => {
@@ -302,6 +302,16 @@ describe('social', () => {
     const viaApi = mergePostRecord(saved, { slug: 'bby-3', id: 'x', ok: true, url: 'https://x.com/1' })
     expect(viaApi.manual).toBe(false)
     expect(viaApi.url).toBe('https://x.com/1')
+  })
+
+  it('skips networks already posted when scheduling cron runs', () => {
+    expect(
+      networksNeedingPost(['instagram', 'threads', 'youtube'], {
+        instagram: { ok: true },
+        threads: { ok: false },
+      })
+    ).toEqual(['threads', 'youtube'])
+    expect(networksNeedingPost(['instagram'], { instagram: { ok: true } })).toEqual([])
   })
 
   it('keeps the last success URL when a later post fails', () => {

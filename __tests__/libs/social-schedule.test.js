@@ -69,6 +69,21 @@ describe('social schedule store (local)', () => {
     expect(done.results.filter((r) => !r.ok)).toHaveLength(1)
   })
 
+  it('rejects a second pending schedule for the same slug', async () => {
+    await store.createSchedule({
+      slug: 'bby-dup',
+      networks: ['bluesky'],
+      runAt: new Date(Date.now() + 3600_000).toISOString(),
+    })
+    await expect(
+      store.createSchedule({
+        slug: 'bby-dup',
+        networks: ['telegram'],
+        runAt: new Date(Date.now() + 7200_000).toISOString(),
+      })
+    ).rejects.toThrow(/pending schedule already exists/i)
+  })
+
   it('cancels a pending schedule', async () => {
     const created = await store.createSchedule({
       slug: 'bby-2',
