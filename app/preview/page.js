@@ -1,4 +1,3 @@
-import './preview.css'
 import DealHero from '@/components/preview/DealHero'
 import { DeckProvider } from '@/components/preview/DeckProvider'
 import DeckStrip from '@/components/preview/DeckStrip'
@@ -13,22 +12,24 @@ import { listBooks } from '@/libs/books'
 import { listMoodIntents, listQuotes } from '@/libs/content'
 import { isPrintableQuote } from '@/libs/quote-text'
 import { sample } from '@/libs/sample'
-import { buildMetadata } from '@/libs/seo'
 
 /**
- * Redesign trial ("the deck"). Same data as `/`, new layout. Kept out of search
- * so it never competes with the real homepage; delete `app/preview`,
- * `components/preview` and `config/preview.js` to drop it.
+ * Redesign trial ("the deck"). Same data as `/`, new layout. Delete
+ * `app/preview`, `components/preview` and `config/preview.js` to drop it.
  */
-export const metadata = {
-  ...buildMetadata({ title: 'Preview' }),
-  robots: { index: false, follow: false },
-}
 
 export default async function PreviewHome() {
   const all = await listQuotes()
   const pool = all
-    .map(({ slug, n, src, tags, text, author, theme }) => ({ slug, n, src, tags, text, author, theme }))
+    .map(({ slug, n, src, tags, text, author, theme }) => ({
+      slug,
+      n,
+      src,
+      tags,
+      text,
+      author,
+      theme,
+    }))
     .sort((a, b) => b.n - a.n)
   const [today, yesterday] = pool
   const moods = await listMoodIntents()

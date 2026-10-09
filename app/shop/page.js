@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import CatalogFilters from '@/components/site/CatalogFilters'
+import PrintOwnForm from '@/components/site/PrintOwnForm'
 import ShopQuoteThumb from '@/components/site/ShopQuoteThumb'
 import { Page, PageIntro, Pager } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
-import { quoteCard } from '@/config/quote-card'
 import { publicPrintProducts } from '@/config/print-products'
 import { creditForAuthor } from '@/config/print-styles'
 import { shop } from '@/config/site'
 import { pagePrintableQuotes, param, printableQuoteTags, resolveSeed, resolveSort } from '@/libs/content'
-import { customPrintSlug, printHref } from '@/libs/print-link'
+import { printHref } from '@/libs/print-link'
 import { formatTag, shopHref } from '@/libs/quotes-url'
 import { pageRange } from '@/libs/paging'
 import { buildMetadata } from '@/libs/seo'
@@ -107,35 +107,9 @@ export default async function Shop({ searchParams }) {
           pageSize={pageSize}
           href={(p) => shopHref({ tag, page: p, sort, seed })}
         />
-        <form action={printHref(customPrintSlug)} method="get" className="mt-16 space-y-4 border-t border-line pt-12">
+        <PrintOwnForm className="mt-16 border-t border-line pt-12">
           <p className="text-lg text-paper">Or write your own.</p>
-          <label className="block">
-            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Line</span>
-            <textarea
-              name="text"
-              required
-              rows={4}
-              maxLength={quoteCard.quote.maxChars}
-              className="w-full resize-none border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
-            />
-          </label>
-          <label className="block">
-            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Author</span>
-            <input
-              name="author"
-              maxLength={80}
-              placeholder="Optional"
-              className="w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40"
-            />
-          </label>
-          <span className="flex flex-wrap justify-center gap-4 sm:justify-start">
-            {publicPrintProducts.map((product) => (
-              <button key={product.id} type="submit" name="product" value={product.id} className="tag font-semibold text-accent hover:text-paper">
-                {product.name}
-              </button>
-            ))}
-          </span>
-        </form>
+        </PrintOwnForm>
       </Page>
     )
   }

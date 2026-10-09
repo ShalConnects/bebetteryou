@@ -64,3 +64,9 @@ export async function postQuotes(post, count = blogQuoteCount) {
     seed: seedFromKey(post.slug),
   })
 }
+
+/** ~220 words a minute over every text a post's blocks carry. */
+export function readingMinutes(post) {
+  const words = JSON.stringify(post.blocks || []).split(/\s+/).length
+  return Math.max(1, Math.round(words / 220))
+}

@@ -91,7 +91,7 @@
   }
   100% {
     opacity: 1;
-    transform: translateY(0) rotateY(0) rotate(var(--tilt));
+    transform: none;
   }
 }
 .pv-card-deal {
@@ -113,9 +113,6 @@
   width: 11.5rem;
   scroll-snap-align: start;
   scroll-margin-left: max(1.25rem, calc((100vw - 72rem) / 2));
-}
-.pv-strip-item .pv-card {
-  --tilt: inherit;
 }
 @media (min-width: 768px) {
   .pv-strip-item {
@@ -194,4 +191,13 @@
     animation: none;
     transition: none;
   }
+}
+
+.pv-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  background: rgb(var(--accent));
+  transform-origin: left;
 }
