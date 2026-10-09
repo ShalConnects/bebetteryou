@@ -1,4 +1,3 @@
-import { notFound } from 'next/navigation'
 import Chips, { moodLinks } from '@/components/preview/Chips'
 import SectionHead from '@/components/preview/SectionHead'
 import ShopGrid from '@/components/preview/ShopGrid'
@@ -10,7 +9,6 @@ import { listMoodIntents, pagePrintableQuotes, param, printableQuoteTags } from 
 import { shopHref } from '@/libs/quotes-url'
 
 export default async function PreviewShop({ searchParams }) {
-  if (!appConfig.features.enablePrintShop) notFound()
   const sp = await searchParams
   const tag = param(sp?.tag)
   const [{ items, page, pages, total, pageSize }, tags, moods] = await Promise.all([
@@ -23,6 +21,7 @@ export default async function PreviewShop({ searchParams }) {
   return (
     <Page>
       <SectionHead as="h1" title={c.shopTitle} sub={c.wearSub} />
+      {appConfig.features.enablePrintShop ? null : <p className="pv-tile mb-8 text-sm text-quiet">{c.shopOff}</p>}
       <PrintOwnForm className="pv-tile mb-12">
         <h2 className="heading-sm">{c.ownTitle}</h2>
         <p className="text-sm text-body/75">{c.ownSub}</p>

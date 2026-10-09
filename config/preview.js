@@ -37,6 +37,7 @@ export const previewCopy = {
   likeThis: 'Another like this',
   shopTitle: 'Wear the words.',
   ownTitle: 'Your words, on a tee.',
+  shopOff: 'Print shop is switched off on this build, so the designs show but checkout links won’t open.',
   ownSub: 'Write a line, pick tee or mug, and we print just that one.',
   blogTitle: 'Notes.',
   noteCard: 'The card for this note',
