@@ -7,6 +7,15 @@ export const quoteSorts = [
   { id: 'random', label: 'Random' },
 ]
 
+/** /quotes grid looks. First is the default (kept out of the URL). */
+export const quoteViews = [
+  { id: 'tilted', label: 'Tilted' },
+  { id: 'straight', label: 'Straight' },
+  { id: 'classic', label: 'Classic' },
+]
+
+export const resolveView = (v) => (quoteViews.some((x) => x.id === v) ? v : quoteViews[0].id)
+
 /** Display label: Mindset → #mindset */
 export function formatTag(tag) {
   return tag ? `#${String(tag).replace(/^#/, '').toLowerCase()}` : ''
@@ -19,11 +28,12 @@ export function quotesListTitle({ tag, page, sort }) {
   return parts.join(' — ')
 }
 
-export function catalogHref(path, { tag, page, sort, seed } = {}) {
+export function catalogHref(path, { tag, page, sort, seed, view } = {}) {
   const q = new URLSearchParams()
   if (tag) q.set('tag', tag)
   if (sort && sort !== 'newest') q.set('sort', sort)
   if (sort === 'random' && seed != null) q.set('seed', String(seed))
+  if (view && view !== quoteViews[0].id) q.set('view', view)
   if (page > 1) q.set('page', String(page))
   const s = q.toString()
   return s ? `${path}?${s}` : path

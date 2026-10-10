@@ -1,5 +1,5 @@
-import ProductMock from '@/components/preview/ProductMock'
-import SectionHead from '@/components/preview/SectionHead'
+import ProductMock from '@/components/site/ProductMock'
+import SectionHead from '@/components/site/SectionHead'
 import { Page } from '@/components/site/ui'
 import { previewCopy as c, teeLooks } from '@/config/preview'
 import { listQuotes } from '@/libs/content'

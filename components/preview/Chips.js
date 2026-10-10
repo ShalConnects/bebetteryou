@@ -6,7 +6,7 @@ export default function Chips({ items, label, className = '' }) {
   return (
     <div className={`flex flex-wrap gap-2.5 ${className}`} role="group" aria-label={label}>
       {items.map(({ key, label: text, href, onClick, active }) => {
-        const cls = `pv-chip ${active ? 'pv-chip-on' : ''}`
+        const cls = `chip ${active ? 'chip-on' : ''}`
         return href ? (
           <Link key={key} href={href} className={cls} aria-current={active ? 'true' : undefined}>
             {text}

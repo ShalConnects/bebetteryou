@@ -11,11 +11,11 @@ export default function TableCard({ quote, href, tilt, variant = 'grid', priorit
   return (
     <div className={className}>
       {href ? (
-        <Link href={href} className="pv-card block" style={style} aria-label={`Quote #${quote.n}`}>
+        <Link href={href} className="tilt-cover block" style={style} aria-label={`Quote #${quote.n}`}>
           {img}
         </Link>
       ) : (
-        <div className="pv-card" style={style}>
+        <div className="tilt-cover" style={style}>
           {img}
         </div>
       )}

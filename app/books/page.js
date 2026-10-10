@@ -40,8 +40,7 @@ export default async function BooksPage({ searchParams }) {
   return (
     <Page>
       <PageIntro
-        title={tag ? formatTag(tag) : undefined}
-        srTitle="Books"
+        srTitle={tag ? formatTag(tag) : 'Books'}
         aside={
           <FilterMenu
             label="Tags"

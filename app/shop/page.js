@@ -1,14 +1,10 @@
-import Link from 'next/link'
 import CatalogFilters from '@/components/site/CatalogFilters'
 import PrintOwnForm from '@/components/site/PrintOwnForm'
-import ShopQuoteThumb from '@/components/site/ShopQuoteThumb'
+import ShopGrid from '@/components/site/ShopGrid'
 import { Page, PageIntro, Pager } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
-import { publicPrintProducts } from '@/config/print-products'
-import { creditForAuthor } from '@/config/print-styles'
-import { shop } from '@/config/site'
+import { copy, shop } from '@/config/site'
 import { pagePrintableQuotes, param, printableQuoteTags, resolveSeed, resolveSort } from '@/libs/content'
-import { printHref } from '@/libs/print-link'
 import { formatTag, shopHref } from '@/libs/quotes-url'
 import { pageRange } from '@/libs/paging'
 import { buildMetadata } from '@/libs/seo'
@@ -29,12 +25,7 @@ export async function generateMetadata({ searchParams }) {
   const sp = await searchParams
   const tag = param(sp?.tag)
   const sort = resolveSort(sp?.sort)
-  const { page, total, pageSize } = await pagePrintableQuotes(
-    tag,
-    param(sp?.page),
-    sort,
-    resolveSeed(sort, sp?.seed)
-  )
+  const { page, total, pageSize } = await pagePrintableQuotes(tag, param(sp?.page), sort, resolveSeed(sort, sp?.seed))
   const range = pageRange(page, pageSize, total)
   const url = getUrl(shopHref({ tag, page, sort }))
   return {
@@ -61,45 +52,16 @@ export default async function Shop({ searchParams }) {
     return (
       <Page>
         <PageIntro
-          title={tag ? formatTag(tag) : undefined}
-          srTitle="Shop"
+          srTitle={tag ? formatTag(tag) : 'Shop'}
           aside={<CatalogFilters hrefFor={shopHref} tag={tag} sort={sort} seed={seed} tags={tags} />}
         >
           {shopIntro}
         </PageIntro>
-        {items.length ? (
-          <ul className="divide-y divide-line">
-            {items.map((quote) => (
-              <li key={quote.slug} className="flex flex-col gap-4 py-8 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-                <span className="flex min-w-0 items-center gap-4">
-                  <ShopQuoteThumb quote={quote} />
-                  <span className="min-w-0">
-                    <p className="whitespace-pre-line text-lg text-paper">{quote.text}</p>
-                    {quote.n != null ? (
-                      <p className="mt-2 text-sm text-quiet">#{quote.n}</p>
-                    ) : null}
-                    {creditForAuthor(quote.author).id === 'on' ? (
-                      <p className="mt-2 text-sm text-quiet">{quote.author}</p>
-                    ) : null}
-                  </span>
-                </span>
-                <span className="flex flex-wrap justify-center gap-4 sm:shrink-0 sm:justify-end">
-                  {publicPrintProducts.map((product) => (
-                    <Link
-                      key={product.id}
-                      href={printHref(quote.slug, { productId: product.id })}
-                      className="tag font-semibold text-accent hover:text-paper"
-                    >
-                      {product.name}
-                    </Link>
-                  ))}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-center text-quiet">No quotes yet.</p>
-        )}
+        <PrintOwnForm className="tile mb-12 hover:translate-y-0">
+          <h2 className="heading-sm">{copy.shopOwnTitle}</h2>
+          <p className="text-sm text-body/75">{copy.shopOwnSub}</p>
+        </PrintOwnForm>
+        {items.length ? <ShopGrid items={items} /> : <p className="text-center text-quiet">No quotes yet.</p>}
         <Pager
           page={page}
           pages={pages}
@@ -107,9 +69,6 @@ export default async function Shop({ searchParams }) {
           pageSize={pageSize}
           href={(p) => shopHref({ tag, page: p, sort, seed })}
         />
-        <PrintOwnForm className="mt-16 border-t border-line pt-12">
-          <p className="text-lg text-paper">Or write your own.</p>
-        </PrintOwnForm>
       </Page>
     )
   }
@@ -126,8 +85,7 @@ export default async function Shop({ searchParams }) {
   return (
     <Page>
       <PageIntro title="Wear the reminder.">
-        Tees and mugs carrying the quotes. Printed and shipped when you order, so nothing sits in a
-        warehouse.
+        Tees and mugs carrying the quotes. Printed and shipped when you order, so nothing sits in a warehouse.
       </PageIntro>
       <p>
         <a className="btn" href={shop.url} target="_blank" rel="noopener noreferrer">

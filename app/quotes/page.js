@@ -1,7 +1,7 @@
 import CatalogFilters from '@/components/site/CatalogFilters'
 import { Page, PageIntro, Pager, QuoteGrid } from '@/components/site/ui'
 import { pageQuotes, param, quoteTags, resolveSeed, resolveSort } from '@/libs/content'
-import { formatTag, quotesHref, quotesListTitle } from '@/libs/quotes-url'
+import { formatTag, quotesHref, quotesListTitle, resolveView } from '@/libs/quotes-url'
 import { pageRange } from '@/libs/paging'
 import { getUrl } from '@/config/app'
 import { quotesIntro } from '@/config/quotes'
@@ -29,6 +29,7 @@ export default async function QuotesPage({ searchParams }) {
   const tag = param(sp?.tag)
   const sort = resolveSort(sp?.sort)
   const seed = resolveSeed(sort, sp?.seed)
+  const view = resolveView(param(sp?.view))
   const [{ items, page, pages, total, pageSize }, tags] = await Promise.all([
     pageQuotes(tag, param(sp?.page), sort, seed),
     quoteTags(),
@@ -36,19 +37,18 @@ export default async function QuotesPage({ searchParams }) {
   return (
     <Page>
       <PageIntro
-        title={tag ? formatTag(tag) : undefined}
-        srTitle="Quotes"
-        aside={<CatalogFilters hrefFor={quotesHref} tag={tag} sort={sort} seed={seed} tags={tags} />}
+        srTitle={tag ? formatTag(tag) : 'Quotes'}
+        aside={<CatalogFilters hrefFor={quotesHref} tag={tag} sort={sort} seed={seed} view={view} tags={tags} />}
       >
         {quotesIntro}
       </PageIntro>
-      <QuoteGrid items={items} priorityCount={3} />
+      <QuoteGrid items={items} priorityCount={4} view={view} />
       <Pager
         page={page}
         pages={pages}
         total={total}
         pageSize={pageSize}
-        href={(p) => quotesHref({ tag, page: p, sort, seed })}
+        href={(p) => quotesHref({ tag, page: p, sort, seed, view })}
       />
     </Page>
   )

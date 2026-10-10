@@ -2,20 +2,26 @@
 
 import Link from 'next/link'
 import { printHref } from '@/libs/print-link'
+import { quoteAlt } from '@/libs/quote-text'
 import ProductMock, { money, productById } from './ProductMock'
 import ProductPicker, { useProductPick } from './ProductPicker'
 
 /** Shop: every printable quote, already on the product — one picker drives the grid. */
 export default function ShopGrid({ items }) {
   const pick = useProductPick()
-  const price = money(productById(pick.productId).retail)
+  const product = productById(pick.productId)
+  const price = money(product.retail)
   return (
     <>
       <ProductPicker {...pick} className="mb-10" />
       <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
         {items.map((q) => (
           <li key={q.slug}>
-            <Link href={printHref(q.slug, { productId: pick.productId })} className="group block">
+            <Link
+              href={printHref(q.slug, { productId: pick.productId })}
+              className="group block"
+              aria-label={`${product.name}: ${quoteAlt(q)} — ${price}`}
+            >
               <ProductMock
                 quote={q}
                 productId={pick.productId}

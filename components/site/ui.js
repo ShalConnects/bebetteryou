@@ -1,11 +1,9 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import ScrollLink from '@/components/site/ScrollLink'
-import BookCard from '@/components/site/BookCard'
 import BookTile from '@/components/site/BookTile'
+import PostTile from '@/components/site/PostTile'
 import QuoteCard from '@/components/site/QuoteCard'
 import { pageRange, pageWindow } from '@/libs/paging'
-import { postHref } from '@/libs/blog-url'
 
 export function PageIntro({ title, children, center, aside, srTitle = 'Page' }) {
   return (
@@ -39,16 +37,6 @@ export function LegalPage({ title, children }) {
       <PageIntro title={title} />
       <div className="legal max-w-2xl">{children}</div>
     </Page>
-  )
-}
-
-export function ViewMore({ href, label = 'View all' }) {
-  return (
-    <p className="mt-12 text-center">
-      <Link href={href} className="btn">
-        {label}
-      </Link>
-    </p>
   )
 }
 
@@ -114,27 +102,33 @@ export function Pager({ page, pages, href, total, pageSize }) {
   )
 }
 
-export function QuoteGrid({ items, priorityCount = 0 }) {
+/** `view` (tilted | straight) lays cards on the table — 2 / 3 columns, numbered; classic or none = the plain grid. */
+export function QuoteGrid({ items, priorityCount = 0, view }) {
   if (!items.length) return <p className="text-center text-quiet">No quotes yet.</p>
+  const table = view === 'tilted' || view === 'straight'
   return (
-    <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4">
-      {items.map((quote, i) => (
-        <QuoteCard key={quote.slug} quote={quote} priority={i < priorityCount} />
-      ))}
+    <div
+      className={
+        table
+          ? 'grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 md:gap-x-8'
+          : 'grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4'
+      }
+    >
+      {items.map((quote, i) =>
+        table ? (
+          <div key={quote.slug}>
+            <QuoteCard
+              quote={quote}
+              priority={i < priorityCount}
+              className={`tilt-cover ${view === 'straight' ? 'rotate-0' : i % 2 ? 'rotate-2' : ''}`}
+            />
+            <p className="mt-3 font-display text-sm text-quiet">#{quote.n}</p>
+          </div>
+        ) : (
+          <QuoteCard key={quote.slug} quote={quote} priority={i < priorityCount} />
+        )
+      )}
     </div>
-  )
-}
-
-export function BookList({ items }) {
-  if (!items.length) return <p className="text-center text-quiet">No books yet.</p>
-  return (
-    <ul className="divide-y divide-line">
-      {items.map((book) => (
-        <li key={book.slug} className="py-8 first:pt-0 last:pb-0">
-          <BookCard book={book} />
-        </li>
-      ))}
-    </ul>
   )
 }
 
@@ -152,32 +146,14 @@ export function BookGrid({ items }) {
   )
 }
 
-export function BlogList({ posts }) {
+/** Blog grid: first tile spans the row when `featured`; `cards[i]` / `minutes[i]` pair with `posts[i]`. */
+export function BlogList({ posts, cards = [], minutes = [], featured = false }) {
   if (!posts.length) return <p className="text-center text-quiet">No posts yet.</p>
   return (
-    <ul className="divide-y divide-line">
-      {posts.map((post) => (
-        <li key={post.slug} className="py-8 first:pt-0 last:pb-0">
-          <Link
-            href={postHref(post.slug)}
-            className="group flex items-center justify-between gap-4 sm:gap-6"
-          >
-            <span className="flex min-w-0 items-center gap-4 sm:gap-6">
-              {post.image ? (
-                <span className="relative block aspect-[16/9] w-24 shrink-0 overflow-hidden bg-ink sm:w-32">
-                  <Image src={post.image} alt="" fill sizes="128px" className="object-cover" />
-                </span>
-              ) : null}
-              <span className="min-w-0">
-                <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
-                <h2 className="mt-2 text-lg text-paper transition-opacity group-hover:opacity-70">
-                  {post.title}
-                </h2>
-                <p className="mt-2 text-sm text-body/70">{post.excerpt}</p>
-              </span>
-            </span>
-            <span className="shrink-0 text-sm font-semibold text-accent">Read post</span>
-          </Link>
+    <ul className="grid gap-4 md:grid-cols-3">
+      {posts.map((post, i) => (
+        <li key={post.slug} className={featured && i === 0 ? 'md:col-span-3' : undefined}>
+          <PostTile post={post} card={cards[i]} minutes={minutes[i]} featured={featured && i === 0} />
         </li>
       ))}
     </ul>

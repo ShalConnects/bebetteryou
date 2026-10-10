@@ -81,7 +81,7 @@ function Block({ block, quotes, tag, topic, slug }) {
         <Heading>{heading}</Heading>
         <div className="mt-4 grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-4">
           {quotes.map((quote) => (
-            <QuoteCard key={quote.slug} quote={quote} compact />
+            <QuoteCard key={quote.slug} quote={quote} compact className="overflow-hidden rounded-[10px]" />
           ))}
         </div>
         <ThemeLinks tag={tag} topic={topic} />
@@ -131,14 +131,17 @@ function Block({ block, quotes, tag, topic, slug }) {
   return null
 }
 
-export default function BlogArticle({ post, quotes = [], related = [], books = [], tag }) {
+export default function BlogArticle({ post, quotes = [], related = [], books = [], tag, minutes }) {
   const hasScripture = post.blocks?.some((b) => b.type === 'scripture')
 
   return (
-    <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_min(18rem,100%)] lg:items-start lg:gap-16">
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,42rem)_minmax(18rem,1fr)] lg:items-start lg:gap-16">
       <article className="min-w-0 max-w-2xl">
         <header className="mb-2">
-          <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">{post.date}</time>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">
+            <time>{post.date}</time>
+            {minutes ? ` · ${minutes} min read` : null}
+          </p>
           <h1 className="heading mt-3">{post.heading || post.title}</h1>
           {post.excerpt ? <p className="lede">{post.excerpt}</p> : null}
         </header>

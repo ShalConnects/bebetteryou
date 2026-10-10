@@ -8,7 +8,7 @@ export const productById = (id) => publicPrintProducts.find((p) => p.id === id) 
 /**
  * Rough product preview — the real typesetting happens on /print. Text is sized
  * to the print box in container units (% of mockup width) so any length fits.
- * `look` is a mockup-only proposal: { serial, card } (see config/preview teeLooks).
+ * `look` is a mockup-only design proposal: { serial, card }.
  */
 export default function ProductMock({
   quote,
@@ -33,7 +33,7 @@ export default function ProductMock({
   }
 
   return (
-    <div className={`pv-mock relative aspect-square overflow-hidden ${className}`}>
+    <div className={`mock relative aspect-square overflow-hidden ${className}`}>
       <Image
         src={color.mockup}
         alt=""
@@ -43,18 +43,18 @@ export default function ProductMock({
         style={back ? { transform: 'scaleX(-1)' } : undefined}
       />
       {back ? (
-        <div className="pv-ink flex-col gap-[0.4em]" style={{ ...box, fontSize: `${height / 3}cqw` }} aria-hidden>
+        <div className="mock-ink flex-col gap-[0.4em]" style={{ ...box, fontSize: `${height / 3}cqw` }} aria-hidden>
           <span>Be</span>
           <span className="text-[0.45em]">#{quote.n} · bebetteryou.online</span>
         </div>
       ) : look.card ? (
-        <div className="pv-ink" style={box} aria-hidden>
+        <div className="mock-ink" style={box} aria-hidden>
           <Image src={quote.src} alt="" width={300} height={375} unoptimized className="h-full w-auto rounded-[4%]" />
         </div>
       ) : (
         <div
           key={`${quote.slug}-${product.id}`}
-          className="pv-ink flex-col"
+          className="mock-ink flex-col"
           style={{ ...box, fontSize: `${size}cqw` }}
           aria-hidden
         >

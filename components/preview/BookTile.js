@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { bookCover, bookRel, bookUrl } from '@/config/books'
 import { previewCopy as c, pv } from '@/config/preview'
-import TableCard from './TableCard'
+import TableCard from '@/components/site/TableCard'
 
 /** Book tile: cover face-out, blurb as the takeaway, optional matching card. */
 export default function BookTile({ book, card, large = false }) {
@@ -10,11 +10,11 @@ export default function BookTile({ book, card, large = false }) {
   const cover = bookCover(book)
 
   return (
-    <div className="pv-tile">
+    <div className="tile">
       <a href={href} target="_blank" rel={bookRel} className="group flex gap-5">
         {cover ? (
           <span
-            className={`pv-card relative block aspect-[2/3] shrink-0 ${large ? 'w-28 md:w-32' : 'w-16'}`}
+            className={`tilt-cover relative block aspect-[2/3] shrink-0 ${large ? 'w-28 md:w-32' : 'w-16'}`}
             style={{ '--tilt': '-2deg' }}
           >
             <Image src={cover} alt={`${book.title} cover`} fill sizes="128px" className="object-cover" />

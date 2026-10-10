@@ -1,21 +1,21 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import Hero from '@/components/Hero'
+import DeckStrip from '@/components/site/DeckStrip'
 import NewsletterForm from '@/components/site/NewsletterForm'
-import { BookList, QuoteGrid, TextLink, ViewMore } from '@/components/site/ui'
+import ReadDeeper from '@/components/site/ReadDeeper'
+import WearIt from '@/components/site/WearIt'
 import { appConfig } from '@/config/app'
 import { practiceCopy, practiceDiscoverable } from '@/config/practice'
-import { copy, shop } from '@/config/site'
-import { listPosts } from '@/libs/blog'
-import { postHref } from '@/libs/blog-url'
+import { copy, heroVideo, shop } from '@/config/site'
+import { listPosts, readingMinutes } from '@/libs/blog'
 import { withBookPrices } from '@/libs/book-prices'
 import { listBooks } from '@/libs/books'
-import { booksHref } from '@/libs/books-url'
 import { homeQuoteCount, listMoodIntents, listQuotes } from '@/libs/content'
+import { isPrintableQuote } from '@/libs/quote-text'
 import { sample } from '@/libs/sample'
 
-const HOME_BLOG_COUNT = 3
-const HOME_BOOK_COUNT = 3
+const HOME_BLOG_COUNT = 2
 
 export default async function Home() {
   const all = await listQuotes()
@@ -29,73 +29,23 @@ export default async function Home() {
     author,
     theme,
   }))
-  const quotes = sample(pool, homeQuoteCount)
+  const newest = [...pool].sort((a, b) => b.n - a.n)
   const moods = await listMoodIntents()
 
-  const posts =
-    appConfig.features.enableBlog ? listPosts().slice(0, HOME_BLOG_COUNT) : []
-  const books = appConfig.features.enableBooks
-    ? await withBookPrices(sample(listBooks(), HOME_BOOK_COUNT))
-    : []
+  const posts = appConfig.features.enableBlog ? listPosts().slice(0, HOME_BLOG_COUNT) : []
+  const [book] = appConfig.features.enableBooks ? await withBookPrices(sample(listBooks(), 1)) : []
   const printLive = appConfig.features.enablePrintShop
-  const shopHref = printLive ? '/shop' : shop.url || ''
-  const showShop = Boolean(shopHref)
+  const printable = newest.find(isPrintableQuote)
 
   return (
     <>
-      <Hero quotes={pool} />
+      <Hero quotes={pool} moods={moods} video={heroVideo} />
 
-      <section className="border-t border-line">
-        <div className="section pb-8 pt-14 md:pb-10 md:pt-16">
-          <div className="shell-inner">
-            <p className="label">Quotes</p>
-            <QuoteGrid items={quotes} priorityCount={3} />
-            <ViewMore href="/quotes" />
-          </div>
-        </div>
-      </section>
+      <DeckStrip items={newest.slice(0, homeQuoteCount)} />
+      {printLive && printable ? <WearIt quote={printable} /> : null}
+      <ReadDeeper posts={posts} minutes={posts.map(readingMinutes)} book={book} />
 
-      {posts.length ? (
-        <section className="border-t border-line">
-          <div className="section">
-            <div className="shell-inner">
-              <p className="label">{copy.homeBlogLabel}</p>
-              <ul className="grid grid-cols-1 gap-8 min-[400px]:grid-cols-2 md:grid-cols-3 md:gap-10">
-                {posts.map((post, i) => (
-                  <li key={post.slug} className={i >= 2 ? 'hidden md:block' : undefined}>
-                    <Link href={postHref(post.slug)} className="group block h-full">
-                      <time className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        {post.date}
-                      </time>
-                      <h2 className="mt-2 text-lg text-paper transition-opacity group-hover:opacity-70">
-                        {post.title}
-                      </h2>
-                      {post.excerpt ? (
-                        <p className="mt-2 text-sm leading-relaxed text-body/70">{post.excerpt}</p>
-                      ) : null}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <ViewMore href="/blog" label="All notes" />
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {books.length ? (
-        <section className="border-t border-line">
-          <div className="section">
-            <div className="shell-inner">
-              <p className="label">{copy.homeBooksLabel}</p>
-              <BookList items={books} />
-              <ViewMore href={booksHref()} label="All books" />
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {showShop ? (
+      {!printLive && shop.url ? (
         <section className="border-t border-line">
           <div className="section">
             <div className="shell-inner mx-auto max-w-xl text-center">
@@ -112,15 +62,9 @@ export default async function Home() {
               <h2 className="heading-sm">{copy.homePrintTitle}</h2>
               <p className="lede mx-auto">{copy.homePrintSub}</p>
               <p className="mt-8">
-                {printLive ? (
-                  <Link href={shopHref} className="btn">
-                    {copy.homePrintCta}
-                  </Link>
-                ) : (
-                  <a href={shopHref} target="_blank" rel="noopener noreferrer" className="btn">
-                    {copy.homePrintCta}
-                  </a>
-                )}
+                <a href={shop.url} target="_blank" rel="noopener noreferrer" className="btn">
+                  {copy.homePrintCta}
+                </a>
               </p>
             </div>
           </div>
@@ -148,18 +92,7 @@ export default async function Home() {
           <div className="shell-inner mx-auto max-w-xl text-center">
             <h2 className="heading-sm">{copy.newsletterTitle}</h2>
             <p className="lede mx-auto">{copy.newsletterSub}</p>
-            <NewsletterForm quotes={pool} moods={moods} />
-          </div>
-        </div>
-      </section>
-
-      <section className="border-t border-line">
-        <div className="section">
-          <div className="shell-inner mx-auto max-w-2xl text-center">
-            <p className="text-base text-body/80 md:text-lg">{copy.aboutTeaser}</p>
-            <p className="mt-8">
-              <TextLink href="/about">About</TextLink>
-            </p>
+            <NewsletterForm />
           </div>
         </div>
       </section>

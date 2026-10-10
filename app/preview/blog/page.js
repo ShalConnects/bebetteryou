@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Chips from '@/components/preview/Chips'
 import PostTile from '@/components/preview/PostTile'
-import SectionHead from '@/components/preview/SectionHead'
+import SectionHead from '@/components/site/SectionHead'
 import { Page, Pager } from '@/components/site/ui'
 import { appConfig } from '@/config/app'
 import { blogIntro } from '@/config/blog'

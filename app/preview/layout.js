@@ -11,7 +11,7 @@ export default function PreviewLayout({ children }) {
     <>
       <nav className="inset-x-page border-b border-line bg-ink-soft/60" aria-label="Preview pages">
         <div className="shell-inner flex gap-5 overflow-x-auto py-2">
-          <span className="pv-kicker shrink-0 self-center">Preview</span>
+          <span className="kicker shrink-0 self-center">Preview</span>
           {previewNav.map(({ href, label }) => (
             <Link key={href} href={pv(href)} className="nav-link shrink-0">
               {label}

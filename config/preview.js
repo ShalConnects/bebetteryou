@@ -16,39 +16,21 @@ export const previewNav = [
 ]
 
 export const previewCopy = {
-  kicker: 'Be better than yesterday.',
-  title: 'How do you feel?',
-  sub: 'Pick a mood. We’ll deal one card.',
-  today: 'Today',
-  yesterday: 'Yesterday',
-  another: 'Deal another',
   all: 'All',
-  deckLabel: 'The deck',
-  deckAll: 'See all cards',
-  wearKicker: 'The shop',
-  wearTitle: { tee: 'This one, on a tee.', mug: 'This one, on a mug.' },
-  wearSub: 'Printed when you order — nothing sitting in a warehouse.',
-  wearCta: 'Make this one',
-  readLabel: 'Read deeper',
-  newsletterTitle: 'Get the deck in your inbox.',
-  newsletterSub: 'New cards as they land — plus blog and book notes if you want them.',
   quotesTitle: 'Every card.',
   shuffle: 'Shuffle',
   likeThis: 'Another like this',
+  moreLike: 'More like this',
   shopTitle: 'Wear the words.',
-  ownTitle: 'Your words, on a tee.',
   shopOff: 'Print shop is switched off on this build, so the designs show but checkout links won’t open.',
-  ownSub: 'Write a line, pick tee or mug, and we print just that one.',
   blogTitle: 'Notes.',
   noteCard: 'The card for this note',
+  keepReading: 'Keep reading',
   booksTitle: 'The shelf.',
   booksCard: 'Card that goes with it',
   teesTitle: 'Tee designs.',
   teesSub: 'Mockups only — the real print files stay as they are until you pick one.',
 }
-
-/** Latest cards in the sideways deck strip. */
-export const previewDeckCount = 12
 
 /** Tee design proposals (mockups only — print renderer untouched). */
 export const teeLooks = [

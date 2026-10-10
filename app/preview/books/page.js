@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import BookTile from '@/components/preview/BookTile'
 import Chips, { moodLinks } from '@/components/preview/Chips'
-import SectionHead from '@/components/preview/SectionHead'
+import SectionHead from '@/components/site/SectionHead'
 import { Page } from '@/components/site/ui'
 import { appConfig } from '@/config/app'
 import { affiliateDisclosure, booksIntro } from '@/config/books'

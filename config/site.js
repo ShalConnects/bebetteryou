@@ -42,6 +42,9 @@ export const socials = [
   { id: 'telegram', href: 'https://t.me/BeBetterYou_Motivational', label: 'Telegram' },
 ]
 
+/** Homepage hero background loop (silent; desktop only — see HeroVideo). */
+export const heroVideo = { src: '/hero/loop.mp4', poster: '/hero/loop.jpg' }
+
 const mark = '/brand/fav.png'
 
 export const brand = {
@@ -63,11 +66,18 @@ export const copy = {
   newsletterSub: 'Quote card roundups when we send them — plus blog and book notes if you want them.',
   surpriseTitle: 'How do you feel?',
   surpriseSub: 'Pick a mood. We’ll deal one card.',
-  homeBlogLabel: 'Notes',
-  homeBooksLabel: 'Books',
+  homeDeckTitle: 'The deck',
+  homeDeckAll: 'See all cards',
+  homeReadTitle: 'Read deeper',
+  wearKicker: 'The shop',
+  wearTitle: { tee: 'This one, on a tee.', mug: 'This one, on a mug.' },
+  wearSub: 'Printed when you order — nothing sitting in a warehouse.',
+  wearCta: 'Make this one',
   homePrintTitle: 'Want one on a tee or mug?',
   homePrintSub: 'Print a quote when you order — nothing sitting in a warehouse.',
   homePrintCta: 'Browse the shop',
+  shopOwnTitle: 'Your words, on a tee.',
+  shopOwnSub: 'Write a line, pick tee or mug, and we print just that one.',
   notFoundTitle: 'Wrong turn.',
   notFoundSub: 'Here’s a card while you’re here. Still counts as moving.',
 }

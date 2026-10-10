@@ -187,9 +187,96 @@
     @apply block h-full rounded-xl border border-line bg-ink-soft/60 p-6 transition hover:-translate-y-0.5 hover:border-accent/40;
   }
 
-  /* Cover lying slightly tilted on the table; straightens on hover. */
+  /* Card or cover lying on the table: tilt (`--tilt`, default -2deg), shadow; straightens + mint edge on hover. */
   .tilt-cover {
-    @apply -rotate-2 overflow-hidden rounded-[10px] shadow-[0_22px_50px_rgba(0,0,0,0.55)] transition-transform duration-500 hover:rotate-0;
+    @apply overflow-hidden rounded-[10px] shadow-[0_22px_50px_rgba(0,0,0,0.55)] ring-1 ring-line transition-transform duration-500 hover:ring-accent/40;
+    transform: rotate(var(--tilt, -2deg));
+  }
+  .tilt-cover:hover,
+  .tilt-cover:focus-visible {
+    transform: none;
+    outline: none;
+  }
+
+  .kicker {
+    @apply text-[11px] uppercase tracking-[0.3em] text-accent;
+  }
+
+  .btn-solid {
+    @apply inline-block rounded-full bg-accent px-8 py-3.5 text-xs uppercase tracking-[0.2em] text-accent-ink transition hover:-translate-y-px hover:bg-paper;
+  }
+
+  /* Sideways row: full-bleed, first card lines up with the page gutter (same maths as .inset-x-page + .shell-inner). */
+  .strip {
+    --edge: max(1.25rem, calc((100% - 72rem) / 2));
+    @apply flex snap-x snap-mandatory gap-5 overflow-x-auto pb-6 pt-3;
+    padding-inline: var(--edge);
+    scroll-padding-inline: var(--edge);
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--line) / 0.2) transparent;
+  }
+  @media (min-width: 768px) {
+    .strip {
+      --edge: max(2rem, calc((100% - 72rem) / 2));
+    }
+  }
+  .strip-item {
+    @apply w-[11.5rem] flex-none snap-start md:w-56;
+  }
+
+  /* Pill buttons (moods, products): mint only when chosen. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0 1.15rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--line) / 0.22);
+    background: rgb(var(--ink-soft) / 0.85);
+    color: rgb(var(--body));
+    font-size: 0.875rem;
+    transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+  }
+  .chip:hover {
+    border-color: rgb(var(--accent) / 0.6);
+    color: rgb(var(--paper));
+  }
+  .chip-on,
+  .chip-on:hover {
+    background: rgb(var(--accent));
+    border-color: rgb(var(--accent));
+    color: rgb(var(--accent-ink));
+  }
+
+  /* Product mockup: print text sized in container units of the photo. */
+  .mock {
+    border-radius: 16px;
+    container-type: size;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  }
+  .mock-ink {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: var(--font-iceberg), sans-serif;
+    line-height: 1.15;
+    overflow: hidden;
+    animation: rise 0.5s ease-out both;
+  }
+
+  .swatch {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    box-shadow: 0 0 0 1px rgb(var(--line) / 0.3);
+    transition: box-shadow 0.2s;
+  }
+  .swatch-on {
+    box-shadow:
+      0 0 0 2px rgb(var(--ink)),
+      0 0 0 4px rgb(var(--accent));
   }
 
   /* Opens downward from the trigger; long lists scroll vertically. */
@@ -311,6 +398,38 @@
 .search-tip-out {
   animation: search-tip-out 0.3s ease-in both;
 }
+/* Background loop: dimmed, fading out toward the text (above when stacked, left from lg). */
+.hero-video {
+  --fade: linear-gradient(180deg, transparent 25%, #000 75%);
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.22;
+  pointer-events: none;
+  -webkit-mask-image: var(--fade);
+  mask-image: var(--fade);
+}
+
+@media (min-width: 1024px) {
+  .hero-video {
+    --fade: linear-gradient(90deg, transparent 15%, #000 65%);
+  }
+}
+
+/* Mood re-deal: each new card flips in. */
+@keyframes deal-in {
+  from {
+    opacity: 0;
+    transform: rotateY(80deg);
+  }
+}
+
+.hero-deal .hero-scatter-card img {
+  animation: deal-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .hero-scatter {
   --scatter-ease: cubic-bezier(0.16, 1, 0.3, 1);
   @apply relative mx-auto flex h-[18rem] w-full max-w-[20rem] items-center justify-center sm:h-[22rem] sm:max-w-[26rem] lg:mx-0 lg:h-[28rem] lg:max-w-[36rem] lg:shrink-0;
@@ -474,5 +593,10 @@
 
   .hero-scatter-card {
     transition: none;
+  }
+
+  .mock-ink,
+  .hero-deal .hero-scatter-card img {
+    animation: none;
   }
 }

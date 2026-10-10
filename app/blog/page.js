@@ -3,7 +3,7 @@ import FilterMenu from '@/components/site/FilterMenu'
 import { BlogList, Page, PageIntro, Pager } from '@/components/site/ui'
 import { blogIntro } from '@/config/blog'
 import { appConfig, getUrl } from '@/config/app'
-import { findTopic, pagePosts, postTopics } from '@/libs/blog'
+import { findTopic, pagePosts, postQuotes, postTopics, readingMinutes } from '@/libs/blog'
 import { blogHref, blogListTitle } from '@/libs/blog-url'
 import { param } from '@/libs/content'
 import { pageRange } from '@/libs/paging'
@@ -32,12 +32,12 @@ export default async function BlogPage({ searchParams }) {
   const sp = await searchParams
   const topic = param(sp?.topic)
   const { items, page, pages, total, pageSize } = pagePosts(topic, param(sp?.page))
+  const cards = await Promise.all(items.map((p) => postQuotes(p, 1).then(([q]) => q)))
 
   return (
     <Page>
       <PageIntro
-        title={findTopic(topic)?.label}
-        srTitle="Blog"
+        srTitle={findTopic(topic)?.label || 'Blog'}
         aside={
           <FilterMenu
             label="Topics"
@@ -51,7 +51,7 @@ export default async function BlogPage({ searchParams }) {
       >
         {blogIntro}
       </PageIntro>
-      <BlogList posts={items} />
+      <BlogList posts={items} cards={cards} minutes={items.map(readingMinutes)} featured={page === 1} />
       <Pager
         page={page}
         pages={pages}
