@@ -3,6 +3,7 @@ import { connectDB } from '@/libs/mongo'
 import { logError, logInfo } from '@/libs/logger'
 import { unsubscribeNewsletterSubscriber } from '@/libs/newsletter'
 import {
+  normalizeResendWebhookEvent,
   recipientFromResendData,
   resendEventData,
   resolveResendEventType,
@@ -10,6 +11,7 @@ import {
 import NewsletterDeliveryEvent from '@/models/NewsletterDeliveryEvent'
 
 export {
+  normalizeResendWebhookEvent,
   recipientFromResendData,
   resendEventData,
   resolveResendEventType,
@@ -29,20 +31,23 @@ export function verifyResendWebhook(payload, headers, secret) {
       /* keep string; handler will ignore */
     }
   }
-  return event
+  return normalizeResendWebhookEvent(event)
 }
 
 /**
  * Persist bounce/complaint and soft-unsubscribe newsletter leads.
+ * Unsubscribe is attempted even if event persistence fails.
  * Idempotent on (emailId, type) when Resend retries the webhook.
  */
 export async function handleResendWebhookEvent(event) {
-  const type = resolveResendEventType(event)
+  const normalized = normalizeResendWebhookEvent(event)
+  const type = resolveResendEventType(normalized)
   if (type !== 'email.bounced' && type !== 'email.complained') {
     logInfo('Resend webhook ignored', {
       receivedType: event?.type ?? null,
       resolvedType: type || null,
-      hasBounce: Boolean(event?.data?.bounce || event?.bounce),
+      hasBounce: Boolean(resendEventData(normalized).bounce),
+      keys: event && typeof event === 'object' ? Object.keys(event) : [],
     })
     return {
       handled: false,
@@ -52,10 +57,13 @@ export async function handleResendWebhookEvent(event) {
     }
   }
 
-  const data = resendEventData(event)
+  const data = resendEventData(normalized)
   const email = recipientFromResendData(data)
   if (!email) {
-    logInfo('Resend webhook missing recipient', { type })
+    logInfo('Resend webhook missing recipient', {
+      type,
+      dataKeys: data && typeof data === 'object' ? Object.keys(data) : [],
+    })
     return { handled: false, reason: 'no_email', resolvedType: type }
   }
 
@@ -66,9 +74,16 @@ export async function handleResendWebhookEvent(event) {
     bounce.message ||
     (kind === 'complained' ? 'Marked as spam' : 'Email bounced')
 
-  await connectDB()
+  // Unsubscribe first — don't let event storage failures leave them Active.
+  let unsub = { ok: false }
+  try {
+    unsub = await unsubscribeNewsletterSubscriber(email)
+  } catch (error) {
+    logError('Failed to unsubscribe after Resend delivery event', error, { email, type: kind })
+  }
 
   try {
+    await connectDB()
     await NewsletterDeliveryEvent.create({
       email,
       type: kind,
@@ -80,21 +95,30 @@ export async function handleResendWebhookEvent(event) {
       createdAt: data.created_at ? new Date(data.created_at) : new Date(),
     })
   } catch (error) {
-    // Duplicate webhook delivery — still ensure unsubscribed.
     if (error?.code !== 11000) {
       logError('Failed to store Resend delivery event', error, { email, type: kind })
+      // Still report handled if we unsubscribed — Resend should not retry forever.
+      if (unsub?.ok) {
+        return { handled: true, email, type: kind, unsubscribed: true, eventStored: false }
+      }
       throw error
     }
   }
 
-  const unsub = await unsubscribeNewsletterSubscriber(email)
   logInfo('Resend delivery event processed', {
     email,
     type: kind,
     unsubscribed: Boolean(unsub?.ok),
+    already: Boolean(unsub?.already),
   })
 
-  return { handled: true, email, type: kind, unsubscribed: Boolean(unsub?.ok) }
+  return {
+    handled: true,
+    email,
+    type: kind,
+    unsubscribed: Boolean(unsub?.ok),
+    already: Boolean(unsub?.already),
+  }
 }
 
 export async function listNewsletterDeliveryEvents(limit = 100) {

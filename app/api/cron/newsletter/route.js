@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { runQuoteEmailCron } from '@/libs/newsletter-cron'
+import { cleanupSuppressedNewsletterSubscribers } from '@/libs/newsletter-cleanup'
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
-import { logError } from '@/libs/logger'
+import { logError, logInfo } from '@/libs/logger'
 
-/** Vercel Cron — email today's successful social quote to up to 100 eligible subscribers. */
+/** Vercel Cron — sync bounce suppressions, then email today's social quote (up to 100). */
 export const maxDuration = 300
 
 function authorized(req) {
@@ -19,8 +20,18 @@ async function handleGet(req) {
     if (!authorized(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    let cleanup = null
+    try {
+      cleanup = await cleanupSuppressedNewsletterSubscribers()
+      logInfo('Newsletter cron: suppression cleanup', cleanup)
+    } catch (error) {
+      logError('Newsletter cron: suppression cleanup failed', error)
+      cleanup = { error: error.message || 'cleanup failed' }
+    }
+
     const result = await runQuoteEmailCron()
-    return NextResponse.json({ ok: true, ...result })
+    return NextResponse.json({ ok: true, cleanup, ...result })
   } catch (error) {
     logError('Quote email cron failed', error)
     const errorResponse = handleApiError(error)
