@@ -1,6 +1,6 @@
 /** Bump on every card redesign. The public site shows only quotes rendered at
     this revision, so restyled cards surface as they are re-rendered. */
-export const cardRevision = 6
+export const cardRevision = 7
 
 /** Quote card layout tokens (matches bby1–bby3: 600×750). */
 export const quoteCard = {

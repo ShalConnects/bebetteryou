@@ -9,7 +9,7 @@
       "Yourself",
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-19",
@@ -21,7 +21,7 @@
       "Yourself",
       "Love"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-18",
@@ -32,7 +32,7 @@
     "tags": [
       "Yourself"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-17",
@@ -44,7 +44,7 @@
       "Yourself",
       "Love"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-16",
@@ -56,7 +56,7 @@
       "Motivation",
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-15",
@@ -67,7 +67,7 @@
     "tags": [
       "Mindset"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-14",
@@ -79,7 +79,7 @@
       "Love",
       "Yourself"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-13",
@@ -91,7 +91,7 @@
       "Mindset",
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-12",
@@ -102,7 +102,7 @@
     "tags": [
       "Yourself"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-11",
@@ -114,7 +114,7 @@
       "Motivation",
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-10",
@@ -126,7 +126,7 @@
       "Yourself",
       "Love"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-9",
@@ -137,7 +137,7 @@
     "tags": [
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-8",
@@ -149,7 +149,7 @@
       "Growth",
       "Mindset"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-1",
@@ -160,7 +160,7 @@
     "tags": [
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-2",
@@ -171,7 +171,7 @@
     "tags": [
       "Motivation"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-3",
@@ -182,7 +182,7 @@
     "tags": [
       "Motivation"
     ],
-    "rev": 6,
+    "rev": 7,
     "theme": "perseverance"
   },
   {
@@ -194,7 +194,7 @@
     "tags": [
       "Motivation"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-5",
@@ -205,7 +205,7 @@
     "tags": [
       "Motivation"
     ],
-    "rev": 6
+    "rev": 7
   },
   {
     "slug": "bby-6",
@@ -216,7 +216,7 @@
     "tags": [
       "Mindset"
     ],
-    "rev": 6,
+    "rev": 7,
     "theme": "perseverance"
   },
   {
@@ -229,6 +229,6 @@
       "Mindset",
       "Growth"
     ],
-    "rev": 6
+    "rev": 7
   }
 ]
