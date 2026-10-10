@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import ScrollLink from '@/components/site/ScrollLink'
 import BookCard from '@/components/site/BookCard'
+import BookTile from '@/components/site/BookTile'
 import QuoteCard from '@/components/site/QuoteCard'
 import { pageRange, pageWindow } from '@/libs/paging'
 import { postHref } from '@/libs/blog-url'
@@ -131,6 +132,20 @@ export function BookList({ items }) {
       {items.map((book) => (
         <li key={book.slug} className="py-8 first:pt-0 last:pb-0">
           <BookCard book={book} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/** /books: tiles in a 1 / 2 / 3 column grid. */
+export function BookGrid({ items }) {
+  if (!items.length) return <p className="text-center text-quiet">No books yet.</p>
+  return (
+    <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {items.map((book) => (
+        <li key={book.slug}>
+          <BookTile book={book} />
         </li>
       ))}
     </ul>
