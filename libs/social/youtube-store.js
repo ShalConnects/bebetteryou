@@ -1,9 +1,13 @@
 import fs from 'fs'
 import path from 'path'
 import { mongoUri } from '@/libs/mongo-uri'
+import { youtubeClient } from '@/libs/social/youtube-oauth'
 
 const dataFile = path.join(process.cwd(), 'data/youtube-auth.json')
 const network = 'youtube'
+const TOKEN_URL = 'https://oauth2.googleapis.com/token'
+const PROBE_TTL_MS = 5 * 60 * 1000
+let lastProbe = { key: '', ok: false, at: 0 }
 
 function readLocal() {
   try {
@@ -34,6 +38,42 @@ async function readRemote() {
 
 export async function readYoutubeRefreshToken() {
   return (await readRemote()) || readLocal() || ''
+}
+
+/** Prefer Connect/Mongo (or local file) over a stale Vercel env override. */
+export async function resolveYoutubeRefreshToken() {
+  const stored = await readYoutubeRefreshToken()
+  if (stored) return stored
+  return String(process.env.YOUTUBE_REFRESH_TOKEN || '').trim()
+}
+
+/** Lightweight refresh probe (cached ~5m). False on missing/revoked tokens. */
+export async function probeYoutubeRefreshToken(refreshToken) {
+  const token = String(refreshToken || '').trim()
+  if (!token) return false
+  const { clientId, clientSecret } = youtubeClient()
+  if (!clientId || !clientSecret) return false
+  if (lastProbe.key === token && Date.now() - lastProbe.at < PROBE_TTL_MS) return lastProbe.ok
+
+  let ok = false
+  try {
+    const res = await fetch(TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: clientId,
+        client_secret: clientSecret,
+        refresh_token: token,
+        grant_type: 'refresh_token',
+      }),
+    })
+    const data = await res.json().catch(() => ({}))
+    ok = Boolean(res.ok && data.access_token)
+  } catch {
+    ok = false
+  }
+  lastProbe = { key: token, ok, at: Date.now() }
+  return ok
 }
 
 export async function saveYoutubeRefreshToken(refreshToken) {

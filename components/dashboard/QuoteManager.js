@@ -199,6 +199,9 @@ export default function QuoteManager({
                 >
                   <div className="min-w-0">
                     <span className="text-paper">#{quote.n}</span>
+                    {quote.status === 'draft' || quote.status === 'scheduled' ? (
+                      <span className="ml-2 text-xs text-quiet">{quote.status}</span>
+                    ) : null}
                     {!quote.text ? <span className="ml-2 text-xs text-quiet">no text</span> : null}
                     <p className="truncate text-sm text-body/85">{quote.text?.split('\n')[0] || '—'}</p>
                   </div>
@@ -210,9 +213,15 @@ export default function QuoteManager({
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <h2 className="heading-sm">Edit #{current.n}</h2>
                       <div className="flex flex-wrap items-center gap-4">
-                        <Link href={`/quotes/${current.slug}`} className="nav-link">
-                          View on site
-                        </Link>
+                        {current.status === 'draft' || current.status === 'scheduled' ? (
+                          <span className="text-xs text-quiet">
+                            {current.status === 'scheduled' ? 'Scheduled — not on site yet' : 'Draft — not on site yet'}
+                          </span>
+                        ) : (
+                          <Link href={`/quotes/${current.slug}`} className="nav-link">
+                            View on site
+                          </Link>
+                        )}
                         <button
                           type="button"
                           onClick={close}

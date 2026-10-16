@@ -4,9 +4,11 @@ import { postQuote, readyNetworks } from '@/libs/social'
 import { manualPostResults } from '@/libs/social/post-log'
 import { readPosts, recordPost } from '@/libs/social/post-store'
 import { recordDoneSocialSend } from '@/libs/social/schedule-store'
+import { publishQuote } from '@/libs/quotes-store'
 
 /** Encode + YouTube upload can exceed the default serverless window. */
-export const maxDuration = 60
+/** YouTube Short encode + upload + thumbnail can exceed 60s. */
+export const maxDuration = 300
 
 export async function GET(req) {
   const auth = await requireAdmin()
@@ -31,6 +33,9 @@ export async function POST(req) {
   if (!networks.length) return NextResponse.json({ error: 'networks required' }, { status: 400 })
 
   try {
+    /** Site + social go live together on Post now / Mark posted. */
+    await publishQuote(slug)
+
     /** Admin posted outside the app (e.g. X while API credits are depleted). */
     if (body?.manual) {
       const statusList = await readyNetworks()

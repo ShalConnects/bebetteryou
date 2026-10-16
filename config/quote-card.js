@@ -50,6 +50,14 @@ export const quoteCard = {
     sizeRatio: 0.48,
     lineWidth: 3.5,
   },
+  /** Thin rule + number tint from scripture/social theme (not a full style swap). */
+  themeAccent: {
+    perseverance: '#e8c547',
+    clarity: '#8ecae6',
+    growth: '#95d5b2',
+    love: '#f4a6a6',
+    'self-worth': '#c9b1ff',
+  },
 }
 
 /** 9:16 Short layout — same chrome as the card, scaled to 1080 wide. */
@@ -71,11 +79,23 @@ export const quoteShort = {
   meta: { ...quoteCard.meta, size: Math.round(quoteCard.meta.size * shortScale) },
   fps: 30,
   beat: 1.15,
-  hold: 3.6,
+  /** Longer last readable beat for screenshot / rewatch. */
+  hold: 4.8,
   hook: 0.7,
+  /** Brief #N / series plate before the hook. */
+  series: 0.85,
+  seriesTexts: ['Daily quote', 'BeBetterYou', 'One line today'],
   end: 1.4,
   endText: 'Follow for daily quotes.',
-  maxSeconds: 18,
+  endTexts: [
+    'Follow for daily quotes.',
+    'Save this for a hard day.',
+    'Share with someone who needs it.',
+    'Quote #{n} — full on site.',
+  ],
+  maxSeconds: 20,
+  /** Week-in-review Short hard cap (YouTube Shorts ~60s). */
+  weekMaxSeconds: 55,
   fallbackSeconds: 8,
   /** Fade-through-black on layout changes (hook → quote, quote → end). */
   crossfade: 0.3,

@@ -1,12 +1,22 @@
 /**
  * @jest-environment node
  */
+
+jest.mock('svix', () => ({
+  Webhook: jest.fn().mockImplementation(() => ({
+    // Svix 2.x verify only checks the signature and returns undefined.
+    verify: jest.fn(() => undefined),
+  })),
+}))
+
+import { Webhook } from 'svix'
 import {
   normalizeResendWebhookEvent,
   recipientFromResendData,
   resolveResendEventType,
   resendEventData,
 } from '@/libs/resend-webhook-parse'
+import { verifyResendWebhook } from '@/libs/resend-webhook'
 
 describe('resend webhook helpers', () => {
   it('reads the first recipient from to[]', () => {
@@ -69,5 +79,28 @@ describe('resend webhook helpers', () => {
     expect(
       resendEventData({ payload: { type: 'email.bounced', data: { to: ['x@y.com'] } } }).to
     ).toEqual(['x@y.com'])
+  })
+})
+
+describe('verifyResendWebhook (svix 2.x)', () => {
+  it('parses the raw payload because verify() returns undefined', () => {
+    const payload = JSON.stringify({
+      type: 'email.bounced',
+      data: {
+        email_id: 'abc',
+        to: ['bounce@example.com'],
+        bounce: { type: 'Permanent', subType: 'General', message: 'gone' },
+      },
+    })
+
+    const event = verifyResendWebhook(
+      payload,
+      { id: 'msg_1', timestamp: '123', signature: 'v1,sig' },
+      'whsec_test'
+    )
+
+    expect(Webhook).toHaveBeenCalledWith('whsec_test')
+    expect(event.type).toBe('email.bounced')
+    expect(event.data.to).toEqual(['bounce@example.com'])
   })
 })

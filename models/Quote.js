@@ -11,6 +11,16 @@ const QuoteSchema = new mongoose.Schema(
     theme: { type: String, default: '' },
     /** Public pages only list the current cardRevision. */
     rev: { type: Number },
+    /**
+     * Site visibility. Missing = legacy published.
+     * draft/scheduled stay off the public site until publish.
+     */
+    status: {
+      type: String,
+      enum: ['draft', 'scheduled', 'published'],
+    },
+    /** When a scheduled quote is meant to go live (ISO via lean docs). */
+    publishAt: { type: Date },
     related: {
       books: { type: [String], default: undefined },
       posts: { type: [String], default: undefined },

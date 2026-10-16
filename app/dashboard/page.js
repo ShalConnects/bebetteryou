@@ -42,12 +42,18 @@ export default async function Dashboard({ searchParams }) {
     const { stats, social, attention, networkActivity } = await adminOverview(await readQuotes())
     const readySocial = social.filter((n) => n.ready).length
     const yt = params.youtube
-    const ytNote =
-      yt === 'connected'
-        ? 'YouTube connected. You can post Shorts from this dashboard.'
-        : yt
-          ? 'YouTube connect failed. Add the callback URL in Google Cloud and try Connect again.'
-          : ''
+    const ytNotes = {
+      connected: 'YouTube connected. You can post Shorts from this dashboard.',
+      token: 'YouTube token exchange failed. Reconnect and allow every permission Google shows.',
+      state: 'YouTube connect was interrupted (bad state). Try Connect again.',
+      signin: 'Sign in to the dashboard first, then Connect YouTube.',
+      access_denied: 'YouTube access was denied. Try Connect again and allow the channel.',
+      config: 'YouTube client id/secret missing. Check env, then Connect again.',
+    }
+    const ytNote = yt
+      ? ytNotes[yt] ||
+        'YouTube connect failed. Add the callback URL in Google Cloud and try Connect again.'
+      : ''
 
     return (
       <div className="space-y-8">
@@ -75,7 +81,7 @@ export default async function Dashboard({ searchParams }) {
         <DashPanel title="Social">
           {ytNote ? <p className="mb-4 text-sm text-paper">{ytNote}</p> : null}
           <ul className="space-y-2">
-            {social.map(({ id, label, ready, pending, connectable }) => {
+            {social.map(({ id, label, ready, pending, connectable, reconnect }) => {
               const href = socialHref[id]
               const last = networkActivity[id]
               return (
@@ -141,7 +147,7 @@ export default async function Dashboard({ searchParams }) {
                       href="/api/social/youtube/connect"
                       className="shrink-0 text-paper underline-offset-2 hover:underline"
                     >
-                      Connect
+                      {reconnect || id === 'youtube' ? 'Reconnect' : 'Connect'}
                     </a>
                   ) : (
                     <span className="shrink-0 text-quiet">Not configured</span>

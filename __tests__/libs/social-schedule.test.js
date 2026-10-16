@@ -5,6 +5,29 @@ import fs from 'fs'
 import os from 'os'
 import path from 'path'
 
+function seedQuote(slug, status = 'draft') {
+  fs.mkdirSync(path.join(process.cwd(), 'data'), { recursive: true })
+  const file = path.join(process.cwd(), 'data/quotes.json')
+  const quotes = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : []
+  const n = Number(String(slug).replace(/\D/g, '')) || quotes.length + 1
+  quotes.push({
+    slug,
+    n,
+    src: `/quotes/${slug}.jpg`,
+    text: `Quote ${slug}`,
+    author: '',
+    tags: [],
+    rev: 6,
+    status,
+  })
+  fs.writeFileSync(file, JSON.stringify(quotes, null, 2))
+}
+
+function readQuote(slug) {
+  const quotes = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'data/quotes.json'), 'utf8'))
+  return quotes.find((q) => q.slug === slug)
+}
+
 describe('social schedule store (local)', () => {
   let dir
   let store
@@ -15,6 +38,10 @@ describe('social schedule store (local)', () => {
     delete process.env.MONGODB_URI
     delete process.env.VERCEL
     jest.resetModules()
+    seedQuote('bby-1')
+    seedQuote('bby-2')
+    seedQuote('bby-partial')
+    seedQuote('bby-dup')
     store = await import('@/libs/social/schedule-store')
   })
 
@@ -31,6 +58,7 @@ describe('social schedule store (local)', () => {
     })
     expect(created.status).toBe('pending')
     expect(created.networks).toEqual(['bluesky', 'telegram'])
+    expect(readQuote('bby-1').status).toBe('scheduled')
 
     const early = await store.claimDueSchedules(new Date(), 5)
     expect(early).toHaveLength(0)
@@ -84,14 +112,26 @@ describe('social schedule store (local)', () => {
     ).rejects.toThrow(/pending schedule already exists/i)
   })
 
-  it('cancels a pending schedule', async () => {
+  it('cancels a pending schedule and returns draft quotes to draft', async () => {
     const created = await store.createSchedule({
       slug: 'bby-2',
       networks: ['x'],
       runAt: new Date(Date.now() + 3600_000).toISOString(),
     })
+    expect(readQuote('bby-2').status).toBe('scheduled')
     const canceled = await store.cancelSchedule(created.id)
     expect(canceled.status).toBe('canceled')
+    expect(readQuote('bby-2').status).toBe('draft')
+  })
+
+  it('does not unpublish an already-public quote when scheduling social', async () => {
+    seedQuote('bby-live', 'published')
+    await store.createSchedule({
+      slug: 'bby-live',
+      networks: ['bluesky'],
+      runAt: new Date(Date.now() + 3600_000).toISOString(),
+    })
+    expect(readQuote('bby-live').status).toBe('published')
   })
 
   it('records an immediate successful post as done for the email cron', async () => {

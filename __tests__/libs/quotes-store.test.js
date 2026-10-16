@@ -34,4 +34,17 @@ describe('overlayQuote', () => {
     expect(merged.createdAt).toBe(when.toISOString())
     expect(merged.slug).toBe('bby-221')
   })
+
+  it('keeps status and normalizes publishAt from Mongo', () => {
+    const when = new Date('2026-10-20T14:00:00.000Z')
+    const merged = overlayQuote(undefined, {
+      slug: 'bby-222',
+      n: 222,
+      text: 'Soon',
+      status: 'scheduled',
+      publishAt: when,
+    })
+    expect(merged.status).toBe('scheduled')
+    expect(merged.publishAt).toBe(when.toISOString())
+  })
 })

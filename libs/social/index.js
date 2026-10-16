@@ -3,7 +3,7 @@ import path from 'path'
 import { getSiteUrl } from '@/libs/site-url'
 import { networkStatus } from '@/config/social'
 import { youtubeClient } from '@/libs/social/youtube-oauth'
-import { readYoutubeRefreshToken } from '@/libs/social/youtube-store'
+import { probeYoutubeRefreshToken, resolveYoutubeRefreshToken } from '@/libs/social/youtube-store'
 import { readQuotes } from '@/libs/quotes-store'
 import { quoteOneLine } from '@/libs/quote-text'
 import { hashtagsForTags } from '@/libs/tag-lane'
@@ -32,19 +32,22 @@ const providers = {
   telegram: postTelegram,
 }
 
-/** Env keys plus a YouTube refresh token saved from Connect on the dashboard. */
+/** Env keys plus a YouTube refresh token that still refreshes (Connect/Mongo preferred). */
 export async function readyNetworks() {
   const { clientId, clientSecret } = youtubeClient()
-  const youtubeReady = Boolean(
-    clientId && clientSecret && (process.env.YOUTUBE_REFRESH_TOKEN || (await readYoutubeRefreshToken()))
-  )
+  const configured = Boolean(clientId && clientSecret)
+  const token = configured ? await resolveYoutubeRefreshToken() : ''
+  const hasToken = Boolean(token)
+  const youtubeReady = configured && hasToken && (await probeYoutubeRefreshToken(token))
   return networkStatus().map((n) => {
     if (n.id !== 'youtube') return n
     return {
       ...n,
       ready: youtubeReady,
       pending: false,
-      connectable: Boolean(clientId && clientSecret) && !youtubeReady,
+      connectable: configured && !youtubeReady,
+      /** Token on file but Google rejected it — show Reconnect, not Connect. */
+      reconnect: configured && hasToken && !youtubeReady,
     }
   })
 }

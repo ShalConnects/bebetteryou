@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { asList, readQuotes } from '@/libs/quotes-store'
+import { asList, isQuotePublic, readQuotes } from '@/libs/quotes-store'
 import { cardRevision } from '@/config/quote-card'
 import { heroQuoteCount, homeQuoteCount, quotesPageSize } from '@/config/quotes'
 import { moodIntents, readTags, tagNames } from '@/libs/tags-store'
@@ -26,10 +26,12 @@ export function resolveSeed(sort, v) {
   return Number.isFinite(n) && n > 0 ? n : (Math.random() * 1e9) | 0
 }
 
-/** Cards on the current design revision. Older ones stay in the store for the
-    dashboard to manage, but stay off the public site until re-rendered. */
+/** Cards on the current design revision that are published. Draft/scheduled
+    stay in the store for the dashboard, but stay off the public site. */
 const publicQuotes = cache(async function publicQuotes() {
-  return asList(await readQuotes()).filter((q) => q.rev === cardRevision)
+  return asList(await readQuotes()).filter(
+    (q) => q.rev === cardRevision && isQuotePublic(q)
+  )
 })
 
 export async function listQuotes(tag) {

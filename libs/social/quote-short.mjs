@@ -105,15 +105,33 @@ function clipFade(prev, next, desired) {
   return prev > 0 && next > 0 && desired > 0 ? Math.min(desired, cap) : 0
 }
 
-/** fadeblack on hook→stack and quote→end; dissolve while lines accumulate. */
-export function shortTransitions(seconds, quoteCount, card = quoteShort) {
+/**
+ * fadeblack on layout changes (series→hook, hook→stack, quote→end);
+ * dissolve while lines accumulate. Pass `series: true` when a series plate is prepended.
+ */
+export function shortTransitions(seconds, quoteCount, card = quoteShort, { series = false } = {}) {
   if (!seconds || seconds.length < 2) return []
   const n = seconds.length
+  const quoteStart = series ? 1 : 0
   const out = []
   for (let i = 1; i < n; i++) {
-    const layout = (i === 1 && quoteCount > 1) || (i === quoteCount && quoteCount < n)
+    const intoHook = series && i === quoteStart
+    const intoStack = i === quoteStart + 1 && quoteCount > 1
+    const intoEnd = i === quoteStart + quoteCount && i < n
+    const layout = intoHook || intoStack || intoEnd
     const d = clipFade(seconds[i - 1], seconds[i], layout ? card.crossfade : card.lineFade)
     out.push({ type: layout ? 'fadeblack' : 'fade', d })
+  }
+  return out
+}
+
+/** fadeblack between every week card (and into end). */
+export function weekTransitions(seconds, card = quoteShort) {
+  if (!seconds || seconds.length < 2) return []
+  const out = []
+  for (let i = 1; i < seconds.length; i++) {
+    const d = clipFade(seconds[i - 1], seconds[i], card.crossfade)
+    out.push({ type: 'fadeblack', d })
   }
   return out
 }
@@ -182,6 +200,25 @@ export function pickShortBed(random = Math.random, tags, seed = '') {
   return beds[pickIndex(beds.length, random, tags, 'bed', seed)]
 }
 
+function fillEndTemplate(text, quote) {
+  return String(text || '').replace(/#\{n\}/g, String(quote?.n ?? ''))
+}
+
+/** Stable end CTA from quoteShort.endTexts (falls back to endText). */
+export function pickShortEndText(quote, random = Math.random) {
+  const list = quoteShort.endTexts?.length ? quoteShort.endTexts : [quoteShort.endText]
+  const seed = quote?.slug || (quote?.n != null ? `bby-${quote.n}` : '')
+  const raw = list[pickIndex(list.length, random, quote?.tags, 'end', seed)] || list[0] || ''
+  return fillEndTemplate(raw, quote)
+}
+
+/** Stable series plate line. */
+export function pickShortSeriesText(quote, random = Math.random) {
+  const list = quoteShort.seriesTexts?.length ? quoteShort.seriesTexts : ['Daily quote']
+  const seed = quote?.slug || (quote?.n != null ? `bby-${quote.n}` : '')
+  return list[pickIndex(list.length, random, quote?.tags, 'series', seed)] || list[0]
+}
+
 function musicInput(seconds, file = pickShortBed()) {
   if (file && fs.existsSync(file)) return ['-stream_loop', '-1', '-i', file]
   return [
@@ -199,11 +236,14 @@ export async function encodeWeekShort(items = [], { music } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
   if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
 
-  const rows = items.filter((row) => row?.quote?.text || row?.imageBuffer?.length)
-  if (!rows.length) throw new Error('No quote frames for week Short')
+  const allRows = items.filter((row) => row?.quote?.text || row?.imageBuffer?.length)
+  if (!allRows.length) throw new Error('No quote frames for week Short')
 
   const card = quoteShort
   const hold = Math.min(4.2, Math.max(2.4, card.hold))
+  const weekMax = card.weekMaxSeconds || 55
+  const maxCards = Math.max(1, Math.floor((weekMax - (card.end || 0)) / hold))
+  const rows = allRows.slice(0, maxCards)
   const frames = await Promise.all(
     rows.map(async (row) => {
       const quote = row.quote
@@ -225,15 +265,16 @@ export async function encodeWeekShort(items = [], { music } = {}) {
       seconds: card.end,
       jpg: await renderQuoteCard({
         n: rows[0].quote?.n || 0,
-        text: card.endText,
+        text: pickShortEndText(rows[0].quote),
         author: '',
+        tags: rows[0].quote?.tags,
         card,
       }),
     })
   }
 
   const seconds = frames.map((b) => b.seconds)
-  const transitions = shortTransitions(seconds, rows.length, card)
+  const transitions = weekTransitions(seconds, card)
   const duration = seconds.reduce((sum, t) => sum + t, 0) - transitions.reduce((sum, x) => sum + x.d, 0)
   const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'bby-week-short-'))
   const mp4 = path.join(dir, 'short.mp4')
@@ -314,26 +355,38 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
         }))
       )
     : [{ seconds: card.fallbackSeconds, jpg: await renderShortFrame(imageBuffer, card) }]
-  const poster = quoteBeats[quoteBeats.length - 1].jpg
-  const beats =
+  /** Hook / first readable still — better Shorts cover tap target than the final frame. */
+  const poster = quoteBeats[0].jpg
+  const useSeries = hasQuoteText(quote) && card.series > 0
+  const seriesBeat = useSeries
+    ? {
+        seconds: card.series,
+        jpg: await renderQuoteCard({
+          n: quote.n,
+          text: pickShortSeriesText(quote),
+          author: '',
+          tags: quote.tags,
+          card,
+        }),
+      }
+    : null
+  const endBeat =
     hasQuoteText(quote) && card.end
-      ? [
-          ...quoteBeats,
-          {
-            seconds: card.end,
-            jpg: await renderQuoteCard({
-              n: quote.n,
-              text: card.endText,
-              author: '',
-              tags: quote.tags,
-              card,
-            }),
-          },
-        ]
-      : quoteBeats
+      ? {
+          seconds: card.end,
+          jpg: await renderQuoteCard({
+            n: quote.n,
+            text: pickShortEndText(quote),
+            author: '',
+            tags: quote.tags,
+            card,
+          }),
+        }
+      : null
+  const beats = [...(seriesBeat ? [seriesBeat] : []), ...quoteBeats, ...(endBeat ? [endBeat] : [])]
 
   const seconds = beats.map((b) => b.seconds)
-  const transitions = shortTransitions(seconds, quoteBeats.length, card)
+  const transitions = shortTransitions(seconds, quoteBeats.length, card, { series: useSeries })
   const duration = seconds.reduce((sum, t) => sum + t, 0) - transitions.reduce((sum, x) => sum + x.d, 0)
   const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'bby-short-'))
   const mp4 = path.join(dir, 'short.mp4')

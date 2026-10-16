@@ -5,7 +5,7 @@ import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { logError, logInfo } from '@/libs/logger'
 
-/** Vercel Cron — sync bounce suppressions, then email today's social quote (up to 100). */
+/** Vercel Cron — sync bounces, email today's quote, sync again for same-send bounces. */
 export const maxDuration = 300
 
 function authorized(req) {
@@ -15,23 +15,34 @@ function authorized(req) {
   return header === `Bearer ${secret}`
 }
 
+async function runCleanup(label) {
+  try {
+    const cleanup = await cleanupSuppressedNewsletterSubscribers()
+    logInfo(`Newsletter cron: ${label}`, cleanup)
+    return cleanup
+  } catch (error) {
+    logError(`Newsletter cron: ${label} failed`, error)
+    return { error: error.message || 'cleanup failed' }
+  }
+}
+
 async function handleGet(req) {
   try {
     if (!authorized(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    let cleanup = null
-    try {
-      cleanup = await cleanupSuppressedNewsletterSubscribers()
-      logInfo('Newsletter cron: suppression cleanup', cleanup)
-    } catch (error) {
-      logError('Newsletter cron: suppression cleanup failed', error)
-      cleanup = { error: error.message || 'cleanup failed' }
-    }
-
+    // Before: catch anything since yesterday. After: catch bounces from this send.
+    const cleanupBefore = await runCleanup('suppression cleanup (before send)')
     const result = await runQuoteEmailCron()
-    return NextResponse.json({ ok: true, cleanup, ...result })
+    const cleanupAfter = await runCleanup('suppression cleanup (after send)')
+
+    return NextResponse.json({
+      ok: true,
+      cleanupBefore,
+      cleanupAfter,
+      ...result,
+    })
   } catch (error) {
     logError('Quote email cron failed', error)
     const errorResponse = handleApiError(error)

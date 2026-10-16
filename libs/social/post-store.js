@@ -30,6 +30,7 @@ function publicRow(row) {
     privacy: row.privacy || '',
     channel: row.channel || '',
     manual: Boolean(row.manual),
+    thumbnailError: row.thumbnailError || '',
   }
 }
 

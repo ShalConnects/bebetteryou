@@ -1,10 +1,23 @@
 import { createCanvas, loadImage } from '@napi-rs/canvas'
 import path from 'path'
 import { brand } from '../config/site.js'
+import { tagSeed } from '../config/quotes.js'
 import { getSiteLabel } from '../libs/site-url.js'
 import { cardRevision, quoteCard } from '../config/quote-card.js'
+import { themesMap } from './tag-lane.js'
 import { capitalizeFirstWord, measureContext, registerFonts, wrapLines } from './canvas-text.mjs'
 import { drawMotif, pickMotif } from './quote-motifs.mjs'
+
+const tagToTheme = themesMap(tagSeed)
+
+function accentForTags(tags, card) {
+  const map = card?.themeAccent || quoteCard.themeAccent || {}
+  for (const name of tags || []) {
+    const theme = tagToTheme[name]
+    if (theme && map[theme]) return map[theme]
+  }
+  return ''
+}
 
 export { cardRevision, quoteCard }
 
@@ -90,10 +103,11 @@ function drawBackdrop(ctx, w, h, layers, { grainOpacity, bgOverlay, bgOverlayCol
 }
 
 /** Top bar: Be-in-circle (left) + #n (right), vertically centered in sectionH. */
-function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, circle, circleScale }) {
+function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, circle, circleScale }, accent = '') {
   const y = sectionH / 2
   const diameter = size * circleScale
   const cx = padX + diameter / 2
+  const tint = accent || color
 
   ctx.beginPath()
   ctx.arc(cx, y, diameter / 2, 0, Math.PI * 2)
@@ -109,10 +123,17 @@ function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, cir
   ctx.restore()
 
   ctx.font = `${size}px ${font}`
-  ctx.fillStyle = color
+  ctx.fillStyle = tint
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
   ctx.fillText(`#${n}`, w - padX, y)
+
+  if (accent) {
+    ctx.fillStyle = accent
+    ctx.globalAlpha = 0.9
+    ctx.fillRect(padX, sectionH - Math.max(2, Math.round(size * 0.06)), w - padX * 2, Math.max(2, Math.round(size * 0.06)))
+    ctx.globalAlpha = 1
+  }
 }
 
 function drawMeta(ctx, w, h, sectionH, footerH, site, author, meta) {
@@ -184,6 +205,8 @@ export async function renderQuoteCard({ n, text, author = '', tags = [], card = 
   ctx.fillRect(0, 0, w, h)
   drawBackdrop(ctx, w, h, layers, card.layers || quoteCard.layers)
 
+  const accent = accentForTags(tags, card)
+
   if (motif) {
     const cx = w / 2
     const cy = sectionH + (h - sectionH - footerH) / 2
@@ -191,13 +214,13 @@ export async function renderQuoteCard({ n, text, author = '', tags = [], card = 
     const scale = w / quoteCard.width
     ctx.save()
     ctx.globalAlpha = motif.opacity ?? 0.11
-    ctx.strokeStyle = motif.color || quote.color
+    ctx.strokeStyle = accent || motif.color || quote.color
     ctx.lineWidth = (motif.lineWidth || 3.5) * scale
     drawMotif(ctx, pickMotif(tags, n), cx, cy, size)
     ctx.restore()
   }
 
-  drawTopChrome(ctx, n, w, sectionH, padX, layers.mark, number)
+  drawTopChrome(ctx, n, w, sectionH, padX, layers.mark, number, accent)
   drawQuoteBlock(ctx, w, h, sectionH, footerH, text, quote, padX, reveal)
   drawMeta(ctx, w, h, sectionH, footerH, site, author, meta)
 

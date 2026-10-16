@@ -29,6 +29,8 @@ export async function createQuote({ text, author = '', tags = [], theme = '' }) 
     author: credit,
     tags: knownTags,
     rev: cardRevision,
+    /** Off the site until Post now or a schedule goes live. */
+    status: 'draft',
     createdAt: new Date().toISOString(),
     ...(known ? { theme: known } : {}),
   }

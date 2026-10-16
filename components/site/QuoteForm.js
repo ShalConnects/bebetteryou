@@ -175,10 +175,7 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
         {error ? <p className="text-sm text-red-400">{error}</p> : null}
         {result ? (
           <p className="text-sm text-body">
-            Saved{' '}
-            <Link href={`/quotes/${result.slug}`} className="text-paper underline">
-              #{result.n}
-            </Link>
+            Saved #{result.n} as draft — not on the site until you Post now or a schedule goes live.
           </p>
         ) : null}
 

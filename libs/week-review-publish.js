@@ -264,6 +264,7 @@ export async function publishWeekReview(now = new Date()) {
         video,
         poster,
         title: `Week in review · ${range.weekKey}`,
+        weekReview: true,
       })
       const row = {
         id: 'youtube',
@@ -271,6 +272,9 @@ export async function publishWeekReview(now = new Date()) {
         ok: true,
         url: posted?.url || null,
         privacy: posted?.privacy || null,
+        ...(posted?.thumbnail === false
+          ? { thumbnailError: posted.thumbnailError || 'Thumbnail not set' }
+          : {}),
       }
       await recordPost(slug, row)
       results.push(row)

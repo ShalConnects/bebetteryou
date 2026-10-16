@@ -1,8 +1,9 @@
 export const youtubeOauthCookie = 'bby_yt_oauth'
 
+/** upload = Shorts; force-ssl = comments, playlists, channel reads. Reconnect after scope changes. */
 export const youtubeScopes = [
   'https://www.googleapis.com/auth/youtube.upload',
-  'https://www.googleapis.com/auth/youtube.readonly',
+  'https://www.googleapis.com/auth/youtube.force-ssl',
 ].join(' ')
 
 export function youtubeClient() {

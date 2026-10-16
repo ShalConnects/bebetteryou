@@ -1,8 +1,11 @@
 import fs from 'fs'
 import path from 'path'
 import { cardRevision } from '@/config/quote-card'
+import { isQuotePublic, withVisibility } from './quote-visibility'
 import { mongoUri } from './mongo-uri'
 import { logError } from './logger'
+
+export { isQuotePublic }
 
 const dataFile = path.join(process.cwd(), 'data/quotes.json')
 
@@ -40,6 +43,8 @@ export function overlayQuote(local, remote) {
   delete next.updatedAt
   if (next.createdAt) next.createdAt = new Date(next.createdAt).toISOString()
   else delete next.createdAt
+  if (next.publishAt) next.publishAt = new Date(next.publishAt).toISOString()
+  else delete next.publishAt
   return next
 }
 
@@ -53,7 +58,9 @@ export async function readQuotes() {
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
     const remote = asList(
-      await Quote.find().select('slug n src text author tags theme related rev createdAt').lean()
+      await Quote.find()
+        .select('slug n src text author tags theme related rev status publishAt createdAt')
+        .lean()
     )
     if (!remote.length) return local
 
@@ -104,4 +111,43 @@ export async function removeQuote(slug) {
   } else if (!mongoUri()) {
     throw new Error('MONGODB_URI required to delete quotes on Vercel')
   }
+}
+
+async function findQuote(slug) {
+  const key = String(slug || '').trim()
+  if (!key) return null
+  return (await readQuotes()).find((q) => q.slug === key) || null
+}
+
+/** Hold a not-yet-public quote until social/site go-live. No-op if already public. */
+export async function scheduleQuoteVisibility(slug, runAt) {
+  const existing = await findQuote(slug)
+  if (!existing) throw new Error('Quote not found')
+  if (isQuotePublic(existing)) return existing
+  const next = withVisibility(existing, { status: 'scheduled', publishAt: runAt })
+  await appendQuote(next)
+  return next
+}
+
+/** Put the quote on the public site. No-op if already public. */
+export async function publishQuote(slug) {
+  const existing = await findQuote(slug)
+  if (!existing) throw new Error('Quote not found')
+  if (isQuotePublic(existing)) return existing
+  const next = withVisibility(existing, {
+    status: 'published',
+    publishAt: existing.publishAt || new Date(),
+  })
+  await appendQuote(next)
+  return next
+}
+
+/** After canceling a schedule, keep unpublished quotes off the site. */
+export async function unscheduleQuoteVisibility(slug) {
+  const existing = await findQuote(slug)
+  if (!existing) throw new Error('Quote not found')
+  if (existing.status !== 'scheduled') return existing
+  const next = withVisibility(existing, { status: 'draft' })
+  await appendQuote(next)
+  return next
 }

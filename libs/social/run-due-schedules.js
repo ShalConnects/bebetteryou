@@ -1,10 +1,11 @@
 import { postQuote, readyNetworks } from '@/libs/social'
 import { networksNeedingPost } from '@/libs/social/post-log'
 import { readPosts } from '@/libs/social/post-store'
-import { claimDueSchedules, finishSchedule } from '@/libs/social/schedule-store'
+import { claimDueSchedules, finishSchedule, requeueSchedule } from '@/libs/social/schedule-store'
+import { publishQuote } from '@/libs/quotes-store'
 import { logError } from '@/libs/logger'
 
-/** Run due social schedules. Skips networks already posted ok for that quote. */
+/** Run due social schedules. Publishes the quote to the site, then posts social. */
 export async function runDueSocialSchedules({ now = new Date(), limit = 5 } = {}) {
   const claimed = await claimDueSchedules(now, limit)
   const outcomes = []
@@ -14,6 +15,8 @@ export async function runDueSocialSchedules({ now = new Date(), limit = 5 } = {}
   for (const job of claimed) {
     const id = String(job._id || job.id)
     try {
+      await publishQuote(job.slug)
+
       const posts = await readPosts(job.slug)
       const requested = Array.isArray(job.networks) ? job.networks : []
       const toPost = networksNeedingPost(requested, posts)
@@ -36,13 +39,17 @@ export async function runDueSocialSchedules({ now = new Date(), limit = 5 } = {}
 
       const posted = await postQuote(job.slug, toPost)
       const results = [...skipped, ...posted]
-      const ok = results.some((r) => r.ok)
-      const error = results
-        .filter((r) => !r.ok)
-        .map((r) => `${r.id}: ${r.error || 'Failed'}`)
-        .join('; ')
-      await finishSchedule(id, { ok, results, error })
-      outcomes.push({ id, slug: job.slug, ok, skipped: skipped.length, results })
+      const failed = results.filter((r) => !r.ok)
+      const error = failed.map((r) => `${r.id}: ${r.error || 'Failed'}`).join('; ')
+      const allOk = results.length > 0 && failed.length === 0
+      const partial = !allOk && results.some((r) => r.ok)
+      if (partial) {
+        await requeueSchedule(id, { results, error })
+        outcomes.push({ id, slug: job.slug, ok: false, partial: true, skipped: skipped.length, results })
+      } else {
+        await finishSchedule(id, { ok: allOk, results, error })
+        outcomes.push({ id, slug: job.slug, ok: allOk, skipped: skipped.length, results })
+      }
     } catch (error) {
       logError('Scheduled social post failed', error, { id, slug: job.slug })
       await finishSchedule(id, { ok: false, results: [], error: error.message || 'Failed' })

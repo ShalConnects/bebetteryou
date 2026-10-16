@@ -22,7 +22,7 @@ export default function NewsletterDeliveryEvents({ events }) {
   if (!events?.length) {
     return (
       <p className="text-sm text-quiet">
-        No bounces or spam complaints yet. After you wire the Resend webhook, they appear here and those
+        No bounces or spam complaints yet. They sync from Resend webhooks (and daily cleanup). Those
         addresses are auto-unsubscribed.
       </p>
     )

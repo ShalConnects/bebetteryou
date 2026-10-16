@@ -5,7 +5,8 @@ import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
 
 /** Vercel Cron — posts due social schedules. Protect with CRON_SECRET. */
-export const maxDuration = 60
+/** Encode + multi-network upload (incl. YouTube Short) can exceed 60s. */
+export const maxDuration = 300
 
 function authorized(req) {
   const secret = (process.env.CRON_SECRET || '').trim()

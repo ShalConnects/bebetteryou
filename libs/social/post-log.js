@@ -11,6 +11,9 @@ export function mergePostRecord(prev, result, at = new Date()) {
     privacy: ok ? result.privacy || '' : prev?.privacy || '',
     channel: ok ? result.channel || '' : prev?.channel || '',
     manual: ok ? Boolean(result.manual) : Boolean(prev?.manual),
+    thumbnailError: ok
+      ? String(result.thumbnailError || '')
+      : String(prev?.thumbnailError || result.thumbnailError || ''),
   }
 }
 

@@ -17,21 +17,65 @@ export {
   resolveResendEventType,
 } from '@/libs/resend-webhook-parse'
 
+/**
+ * Verify Svix signature, then parse the raw body.
+ * Svix 2.x `Webhook.verify` only checks the signature and returns undefined
+ * (`jsonParse: false`) — callers must parse the payload themselves.
+ */
 export function verifyResendWebhook(payload, headers, secret) {
   const wh = new Webhook(secret)
-  let event = wh.verify(payload, {
+  wh.verify(payload, {
     'svix-id': headers.id || headers['svix-id'] || '',
     'svix-timestamp': headers.timestamp || headers['svix-timestamp'] || '',
     'svix-signature': headers.signature || headers['svix-signature'] || '',
   })
-  if (typeof event === 'string') {
-    try {
-      event = JSON.parse(event)
-    } catch {
-      /* keep string; handler will ignore */
-    }
+
+  let event
+  try {
+    event = typeof payload === 'string' ? JSON.parse(payload) : payload
+  } catch (error) {
+    throw new Error('Invalid webhook JSON payload')
   }
   return normalizeResendWebhookEvent(event)
+}
+
+/** Upsert a bounce/complaint row (idempotent on emailId+type when present). */
+export async function upsertNewsletterDeliveryEvent({
+  email,
+  type,
+  subject,
+  emailId,
+  bounceType,
+  bounceSubType,
+  message,
+  createdAt,
+}) {
+  await connectDB()
+  const normalizedEmail = String(email || '')
+    .toLowerCase()
+    .trim()
+  if (!normalizedEmail) return null
+  if (type !== 'bounced' && type !== 'complained') return null
+
+  const doc = {
+    email: normalizedEmail,
+    type,
+    subject: subject || undefined,
+    bounceType: bounceType || undefined,
+    bounceSubType: bounceSubType || undefined,
+    message: message || (type === 'complained' ? 'Marked as spam' : 'Email bounced'),
+    createdAt: createdAt ? new Date(createdAt) : new Date(),
+  }
+
+  if (emailId) {
+    return NewsletterDeliveryEvent.findOneAndUpdate(
+      { emailId: String(emailId), type },
+      { $setOnInsert: { ...doc, emailId: String(emailId) } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).lean()
+  }
+
+  return NewsletterDeliveryEvent.create(doc)
 }
 
 /**
@@ -82,9 +126,9 @@ export async function handleResendWebhookEvent(event) {
     logError('Failed to unsubscribe after Resend delivery event', error, { email, type: kind })
   }
 
+  let eventStored = false
   try {
-    await connectDB()
-    await NewsletterDeliveryEvent.create({
+    await upsertNewsletterDeliveryEvent({
       email,
       type: kind,
       subject: data.subject || undefined,
@@ -92,17 +136,18 @@ export async function handleResendWebhookEvent(event) {
       bounceType: bounce.type || undefined,
       bounceSubType: bounce.subType || undefined,
       message,
-      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+      createdAt: data.created_at || normalized.created_at,
     })
+    eventStored = true
   } catch (error) {
     if (error?.code !== 11000) {
       logError('Failed to store Resend delivery event', error, { email, type: kind })
-      // Still report handled if we unsubscribed — Resend should not retry forever.
       if (unsub?.ok) {
         return { handled: true, email, type: kind, unsubscribed: true, eventStored: false }
       }
       throw error
     }
+    eventStored = true
   }
 
   logInfo('Resend delivery event processed', {
@@ -110,6 +155,7 @@ export async function handleResendWebhookEvent(event) {
     type: kind,
     unsubscribed: Boolean(unsub?.ok),
     already: Boolean(unsub?.already),
+    eventStored,
   })
 
   return {
@@ -118,6 +164,7 @@ export async function handleResendWebhookEvent(event) {
     type: kind,
     unsubscribed: Boolean(unsub?.ok),
     already: Boolean(unsub?.already),
+    eventStored,
   }
 }
 

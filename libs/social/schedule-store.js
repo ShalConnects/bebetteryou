@@ -2,6 +2,10 @@ import fs from 'fs'
 import path from 'path'
 import { mongoUri } from '@/libs/mongo-uri'
 import { logError } from '@/libs/logger'
+import {
+  scheduleQuoteVisibility,
+  unscheduleQuoteVisibility,
+} from '@/libs/quotes-store'
 
 const dataFile = path.join(process.cwd(), 'data/social-schedules.json')
 
@@ -130,25 +134,43 @@ export async function createSchedule({ slug, networks, runAt }) {
     updatedAt: new Date(),
   }
 
+  let schedule
   if (mongoUri()) {
     const SocialSchedule = await model()
     const saved = await SocialSchedule.create(row)
-    return publicRow(saved.toObject())
+    schedule = publicRow(saved.toObject())
+  } else if (process.env.VERCEL) {
+    throw new Error('MONGODB_URI required to schedule posts on Vercel')
+  } else {
+    const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    const local = { ...row, id, runAt: when.toISOString(), createdAt: row.createdAt.toISOString() }
+    const rows = readLocal()
+    rows.push(local)
+    writeLocal(rows)
+    schedule = publicRow(local)
   }
-  if (process.env.VERCEL) throw new Error('MONGODB_URI required to schedule posts on Vercel')
 
-  const id = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
-  const local = { ...row, id, runAt: when.toISOString(), createdAt: row.createdAt.toISOString() }
-  const rows = readLocal()
-  rows.push(local)
-  writeLocal(rows)
-  return publicRow(local)
+  try {
+    await scheduleQuoteVisibility(key, when)
+  } catch (error) {
+    try {
+      await cancelSchedule(schedule.id)
+    } catch (cancelError) {
+      logError('Rollback schedule after visibility failure also failed', cancelError, {
+        slug: key,
+        scheduleId: schedule.id,
+      })
+    }
+    throw error
+  }
+  return schedule
 }
 
 export async function cancelSchedule(id) {
   const key = String(id || '').trim()
   if (!key) throw new Error('id required')
 
+  let canceled
   if (mongoUri()) {
     const SocialSchedule = await model()
     const row = await SocialSchedule.findById(key)
@@ -157,17 +179,25 @@ export async function cancelSchedule(id) {
     row.status = 'canceled'
     row.updatedAt = new Date()
     await row.save()
-    return publicRow(row.toObject())
+    canceled = publicRow(row.toObject())
+  } else if (process.env.VERCEL) {
+    throw new Error('MONGODB_URI required to cancel schedules on Vercel')
+  } else {
+    const rows = readLocal()
+    const i = rows.findIndex((r) => String(r.id) === key)
+    if (i < 0) throw new Error('Schedule not found')
+    if (rows[i].status !== 'pending') throw new Error('Only pending schedules can be canceled')
+    rows[i] = { ...rows[i], status: 'canceled', updatedAt: new Date().toISOString() }
+    writeLocal(rows)
+    canceled = publicRow(rows[i])
   }
-  if (process.env.VERCEL) throw new Error('MONGODB_URI required to cancel schedules on Vercel')
 
-  const rows = readLocal()
-  const i = rows.findIndex((r) => String(r.id) === key)
-  if (i < 0) throw new Error('Schedule not found')
-  if (rows[i].status !== 'pending') throw new Error('Only pending schedules can be canceled')
-  rows[i] = { ...rows[i], status: 'canceled', updatedAt: new Date().toISOString() }
-  writeLocal(rows)
-  return publicRow(rows[i])
+  try {
+    await unscheduleQuoteVisibility(canceled.slug)
+  } catch (error) {
+    logError('Unschedule quote visibility failed', error, { slug: canceled.slug, id: key })
+  }
+  return canceled
 }
 
 /** Claim due pending jobs (status → running). Local file is best-effort. */
@@ -238,6 +268,53 @@ export async function finishSchedule(id, { ok, results, error = '' }) {
   rows[i] = {
     ...rows[i],
     status: ok ? 'done' : 'failed',
+    results: list,
+    error: nextError,
+    updatedAt: new Date().toISOString(),
+  }
+  writeLocal(rows)
+  return publicRow(rows[i])
+}
+
+/**
+ * Partial success: keep results, set pending again so cron retries failed networks only
+ * (networksNeedingPost skips ones already ok in the post log).
+ */
+export async function requeueSchedule(id, { results, error = '', delayMs = 15 * 60 * 1000 } = {}) {
+  const key = String(id || '').trim()
+  const list = Array.isArray(results) ? results : []
+  const failSummary = list
+    .filter((r) => r && !r.ok)
+    .map((r) => `${r.id || 'network'}: ${r.error || 'Failed'}`)
+    .join('; ')
+  const nextError = String(error || failSummary || 'Partial failure')
+  const runAt = new Date(Date.now() + Math.max(0, delayMs))
+  if (mongoUri()) {
+    const SocialSchedule = await model()
+    const row = await SocialSchedule.findByIdAndUpdate(
+      key,
+      {
+        $set: {
+          status: 'pending',
+          runAt,
+          results: list,
+          error: nextError,
+          updatedAt: new Date(),
+        },
+      },
+      { new: true }
+    ).lean()
+    return publicRow(row)
+  }
+  if (process.env.VERCEL) return null
+
+  const rows = readLocal()
+  const i = rows.findIndex((r) => String(r.id || r._id) === key)
+  if (i < 0) return null
+  rows[i] = {
+    ...rows[i],
+    status: 'pending',
+    runAt: runAt.toISOString(),
     results: list,
     error: nextError,
     updatedAt: new Date().toISOString(),

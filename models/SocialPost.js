@@ -11,6 +11,7 @@ const SocialPostSchema = new mongoose.Schema(
     privacy: { type: String, default: '' },
     channel: { type: String, default: '' },
     manual: { type: Boolean, default: false },
+    thumbnailError: { type: String, default: '' },
   },
   { timestamps: true }
 )

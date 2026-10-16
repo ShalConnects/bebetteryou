@@ -6,6 +6,8 @@ jest.mock('@/libs/tags-store', () => ({
 }))
 jest.mock('@/libs/social/youtube-store', () => ({
   readYoutubeRefreshToken: jest.fn(async () => ''),
+  resolveYoutubeRefreshToken: jest.fn(async () => ''),
+  probeYoutubeRefreshToken: jest.fn(async () => false),
   saveYoutubeRefreshToken: jest.fn(),
 }))
 
@@ -163,11 +165,14 @@ describe('social', () => {
     expect(clipPinText('x'.repeat(120), 100).length).toBe(100)
   })
 
-  it('builds a Shorts title from the opening punch', () => {
-    expect(youtubeTitle({ n: 3, text: 'Keep going.' })).toBe('Keep going.')
-    expect(youtubeTitle({ text: 'Be yourself,\nWorld will\nADJUST.' })).toBe('Be yourself,')
+  it('builds a Shorts title from the opening punch with a seeded pattern', () => {
+    const plain = youtubeTitle({ n: 3, text: 'Keep going.' })
+    expect(plain).toContain('Keep going')
+    expect(plain.length).toBeLessThanOrEqual(100)
+    const multi = youtubeTitle({ slug: 'bby-1', text: 'Be yourself,\nWorld will\nADJUST.' })
+    expect(multi).toContain('Be yourself')
+    expect(multi.length).toBeLessThanOrEqual(100)
     const clipped = youtubeTitle({ text: 'x'.repeat(120) })
-    expect(clipped.endsWith('…')).toBe(true)
     expect(clipped.length).toBeLessThanOrEqual(100)
   })
 
@@ -187,6 +192,12 @@ describe('social', () => {
       'fadeblack',
     ])
     expect(shortTransitions([1.85, 1.15, 3.95, 2.2], 3)[1].d).toBe(0.15)
+    expect(shortTransitions([0.85, 1.85, 1.15, 3.95, 1.4], 3, undefined, { series: true }).map((x) => x.type)).toEqual([
+      'fadeblack',
+      'fadeblack',
+      'fade',
+      'fadeblack',
+    ])
   })
 
   it('letterboxes the 600×750 card on a 9:16 Short', () => {
@@ -325,5 +336,23 @@ describe('social', () => {
     expect(failed.ok).toBe(false)
     expect(failed.error).toBe('timeout')
     expect(failed.url).toBe('https://bsky.app/profile/x/post/1')
+  })
+
+  it('persists YouTube thumbnailError on successful posts', () => {
+    const row = mergePostRecord(null, {
+      slug: 'bby-8',
+      id: 'youtube',
+      ok: true,
+      url: 'https://www.youtube.com/watch?v=1',
+      thumbnailError: 'channel not verified',
+    })
+    expect(row.thumbnailError).toBe('channel not verified')
+    const cleared = mergePostRecord(row, {
+      slug: 'bby-8',
+      id: 'youtube',
+      ok: true,
+      url: 'https://www.youtube.com/watch?v=2',
+    })
+    expect(cleared.thumbnailError).toBe('')
   })
 })

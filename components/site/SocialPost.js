@@ -190,7 +190,7 @@ export default function SocialPost({ slug, initialRetry = [] }) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to schedule')
       await loadSchedules(slug)
-      toast('Scheduled')
+      toast('Scheduled — stays off the site until go-live')
     } catch (err) {
       setError(err.message)
     } finally {
@@ -264,12 +264,18 @@ export default function SocialPost({ slug, initialRetry = [] }) {
           )
         })}
       </div>
-      {networks.some((n) => n.id === 'youtube' && n.connectable) ? (
+      {networks.some((n) => n.id === 'youtube' && (n.connectable || n.ready)) ? (
         <p className="text-sm">
           <a href="/api/social/youtube/connect" className="text-paper underline-offset-2 hover:underline">
-            Connect YouTube
+            {networks.some((n) => n.id === 'youtube' && (n.ready || n.reconnect))
+              ? 'Reconnect YouTube'
+              : 'Connect YouTube'}
           </a>{' '}
-          <span className="text-quiet">to post Shorts from this site.</span>
+          <span className="text-quiet">
+            {networks.some((n) => n.id === 'youtube' && n.ready)
+              ? 'if Shorts uploads start failing.'
+              : 'to post Shorts from this site.'}
+          </span>
         </p>
       ) : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
@@ -371,8 +377,10 @@ export default function SocialPost({ slug, initialRetry = [] }) {
         </button>
       </div>
       <p className="text-xs text-quiet">
-        Mark posted = you already shared it yourself (e.g. X). Cron runs daily at 14:00 UTC on Vercel
-        (≈10am US East / 8pm Bangladesh). Set <code className="text-body">CRON_SECRET</code> in env.
+        New quotes stay off the site until you Post now / Mark posted, or a schedule goes live (site +
+        social together). Mark posted = you already shared it yourself (e.g. X). Cron runs daily at
+        14:00 UTC on Vercel (≈10am US East / 8pm Bangladesh). Set{' '}
+        <code className="text-body">CRON_SECRET</code> in env.
       </p>
 
       {pending.length ? (
