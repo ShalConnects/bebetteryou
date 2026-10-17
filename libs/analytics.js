@@ -78,6 +78,29 @@ function rank(rows, metric, limit = topListSize) {
     .slice(0, limit)
 }
 
+const countryNames = new Intl.DisplayNames(['en'], { type: 'region' })
+
+function countryLabel(code) {
+  try {
+    return countryNames.of(code) || code
+  } catch {
+    return code
+  }
+}
+
+/** Percent change vs the previous period; null when there is no baseline to compare. */
+export function change(current, previous) {
+  return previous ? Math.round(((current - previous) / previous) * 100) : null
+}
+
+/** "2026-09-18" → "18 Sep" for chart axes (keys are UTC days). */
+export function shortDay(key) {
+  const date = new Date(`${key}T00:00:00Z`)
+  return Number.isNaN(date.getTime())
+    ? key
+    : date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' })
+}
+
 /** Rounded to one decimal — a download rate of 0 reads as "nobody saved one". */
 function perVisitor(count, visitors) {
   if (!visitors) return 0
@@ -86,10 +109,10 @@ function perVisitor(count, visitors) {
 
 export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
   const keys = dayKeys(days, now)
-  const first = keys[0]
+  const [first, last] = [keys[0], keys[keys.length - 1]]
   const inRange = events.filter((event) => {
     const key = dayKey(event.createdAt)
-    return key && key >= first
+    return key && key >= first && key <= last
   })
 
   const totals = emptyRow('all', 'All')
@@ -124,7 +147,7 @@ export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
   return {
     days,
     from: first,
-    to: keys[keys.length - 1],
+    to: last,
     totals: {
       ...settled,
       downloadRate: perVisitor(settled.downloads, settled.visitors),
@@ -137,6 +160,8 @@ export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
     pages: rank(pageRows, 'pageviews'),
     quotes: rank(quoteRows, 'downloads'),
     shareTargets: rank(shareRows, 'shares'),
+    countries: rank(group(inRange, (event) => event.country || '', countryLabel), 'visitors'),
+    devices: rank(group(inRange, (event) => event.device || ''), 'visitors'),
   }
 }
 

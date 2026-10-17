@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { analyticsEvents, resolveRange } from '@/config/analytics'
-import { barWidths, dayKey, dayKeys, rangeStart, summarize } from '@/libs/analytics'
+import { barWidths, change, dayKey, dayKeys, rangeStart, shortDay, summarize } from '@/libs/analytics'
 import {
   channelFromMedium,
   hostOf,
@@ -339,5 +339,42 @@ describe('resolveRange', () => {
 
   it('resolves a known range', () => {
     expect(resolveRange('7d')).toMatchObject({ days: 7, label: '7 days' })
+  })
+})
+
+describe('period comparison', () => {
+  const now = Date.parse('2026-10-17T12:00:00Z')
+  const view = (createdAt, extra = {}) => ({
+    name: analyticsEvents.pageview,
+    visitor: createdAt,
+    createdAt,
+    ...extra,
+  })
+  const events = [
+    view('2026-10-16T10:00:00Z', { country: 'BD', device: 'mobile' }),
+    view('2026-10-17T10:00:00Z', { country: 'US', device: 'desktop' }),
+    view('2026-10-09T10:00:00Z'),
+  ]
+
+  it('keeps the previous window out of the current one and vice versa', () => {
+    const current = summarize(events, { days: 7, now })
+    const prev = summarize(events, { days: 7, now: rangeStart(7, now).getTime() - 1 })
+    expect(current.totals.pageviews).toBe(2)
+    expect(prev.totals.pageviews).toBe(1)
+    expect(change(current.totals.pageviews, prev.totals.pageviews)).toBe(100)
+  })
+
+  it('has no change without a baseline', () => {
+    expect(change(5, 0)).toBeNull()
+  })
+
+  it('names countries and splits devices', () => {
+    const { countries, devices } = summarize(events, { days: 7, now })
+    expect(countries.map((r) => r.label).sort()).toEqual(['Bangladesh', 'United States'])
+    expect(devices.map((r) => r.key).sort()).toEqual(['desktop', 'mobile'])
+  })
+
+  it('formats chart days', () => {
+    expect(shortDay('2026-09-18')).toMatch(/^18 Sept?$/)
   })
 })

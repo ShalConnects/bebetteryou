@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { DashPanel } from './ui'
 import { analyticsRanges } from '@/config/analytics'
-import { barWidths } from '@/libs/analytics'
+import { barWidths, shortDay } from '@/libs/analytics'
 
 export function RangeTabs({ active }) {
   return (
@@ -112,14 +112,14 @@ export function TrendChart({ daily }) {
             key={day.key}
             className="min-w-px flex-1 bg-paper/30"
             style={{ height: `${widths[i]}%` }}
-            title={`${day.key}: ${day.visitors} visitors, ${day.pageviews} views`}
+            title={`${shortDay(day.key)}: ${day.visitors} visitors, ${day.pageviews} views`}
           />
         ))}
       </div>
       <div className="mt-3 flex justify-between text-[11px] uppercase tracking-[0.2em] text-quiet">
-        <span>{daily[0]?.key}</span>
+        <span>{shortDay(daily[0]?.key)}</span>
         <span>peak {busiest.toLocaleString('en-US')}</span>
-        <span>{daily[daily.length - 1]?.key}</span>
+        <span>{shortDay(daily[daily.length - 1]?.key)}</span>
       </div>
     </DashPanel>
   )
