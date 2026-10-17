@@ -1,50 +1,55 @@
 import Link from 'next/link'
+import { formatStatus } from '@/libs/print-format'
 import { formatScheduleWhen, manageQuotesHref } from '@/libs/dashboard-ops'
 
+const link = 'underline-offset-2 hover:underline'
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
+
 /**
- * Overview “Today” summary only — full failure detail lives on Quotes → Schedules.
+ * Overview “Today”: what needs a hand first (failures, orders), then what runs next.
+ * Full detail lives on Quotes → Schedules and Print.
  */
-export default function AttentionStrip({ failures = [], upcoming = [], pendingSocial = [] }) {
-  const empty = !failures.length && !upcoming.length && !pendingSocial.length
-  if (empty) {
+export default function AttentionStrip({ failures = [], orders = [], upcoming = [], pendingSocial = [] }) {
+  if (!failures.length && !orders.length && !upcoming.length && !pendingSocial.length) {
     return <p className="text-sm text-quiet">Nothing needs attention.</p>
   }
 
   return (
-    <div className="space-y-2 text-sm">
+    <ul className="space-y-2 text-sm">
       {failures.length ? (
-        <p>
-          <Link
-            href={manageQuotesHref({ section: 'schedules' })}
-            className="text-red-400 underline-offset-2 hover:underline"
-          >
-            {failures.length} schedule failure{failures.length === 1 ? '' : 's'}
+        <li>
+          <Link href={manageQuotesHref({ section: 'schedules' })} className={`text-red-400 ${link}`}>
+            {plural(failures.length, 'schedule failure')}
           </Link>
           <span className="text-quiet"> — open Schedules to retry</span>
-        </p>
+        </li>
       ) : null}
 
-      {upcoming.length ? (
-        <p className="text-quiet">
-          Up next:{' '}
-          {upcoming.map((row, i) => (
-            <span key={row.id}>
-              {i ? ' · ' : ''}
-              <Link
-                href={manageQuotesHref({ section: 'schedules' })}
-                className="text-body underline-offset-2 hover:underline"
-              >
-                {row.slug}
-              </Link>
-              <span className="text-quiet"> {formatScheduleWhen(row.runAt)}</span>
-            </span>
-          ))}
-        </p>
-      ) : null}
+      {orders.map((o) => (
+        <li key={o.orderNumber}>
+          <Link href={o.href} className={`${o.canFulfill ? 'text-red-400' : 'text-paper'} ${link}`}>
+            Print order {o.orderNumber}
+          </Link>
+          <span className="text-quiet">
+            {' '}
+            — {formatStatus(o.status)} · {o.customerName || o.customerEmail}
+          </span>
+        </li>
+      ))}
+
+      {upcoming.map((row, i) => (
+        <li key={row.id} className="text-quiet">
+          {i ? 'Then ' : 'Next post '}
+          <Link href={manageQuotesHref({ section: 'schedules' })} className={`text-body ${link}`}>
+            {row.slug}
+          </Link>{' '}
+          · {formatScheduleWhen(row.runAt)}
+        </li>
+      ))}
 
       {pendingSocial.length ? (
-        <p className="text-quiet">Pending: {pendingSocial.map((n) => n.label).join(', ')}</p>
+        <li className="text-quiet">Pending: {pendingSocial.map((n) => n.label).join(', ')}</li>
       ) : null}
-    </div>
+    </ul>
   )
 }

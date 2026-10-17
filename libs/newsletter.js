@@ -428,6 +428,17 @@ export async function listNewsletterSubscribersPage({
   }
 }
 
+/** Active list size and signups in the last `days` (dashboard overview). */
+export async function subscriberCounts(days = 7) {
+  await connectDB()
+  const since = new Date(Date.now() - days * 86_400_000)
+  const [active, recent] = await Promise.all([
+    Lead.countDocuments(ACTIVE_FILTER),
+    Lead.countDocuments({ ...ACTIVE_FILTER, createdAt: { $gte: since } }),
+  ])
+  return { active, recent }
+}
+
 /** Recent addresses for the test-email picker (not the full list). */
 export async function listNewsletterTestEmails(limit = 100) {
   await connectDB()

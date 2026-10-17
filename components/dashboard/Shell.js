@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { brand } from '@/config/site'
 import BrandLogo from '@/components/site/BrandLogo'
 import DashboardNav from './Nav'
@@ -27,9 +26,7 @@ export default function DashboardShell({ isAdmin, children }) {
           {isAdmin ? (
             <aside className="shrink-0 md:w-40 md:self-start">
               <p className="dash-label">Admin</p>
-              <Suspense fallback={null}>
-                <DashboardNav className="pt-4" />
-              </Suspense>
+              <DashboardNav className="pt-4" />
             </aside>
           ) : null}
           <main className={isAdmin ? 'dash-main min-w-0' : 'min-w-0 flex-1 overflow-y-auto'}>

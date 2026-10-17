@@ -61,18 +61,20 @@ export function networkLastActivity(rows) {
   return map
 }
 
+/** Admin-local time (Bangladesh) — `dateStyle` can't be mixed with `weekday`, so spell the parts out. */
+const when = new Intl.DateTimeFormat('en-GB', {
+  weekday: 'short',
+  day: 'numeric',
+  month: 'short',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+  timeZone: 'Asia/Dhaka',
+})
+
 export function formatScheduleWhen(iso) {
-  if (!iso) return '—'
-  try {
-    return `${new Date(iso).toLocaleString(undefined, {
-      weekday: 'short',
-      dateStyle: 'medium',
-      timeStyle: 'short',
-      timeZone: 'UTC',
-    })} UTC`
-  } catch {
-    return iso
-  }
+  const d = iso ? new Date(iso) : null
+  return d && !Number.isNaN(d.getTime()) ? when.format(d) : '—'
 }
 
 /** Deep-link into Manage quotes (cards + optional retry networks). */

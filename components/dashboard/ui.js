@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 export { default as DashSection } from './DashSection'
 
 export function DashPanel({ title, children, className = '' }) {
@@ -11,20 +9,12 @@ export function DashPanel({ title, children, className = '' }) {
   )
 }
 
-export function Stat({ label, value }) {
+export function Stat({ label, value, hint }) {
   return (
     <div>
       <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">{label}</p>
       <p className="mt-1 font-display text-2xl text-paper">{value}</p>
+      {hint ? <p className="mt-0.5 text-xs text-quiet">{hint}</p> : null}
     </div>
-  )
-}
-
-export function ActionLink({ href, title, children }) {
-  return (
-    <Link href={href} className="block border border-line p-6 transition-colors hover:border-paper/40">
-      <h3 className="font-display text-lg text-paper">{title}</h3>
-      <p className="mt-2 text-sm text-quiet">{children}</p>
-    </Link>
   )
 }

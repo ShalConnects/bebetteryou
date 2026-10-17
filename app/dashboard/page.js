@@ -1,25 +1,25 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/libs/next-auth'
 import { isAdminSession } from '@/libs/auth-helpers'
 import { connectDB } from '@/libs/mongo'
 import User from '@/models/User'
 import ButtonCheckout from '@/components/ButtonCheckout'
-import { adminActions } from '@/config/dashboard'
 import { appConfig } from '@/config/app'
 import { socials } from '@/config/site'
 import { adminOverview } from '@/libs/dashboard'
 import { formatScheduleWhen, manageQuotesHref } from '@/libs/dashboard-ops'
 import { readQuotes } from '@/libs/quotes-store'
-import AnalyticsBoard from '@/components/dashboard/AnalyticsBoard'
 import AttentionStrip from '@/components/dashboard/AttentionStrip'
-import { ActionLink, DashPanel, DashSection, Stat } from '@/components/dashboard/ui'
+import { DashPanel, Stat } from '@/components/dashboard/ui'
 import { PageIntro } from '@/components/site/ui'
 
-/** Overview hosts live analytics; avoid a stale cached snapshot. */
+/** Overview shows live counts; avoid a stale cached snapshot. */
 export const dynamic = 'force-dynamic'
 
 const socialHref = Object.fromEntries(socials.map((s) => [s.id, s.href]))
+const count = (n) => (n == null ? '—' : n.toLocaleString('en-US'))
 
 export default async function Dashboard({ searchParams }) {
   const session = await getServerSession(authOptions)
@@ -39,6 +39,8 @@ export default async function Dashboard({ searchParams }) {
   }
 
   if (isAdmin) {
+    /** Analytics moved to its own page — keep old `?range=` links working. */
+    if (params.range) redirect(`/dashboard/analytics?range=${encodeURIComponent(params.range)}`)
     const { stats, social, attention, networkActivity } = await adminOverview(await readQuotes())
     const readySocial = social.filter((n) => n.ready).length
     const yt = params.youtube
@@ -64,18 +66,14 @@ export default async function Dashboard({ searchParams }) {
         </DashPanel>
 
         <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-          <Stat label="Total quotes" value={stats.total} />
-          <Stat label="Latest #" value={stats.latest || '—'} />
-          <Stat label="Next card" value={`#${stats.next}`} />
+          <Stat label="Quotes" value={stats.total} hint={`Next card #${stats.next}`} />
+          <Stat
+            label="Subscribers"
+            value={count(stats.subscribers?.active)}
+            hint={stats.subscribers ? `+${count(stats.subscribers.recent)} this week` : null}
+          />
+          <Stat label="Visitors · 7 days" value={count(stats.visitors)} />
           <Stat label="Social ready" value={`${readySocial}/${social.length}`} />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {adminActions.map((a) => (
-            <ActionLink key={a.href} href={a.href} title={a.title}>
-              {a.body}
-            </ActionLink>
-          ))}
         </div>
 
         <DashPanel title="Social">
@@ -157,17 +155,6 @@ export default async function Dashboard({ searchParams }) {
             })}
           </ul>
         </DashPanel>
-
-        <DashSection
-          id="analytics"
-          title="Analytics"
-          description="Channels, top pages, downloads and shares."
-          defaultOpen={Boolean(params.range)}
-          focus={Boolean(params.range)}
-          persistKey="overview-analytics"
-        >
-          <AnalyticsBoard range={params.range} />
-        </DashSection>
       </div>
     )
   }

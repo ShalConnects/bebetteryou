@@ -1,7 +1,17 @@
-import { redirect } from 'next/navigation'
+import AnalyticsBoard from '@/components/dashboard/AnalyticsBoard'
+import { PageIntro } from '@/components/site/ui'
+import { requireAdminPage } from '@/libs/dashboard-auth'
 
-/** Analytics lives on Overview — keep this URL for old bookmarks. */
-export default async function AdminAnalyticsRedirect({ searchParams }) {
+export const metadata = { title: 'Analytics' }
+export const dynamic = 'force-dynamic'
+
+export default async function AdminAnalyticsPage({ searchParams }) {
+  await requireAdminPage()
   const { range } = (await searchParams) || {}
-  redirect(range ? `/dashboard?range=${encodeURIComponent(range)}#analytics` : '/dashboard#analytics')
+  return (
+    <div className="space-y-8">
+      <PageIntro title="Analytics">Channels, top pages, downloads and shares.</PageIntro>
+      <AnalyticsBoard range={range} />
+    </div>
+  )
 }

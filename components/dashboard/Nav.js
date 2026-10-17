@@ -1,20 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { adminNav } from '@/config/dashboard'
-
-function isActive(item, path, searchParams) {
-  if (item.analytics) return Boolean(searchParams?.get('range'))
-  if (item.href === '/dashboard') return path === '/dashboard' && !searchParams?.get('range')
-  return item.match(path)
-}
 
 export default function DashboardNav({ className = '' }) {
   const path = usePathname()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const active = adminNav.find((item) => isActive(item, path, searchParams)) || adminNav[0]
+  const active = adminNav.find((item) => item.match(path)) || adminNav[0]
 
   return (
     <div className={className}>
@@ -37,7 +30,7 @@ export default function DashboardNav({ className = '' }) {
           <Link
             key={item.href}
             href={item.href}
-            className={isActive(item, path, searchParams) ? 'nav-link-active' : 'nav-link'}
+            className={item.match(path) ? 'nav-link-active' : 'nav-link'}
           >
             {item.label}
           </Link>
