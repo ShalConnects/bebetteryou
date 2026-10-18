@@ -92,7 +92,7 @@ async function youtubeError(res) {
 async function setThumbnail(token, videoId, jpeg) {
   if (!jpeg?.length || !videoId) return { ok: false, error: 'Thumbnail missing' }
   const res = await fetch(
-    `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURICommand(videoId)}&uploadType=media`,
+    `https://www.googleapis.com/upload/youtube/v3/thumbnails/set?videoId=${encodeURIComponent(videoId)}&uploadType=media`,
     {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'image/jpeg' },
