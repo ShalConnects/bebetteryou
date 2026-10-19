@@ -333,6 +333,28 @@ export async function renderShortFrameLetterbox(imageBuffer, card = quoteShort) 
   return canvas.toBuffer('image/jpeg', 92)
 }
 
+/**
+ * Custom YouTube Shorts cover: full quote + grid-safe footer (not the kinetic hook frame).
+ * Video playback still uses footerH for in-player chrome.
+ */
+export async function renderShortPoster(imageBuffer, quote, card = quoteShort) {
+  const thumbCard = {
+    ...card,
+    footerH: card.thumbFooterH ?? card.footerH,
+  }
+  if (hasQuoteText(quote)) {
+    return renderQuoteCard({
+      n: quote.n,
+      text: quote.text,
+      author: quote.author || '',
+      tags: quote.tags,
+      card: thumbCard,
+    })
+  }
+  if (imageBuffer?.length) return renderShortFrame(imageBuffer, thumbCard)
+  throw new Error('Poster needs quote text or an image')
+}
+
 /** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
 export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
@@ -355,8 +377,7 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
         }))
       )
     : [{ seconds: card.fallbackSeconds, jpg: await renderShortFrame(imageBuffer, card) }]
-  /** Hook / first readable still — better Shorts cover tap target than the final frame. */
-  const poster = quoteBeats[0].jpg
+  const poster = await renderShortPoster(imageBuffer, quote, card)
   const useSeries = hasQuoteText(quote) && card.series > 0
   const seriesBeat = useSeries
     ? {

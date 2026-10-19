@@ -55,7 +55,7 @@ export const quoteCard = {
     perseverance: '#e8c547',
     clarity: '#8ecae6',
     growth: '#95d5b2',
-    love: '#f4a6a6',
+    /** Love stays on default chrome — pink tint felt off-brand. */
     'self-worth': '#c9b1ff',
   },
 }
@@ -70,6 +70,11 @@ export const quoteShort = {
   sectionH: Math.round(quoteCard.sectionH * shortScale),
   /** Extra footer so author/site sit above YouTube’s caption + audio pill. */
   footerH: 500,
+  /**
+   * Custom Shorts cover only — more balanced than footerH so YouTube’s channel
+   * grid crop doesn’t clip the quote (video frames keep footerH).
+   */
+  thumbFooterH: 320,
   number: { ...quoteCard.number, size: Math.round(quoteCard.number.size * shortScale) },
   quote: {
     ...quoteCard.quote,
