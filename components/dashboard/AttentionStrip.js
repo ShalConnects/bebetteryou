@@ -9,8 +9,21 @@ const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
  * Overview “Today”: what needs a hand first (failures, orders), then what runs next.
  * Full detail lives on Quotes → Schedules and Print.
  */
-export default function AttentionStrip({ failures = [], orders = [], upcoming = [], pendingSocial = [] }) {
-  if (!failures.length && !orders.length && !upcoming.length && !pendingSocial.length) {
+export default function AttentionStrip({
+  failures = [],
+  orders = [],
+  upcoming = [],
+  pendingSocial = [],
+  shortsBacklog = null,
+}) {
+  const lowShorts = shortsBacklog != null && shortsBacklog < 3
+  if (
+    !failures.length &&
+    !orders.length &&
+    !upcoming.length &&
+    !pendingSocial.length &&
+    !lowShorts
+  ) {
     return <p className="text-sm text-quiet">Nothing needs attention.</p>
   }
 
@@ -49,6 +62,15 @@ export default function AttentionStrip({ failures = [], orders = [], upcoming = 
 
       {pendingSocial.length ? (
         <li className="text-quiet">Pending: {pendingSocial.map((n) => n.label).join(', ')}</li>
+      ) : null}
+
+      {lowShorts ? (
+        <li>
+          <span className={shortsBacklog === 0 ? 'text-red-400' : 'text-quiet'}>
+            YouTube Shorts queue: {plural(shortsBacklog, 'day')} left
+          </span>
+          <span className="text-quiet"> — publish more cards (daily cron 18:00 UTC)</span>
+        </li>
       ) : null}
     </ul>
   )

@@ -49,6 +49,7 @@ const nextConfig = {
     '/api/social/preview': shortEncode,
     '/api/quotes/week-review': shortEncode,
     '/api/cron/social': shortEncode,
+    '/api/cron/youtube-shorts': shortEncode,
   },
   outputFileTracingExcludes: {
     '/**': staticMedia,

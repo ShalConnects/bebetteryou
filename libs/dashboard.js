@@ -7,6 +7,7 @@ import { presentPrintOrder } from '@/libs/print-format'
 import { listOrders, printOrdersReady } from '@/libs/print-orders'
 import { readyNetworks } from '@/libs/social'
 import { readPostsBySlugs } from '@/libs/social/post-store'
+import { countYoutubeShortsBacklog } from '@/libs/social/run-daily-youtube-short'
 import { listAllSchedules } from '@/libs/social/schedule-store'
 import {
   networkLastActivity,
@@ -55,7 +56,9 @@ export async function adminOverview(quotes) {
     settle('subscribers', subscriberCounts, null),
     settle('analytics', weekVisitors, null),
   ])
-  const postsBySlug = await readPostsBySlugs(schedules.map((s) => s.slug))
+  const scheduleSlugs = schedules.map((s) => s.slug)
+  const quoteSlugs = quotes.map((q) => q.slug).filter(Boolean)
+  const postsBySlug = await readPostsBySlugs([...new Set([...scheduleSlugs, ...quoteSlugs])])
   const failures = scheduleFailures(schedules, { postsBySlug })
   return {
     stats: { ...stats, subscribers, visitors },
@@ -67,6 +70,7 @@ export async function adminOverview(quotes) {
       orders,
       upcoming: upcomingPending(schedules, 3),
       pendingSocial: social.filter((n) => n.pending),
+      shortsBacklog: countYoutubeShortsBacklog(quotes, postsBySlug),
     },
   }
 }

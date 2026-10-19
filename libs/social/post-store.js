@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { mongoUri } from '@/libs/mongo-uri'
 import { logError } from '@/libs/logger'
+import { utcDayRange } from '@/libs/social/schedule-store'
 import { mergePostRecord } from './post-log'
 
 const dataFile = path.join(process.cwd(), 'data/social-posts.json')
@@ -155,6 +156,49 @@ export async function listPostedQuoteSlugs({ since, until } = {}) {
   } catch (error) {
     logError('Social post slug list failed', error)
     return []
+  }
+}
+
+/**
+ * True when `network` has a successful post in the UTC calendar day of `now`.
+ * Optional `excludeSlugPrefix` skips week-review style jobs (e.g. `week-`).
+ */
+export async function hasOkNetworkPostInUtcDay(
+  network,
+  { now = new Date(), excludeSlugPrefix = '' } = {}
+) {
+  const key = String(network || '').trim()
+  if (!key) return false
+  const { start, end } = utcDayRange(now)
+  const prefix = String(excludeSlugPrefix || '')
+
+  try {
+    if (mongoUri()) {
+      const { connectDB } = await import('@/libs/mongo')
+      const SocialPost = (await import('@/models/SocialPost')).default
+      await connectDB()
+      const q = {
+        network: key,
+        ok: true,
+        at: { $gte: start, $lt: end },
+      }
+      if (prefix) q.slug = { $not: new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`) }
+      const row = await SocialPost.findOne(q).select('slug').lean()
+      return Boolean(row?.slug)
+    }
+    if (process.env.VERCEL) return false
+
+    const startMs = start.getTime()
+    const endMs = end.getTime()
+    return readLocal().some((row) => {
+      if (row.network !== key || !row.ok) return false
+      if (prefix && String(row.slug || '').startsWith(prefix)) return false
+      const t = new Date(row.at).getTime()
+      return Number.isFinite(t) && t >= startMs && t < endMs
+    })
+  } catch (error) {
+    logError('Social post day check failed', error, { network: key })
+    return false
   }
 }
 
