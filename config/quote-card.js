@@ -50,14 +50,6 @@ export const quoteCard = {
     sizeRatio: 0.48,
     lineWidth: 3.5,
   },
-  /** Thin rule + number tint from scripture/social theme (not a full style swap). */
-  themeAccent: {
-    perseverance: '#e8c547',
-    clarity: '#8ecae6',
-    growth: '#95d5b2',
-    /** Love stays on default chrome — pink tint felt off-brand. */
-    'self-worth': '#c9b1ff',
-  },
 }
 
 /** 9:16 Short layout — same chrome as the card, scaled to 1080 wide. */
@@ -71,10 +63,11 @@ export const quoteShort = {
   /** Extra footer so author/site sit above YouTube’s caption + audio pill. */
   footerH: 500,
   /**
-   * Custom Shorts cover only — more balanced than footerH so YouTube’s channel
-   * grid crop doesn’t clip the quote (video frames keep footerH).
+   * Custom Shorts cover only — taller top band + balanced footer so YouTube’s
+   * Shorts crop doesn’t clip Be / #N or the quote (video frames keep footerH).
    */
-  thumbFooterH: 320,
+  thumbSectionH: Math.round(quoteCard.sectionH * shortScale * 1.55),
+  thumbFooterH: 360,
   number: { ...quoteCard.number, size: Math.round(quoteCard.number.size * shortScale) },
   quote: {
     ...quoteCard.quote,

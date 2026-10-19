@@ -334,12 +334,13 @@ export async function renderShortFrameLetterbox(imageBuffer, card = quoteShort) 
 }
 
 /**
- * Custom YouTube Shorts cover: full quote + grid-safe footer (not the kinetic hook frame).
+ * Custom YouTube Shorts cover: full quote + top/footer safe bands (not the kinetic hook frame).
  * Video playback still uses footerH for in-player chrome.
  */
 export async function renderShortPoster(imageBuffer, quote, card = quoteShort) {
   const thumbCard = {
     ...card,
+    sectionH: card.thumbSectionH ?? card.sectionH,
     footerH: card.thumbFooterH ?? card.footerH,
   }
   if (hasQuoteText(quote)) {
