@@ -4,7 +4,7 @@ Admin only (`ADMIN_EMAIL`). Sign in at `/auth/signin` → `/dashboard`. Other ac
 
 **View site** opens the public homepage. **Log out** ends the session. Phone: **Admin section** dropdown. Desktop menu: Overview, Analytics, Quotes, Tags, Print, Subscribers, Practice (if on). Collapsed sections stay that way in this browser.
 
-Scheduled posts run once a day at **14:00 UTC** (~8pm Bangladesh, ~10am US Eastern in summer). Quote email runs at **15:00 UTC**, and only if a social post succeeded that UTC day.
+One daily cron at **14:00 UTC** (~8pm Bangladesh, ~10am US Eastern in summer): due social posts, then a backlog YouTube Short if none today, then quote email (email only if a social send succeeded that UTC day).
 
 ## Overview
 

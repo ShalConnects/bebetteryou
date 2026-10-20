@@ -69,7 +69,7 @@ export default function AttentionStrip({
           <span className={shortsBacklog === 0 ? 'text-red-400' : 'text-quiet'}>
             YouTube Shorts queue: {plural(shortsBacklog, 'day')} left
           </span>
-          <span className="text-quiet"> — publish more cards (with social cron, 14:00 UTC)</span>
+          <span className="text-quiet"> — publish more cards (daily cron, 14:00 UTC)</span>
         </li>
       ) : null}
     </ul>

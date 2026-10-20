@@ -1,6 +1,7 @@
 import { getQuote } from '@/libs/content'
+import { cleanupSuppressedNewsletterSubscribers } from '@/libs/newsletter-cleanup'
 import { notifyQuoteSubscribers } from '@/libs/newsletter'
-import { logInfo } from '@/libs/logger'
+import { logError, logInfo } from '@/libs/logger'
 import { findEarliestDoneScheduleForUtcDay } from '@/libs/social/schedule-store'
 
 /**
@@ -52,4 +53,26 @@ export async function runQuoteEmailCron(now = new Date()) {
     source,
     ...result,
   }
+}
+
+async function runCleanup(label) {
+  try {
+    const cleanup = await cleanupSuppressedNewsletterSubscribers()
+    logInfo(`Newsletter cron: ${label}`, cleanup)
+    return cleanup
+  } catch (error) {
+    logError(`Newsletter cron: ${label} failed`, error)
+    return { error: error.message || 'cleanup failed' }
+  }
+}
+
+/**
+ * Full daily email pipeline: suppression sync → quote mail → sync again.
+ * Shared by /api/cron/social (after social/YT) and manual /api/cron/newsletter.
+ */
+export async function runNewsletterCronPipeline(now = new Date()) {
+  const cleanupBefore = await runCleanup('suppression cleanup (before send)')
+  const result = await runQuoteEmailCron(now)
+  const cleanupAfter = await runCleanup('suppression cleanup (after send)')
+  return { cleanupBefore, cleanupAfter, ...result }
 }
