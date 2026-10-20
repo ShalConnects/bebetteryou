@@ -9,10 +9,6 @@
     {
       "path": "/api/cron/newsletter",
       "schedule": "0 15 * * *"
-    },
-    {
-      "path": "/api/cron/youtube-shorts",
-      "schedule": "0 18 * * *"
     }
   ]
 }
