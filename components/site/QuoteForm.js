@@ -138,7 +138,13 @@ export default function QuoteForm({
   const [reviewQueue, setReviewQueue] = useState([])
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
+  const [authorLookup, setAuthorLookup] = useState(false)
+  const [authorNote, setAuthorNote] = useState('')
   const pinned = useRef(false)
+  const pasted = useRef(false)
+  const authorEdited = useRef(false)
+  const textRef = useRef('')
+  const lookupSeq = useRef(0)
   const { preview, previewing, error, setError } = useQuotePreview(text, author, tags)
   const duplicate = useMemo(() => findDuplicateQuote(catalog, text), [catalog, text])
   const lanes = tagCatalog.length ? tagCatalog : tagOptions.map((name) => ({ name }))
@@ -172,14 +178,49 @@ export default function QuoteForm({
 
   function onQuoteChange(e) {
     const next = clampQuoteInput(e.target.value)
+    const fromPaste = pasted.current
+    pasted.current = false
+    textRef.current = next
     setText(next)
     if (!next.trim()) {
       pinned.current = false
+      authorEdited.current = false
+      lookupSeq.current += 1
+      setAuthorLookup(false)
+      setAuthorNote('')
+      setAuthor('')
       setTags([])
       setTheme('')
       return
     }
     applySuggestion(next)
+    if (fromPaste) lookupAuthor(next)
+  }
+
+  function lookupAuthor(quote) {
+    if (authorEdited.current) return
+    const seq = lookupSeq.current + 1
+    lookupSeq.current = seq
+    setAuthorNote('')
+    setAuthorLookup(true)
+    fetch('/api/quotes/author', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: quote }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (seq !== lookupSeq.current || authorEdited.current || textRef.current !== quote) return
+        const name = typeof data?.author === 'string' ? data.author : ''
+        setAuthor(name)
+        setAuthorNote(name ? '' : 'No author found for this line.')
+      })
+      .catch(() => {
+        if (seq === lookupSeq.current) setAuthorNote('No author found for this line.')
+      })
+      .finally(() => {
+        if (seq === lookupSeq.current) setAuthorLookup(false)
+      })
   }
 
   function onTagsChange(next) {
@@ -208,6 +249,11 @@ export default function QuoteForm({
       if (!res.ok) throw new Error(data.error || 'Failed')
       setResult(data)
       pinned.current = false
+      authorEdited.current = false
+      textRef.current = ''
+      lookupSeq.current += 1
+      setAuthorLookup(false)
+      setAuthorNote('')
       setText('')
       setAuthor('')
       setTags([])
@@ -252,6 +298,7 @@ export default function QuoteForm({
             value={text}
             onPaste={() => {
               pinned.current = false
+              pasted.current = true
             }}
             onChange={onQuoteChange}
             placeholder={"Line one\nLine two"}
@@ -263,10 +310,16 @@ export default function QuoteForm({
           <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">Author</span>
           <input
             value={author}
-            onChange={(e) => setAuthor(e.target.value)}
+            onChange={(e) => {
+              authorEdited.current = true
+              setAuthorNote('')
+              setAuthor(e.target.value)
+            }}
             placeholder="Optional"
             className={inputClass}
           />
+          {authorLookup ? <span className="mt-2 block text-sm text-quiet">Looking up the author…</span> : null}
+          {!authorLookup && authorNote ? <span className="mt-2 block text-sm text-quiet">{authorNote}</span> : null}
         </label>
 
         <TagPicker options={tagOptions} value={tags} onChange={onTagsChange} />
