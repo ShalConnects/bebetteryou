@@ -58,6 +58,10 @@ export default async function AdminQuotesPage({ searchParams }) {
         <QuoteForm
           nextN={nextQuoteN(quotes)}
           tagOptions={tagOptions}
+          tagCatalog={tags}
+          trainingQuotes={quotes
+            .filter((q) => q.text && q.tags?.length)
+            .map(({ text, tags: quoteTags }) => ({ text, tags: quoteTags }))}
           themeOptions={themeOptions}
           catalog={quotes.filter((q) => q.text).map(({ n, slug, text }) => ({ n, slug, text }))}
         />

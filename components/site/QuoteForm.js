@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { traditions } from '@/config/traditions'
 import { quoteCard } from '@/config/quote-card'
 import { quoteShowsScripture, scriptureFor } from '@/libs/scripture-core'
-import { clampQuoteInput, findDuplicateQuote, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
+import { clampQuoteInput, findDuplicateQuote, quoteFingerprint, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
+import { suggestQuoteLane } from '@/libs/quote-suggest'
 import SocialPost from './SocialPost'
 import EmailQuoteList from '@/components/dashboard/EmailQuoteList'
 import TagPicker from './TagPicker'
@@ -58,15 +59,138 @@ function ScripturePreview({ tags, theme, seed }) {
   )
 }
 
-export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], catalog = [] }) {
+function sameList(a, b) {
+  return a.length === b.length && a.every((item, i) => item === b[i])
+}
+
+function sameDraft(previous, next) {
+  const left = previous.trim().toLowerCase()
+  const right = next.trim().toLowerCase()
+  return Boolean(left && right && (left.startsWith(right) || right.startsWith(left)))
+}
+
+function reviewItem(text, suggestion) {
+  return {
+    id: quoteFingerprint(text),
+    text: text.trim(),
+    tags: suggestion.review.map((row) => row.tag),
+    theme: suggestion.review[0]?.theme || '',
+    suggestions: suggestion.review,
+  }
+}
+
+function upsertReview(queue, text, suggestion) {
+  const item = reviewItem(text, suggestion)
+  if (!item.id) return queue
+  const last = queue[queue.length - 1]
+  const rest = last && sameDraft(last.text, item.text) ? queue.slice(0, -1) : queue.filter((row) => row.id !== item.id)
+  return [...rest, item].slice(-8)
+}
+
+function percent(confidence) {
+  return `${Math.round(confidence * 100)}%`
+}
+
+function ReviewQueue({ items, onAccept, onDismiss }) {
+  if (!items.length) return null
+  return (
+    <div className="space-y-3 border border-line p-4">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">Review queue</p>
+      {items.map((item) => (
+        <div key={item.id} className="space-y-2">
+          <p className="text-sm text-paper">{item.text}</p>
+          {item.suggestions.length ? (
+            <p className="text-xs text-quiet">
+              {item.suggestions.map((row) => `${row.tag} ${percent(row.confidence)}`).join(' · ')}
+              {item.theme ? ` · ${item.theme}` : ''}
+            </p>
+          ) : (
+            <p className="text-xs text-quiet">No close tag in the library. Choose tags yourself.</p>
+          )}
+          <div className="flex gap-4">
+            {item.tags.length ? (
+              <button type="button" className="text-sm text-paper underline" onClick={() => onAccept(item)}>
+                Use these tags
+              </button>
+            ) : null}
+            <button type="button" className="text-sm text-quiet underline" onClick={() => onDismiss(item.id)}>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function QuoteForm({
+  nextN,
+  tagOptions = [],
+  tagCatalog = [],
+  trainingQuotes = [],
+  themeOptions = [],
+  catalog = [],
+}) {
   const [text, setText] = useState('')
   const [author, setAuthor] = useState('')
   const [tags, setTags] = useState([])
   const [theme, setTheme] = useState('')
+  const [reviewQueue, setReviewQueue] = useState([])
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState(null)
+  const pinned = useRef(false)
   const { preview, previewing, error, setError } = useQuotePreview(text, author, tags)
   const duplicate = useMemo(() => findDuplicateQuote(catalog, text), [catalog, text])
+  const lanes = tagCatalog.length ? tagCatalog : tagOptions.map((name) => ({ name }))
+
+  function applySuggestion(nextText, { force = false } = {}) {
+    if (pinned.current && !force) return
+    const suggestion = suggestQuoteLane(nextText, lanes, trainingQuotes)
+    if (suggestion.needsReview) {
+      setTags((prev) => (prev.length ? [] : prev))
+      setTheme((prev) => (prev ? '' : prev))
+      setReviewQueue((prev) => upsertReview(prev, nextText, suggestion))
+      return
+    }
+    setTags((prev) => (sameList(prev, suggestion.tags) ? prev : suggestion.tags))
+    setTheme((prev) => (prev === suggestion.theme ? prev : suggestion.theme))
+    const id = quoteFingerprint(nextText)
+    setReviewQueue((prev) => (prev.some((row) => row.id === id) ? prev.filter((row) => row.id !== id) : prev))
+  }
+
+  function acceptReview(item) {
+    pinned.current = true
+    setText(item.text)
+    setTags(item.tags)
+    setTheme(item.theme)
+    setReviewQueue((prev) => prev.filter((row) => row.id !== item.id))
+  }
+
+  function dismissReview(id) {
+    setReviewQueue((prev) => prev.filter((row) => row.id !== id))
+  }
+
+  function onQuoteChange(e) {
+    const next = clampQuoteInput(e.target.value)
+    setText(next)
+    if (!next.trim()) {
+      pinned.current = false
+      setTags([])
+      setTheme('')
+      return
+    }
+    applySuggestion(next)
+  }
+
+  function onTagsChange(next) {
+    pinned.current = true
+    setTags(next)
+  }
+
+  function onThemeChange(e) {
+    pinned.current = true
+    setTheme(e.target.value)
+  }
 
   async function onSubmit(e) {
     e.preventDefault()
@@ -83,10 +207,12 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
       setResult(data)
+      pinned.current = false
       setText('')
       setAuthor('')
       setTags([])
       setTheme('')
+      setReviewQueue((prev) => prev.filter((row) => row.text.trim() !== text.trim()))
     } catch (err) {
       setError(err.message)
     } finally {
@@ -124,7 +250,10 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
             rows={6}
             maxLength={maxChars}
             value={text}
-            onChange={(e) => setText(clampQuoteInput(e.target.value))}
+            onPaste={() => {
+              pinned.current = false
+            }}
+            onChange={onQuoteChange}
             placeholder={"Line one\nLine two"}
             className={`${inputClass} resize-none`}
           />
@@ -140,14 +269,16 @@ export default function QuoteForm({ nextN, tagOptions = [], themeOptions = [], c
           />
         </label>
 
-        <TagPicker options={tagOptions} value={tags} onChange={setTags} />
+        <TagPicker options={tagOptions} value={tags} onChange={onTagsChange} />
+
+        <ReviewQueue items={reviewQueue} onAccept={acceptReview} onDismiss={dismissReview} />
 
         {themeOptions.length ? (
           <label className="block">
             <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
               Scripture theme
             </span>
-            <select value={theme} onChange={(e) => setTheme(e.target.value)} className="dash-select">
+            <select value={theme} onChange={onThemeChange} className="dash-select">
               <option value="">From tags</option>
               {themeOptions.map((o) => (
                 <option key={o.theme} value={o.theme}>
