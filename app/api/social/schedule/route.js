@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { cancelSchedule, createSchedule, listSchedules } from '@/libs/social/schedule-store'
 import { readyNetworks } from '@/libs/social'
+import { runAtFromPostDate } from '@/libs/social/post-slot'
 import { readQuotes } from '@/libs/quotes-store'
 
 export const maxDuration = 30
@@ -21,8 +22,13 @@ export async function POST(req) {
 
   const body = await req.json().catch(() => null)
   const slug = body?.slug?.trim()
-  const runAt = body?.runAt
   const networks = Array.isArray(body?.networks) ? body.networks : []
+  let runAt
+  try {
+    runAt = runAtFromPostDate(body?.date || body?.runAt)
+  } catch (err) {
+    return NextResponse.json({ error: err.message || 'Pick a date' }, { status: 400 })
+  }
 
   if (!slug) return NextResponse.json({ error: 'slug required' }, { status: 400 })
 

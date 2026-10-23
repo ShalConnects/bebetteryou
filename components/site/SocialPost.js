@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { alreadyPosted, canSelectNetwork, defaultSelected } from '@/libs/social/post-log'
+import { nextPostDate, runAtFromPostDate } from '@/libs/social/post-slot'
 import { toast } from '@/components/dashboard/toast'
 
 function applyResults(posts, results) {
@@ -18,11 +19,6 @@ function applyResults(posts, results) {
     }
   }
   return next
-}
-
-function localInputValue(date = new Date(Date.now() + 60 * 60 * 1000)) {
-  const pad = (n) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 function formatWhen(iso) {
@@ -42,7 +38,7 @@ export default function SocialPost({ slug, initialRetry = [] }) {
   const [posts, setPosts] = useState({})
   const [schedules, setSchedules] = useState([])
   const [selected, setSelected] = useState([])
-  const [runAt, setRunAt] = useState(localInputValue)
+  const [postDate, setPostDate] = useState(nextPostDate)
   const [busy, setBusy] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
   const [results, setResults] = useState(null)
@@ -175,6 +171,13 @@ export default function SocialPost({ slug, initialRetry = [] }) {
       setError('Nothing API-ready selected to schedule.')
       return
     }
+    let when
+    try {
+      when = runAtFromPostDate(postDate)
+    } catch (err) {
+      setError(err.message)
+      return
+    }
     setBusy(true)
     setError('')
     try {
@@ -184,7 +187,8 @@ export default function SocialPost({ slug, initialRetry = [] }) {
         body: JSON.stringify({
           slug,
           networks: apiNets,
-          runAt: new Date(runAt).toISOString(),
+          date: postDate,
+          runAt: when.toISOString(),
         }),
       })
       const data = await res.json()
@@ -359,17 +363,18 @@ export default function SocialPost({ slug, initialRetry = [] }) {
           Mark posted
         </button>
         <label className="flex flex-col gap-1 text-sm text-quiet sm:flex-row sm:items-center sm:gap-2">
-          <span className="sr-only">Schedule time</span>
+          <span>Date</span>
           <input
-            type="datetime-local"
-            value={runAt}
-            onChange={(e) => setRunAt(e.target.value)}
+            type="date"
+            value={postDate}
+            min={nextPostDate()}
+            onChange={(e) => setPostDate(e.target.value)}
             className="w-full min-w-0 border border-line bg-ink px-3 py-2 text-paper outline-none focus:border-paper/40"
           />
         </label>
         <button
           type="button"
-          disabled={busy || !readySelected.length || !runAt}
+          disabled={busy || !readySelected.length || !postDate}
           onClick={onSchedule}
           className="btn disabled:opacity-50"
         >
@@ -378,9 +383,8 @@ export default function SocialPost({ slug, initialRetry = [] }) {
       </div>
       <p className="text-xs text-quiet">
         New quotes stay off the site until you Post now / Mark posted, or a schedule goes live (site +
-        social together). Mark posted = you already shared it yourself (e.g. X). Cron runs daily at
-        14:00 UTC on Vercel (≈10am US East / 8pm Bangladesh). Set{' '}
-        <code className="text-body">CRON_SECRET</code> in env.
+        social together). Mark posted = you already shared it yourself (e.g. X). A chosen date posts
+        at 14:00 UTC (8pm Bangladesh / 10am US East). Today is unavailable after that time.
       </p>
 
       {pending.length ? (
