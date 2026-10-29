@@ -68,5 +68,10 @@ export async function postLinkedIn({ caption, imageBuffer }) {
   })
   const posted = await post.json().catch(() => ({}))
   if (!post.ok) throw new Error(posted.message || 'LinkedIn post failed')
-  return posted
+  /** Create often returns empty body; URN is in `x-restli-id`. */
+  const urn = String(post.headers.get('x-restli-id') || posted.id || '').trim()
+  return {
+    id: urn || null,
+    url: urn ? `https://www.linkedin.com/feed/update/${urn}` : null,
+  }
 }
