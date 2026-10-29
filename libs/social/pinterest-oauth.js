@@ -16,6 +16,13 @@ export function requestOrigin(req) {
   return `${proto}://${host}`
 }
 
+/** Prefer SITE_URL so redirect matches the registered Pinterest URI (www vs apex). */
+export function pinterestPublicOrigin(req) {
+  const site = String(process.env.SITE_URL || process.env.NEXTAUTH_URL || '').trim().replace(/\/$/, '')
+  if (site.startsWith('http://') || site.startsWith('https://')) return site
+  return requestOrigin(req)
+}
+
 export function pinterestRedirectUri(origin) {
   return `${String(origin).replace(/\/$/, '')}/api/social/pinterest/callback`
 }

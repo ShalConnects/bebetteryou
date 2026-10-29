@@ -6,8 +6,8 @@ import {
   pinterestApp,
   pinterestAuthUrl,
   pinterestOauthCookie,
+  pinterestPublicOrigin,
   pinterestRedirectUri,
-  requestOrigin,
 } from '@/libs/social/pinterest-oauth'
 
 export async function GET(req) {
@@ -22,7 +22,7 @@ export async function GET(req) {
     )
   }
 
-  const origin = requestOrigin(req)
+  const origin = pinterestPublicOrigin(req)
   const redirectUri = pinterestRedirectUri(origin)
   const state = crypto.randomBytes(16).toString('hex')
   const jar = await cookies()

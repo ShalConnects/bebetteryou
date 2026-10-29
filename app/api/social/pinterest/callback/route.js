@@ -6,11 +6,11 @@ import {
   exchangePinterestCode,
   pinterestApp,
   pinterestOauthCookie,
-  requestOrigin,
+  pinterestPublicOrigin,
 } from '@/libs/social/pinterest-oauth'
 
 export async function GET(req) {
-  const origin = requestOrigin(req)
+  const origin = pinterestPublicOrigin(req)
   const dashboard = `${origin}/dashboard/integrations`
   const auth = await requireAdmin()
   if (auth instanceof NextResponse) {
