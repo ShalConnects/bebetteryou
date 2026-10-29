@@ -15,7 +15,8 @@
     "hash:admin": "node scripts/hash-admin-password.mjs",
     "youtube:auth": "node scripts/youtube-auth.mjs",
     "pinterest:boards": "node scripts/pinterest-boards.mjs",
-    "threads:me": "node scripts/threads-me.mjs"
+    "threads:me": "node scripts/threads-me.mjs",
+    "pinterest:auth": "node scripts/pinterest-auth.mjs"
   },
   "dependencies": {
     "@napi-rs/canvas": "^1.0.8",

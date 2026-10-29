@@ -1,12 +1,14 @@
 import { quoteCard } from '@/config/quote-card'
 import { getSiteUrl } from '@/libs/site-url'
 import { quoteAlt, quoteOneLine } from '@/libs/quote-text'
+import { resolveBlueskyKeys } from '@/libs/integrations/credentials'
 
 const DEFAULT_PDS = 'https://bsky.social'
 const TEXT_MAX = 300
 const ALT_MAX = 1000
 const BLOB_MAX = 1_000_000
 
+/** Sync env-only (tests). Prefer resolveBlueskyKeys() at runtime. */
 export function blueskyKeys() {
   return {
     handle: process.env.BLUESKY_HANDLE,
@@ -15,8 +17,9 @@ export function blueskyKeys() {
   }
 }
 
-export function hasBlueskyKeys(keys = blueskyKeys()) {
-  return Boolean(keys.handle && keys.password)
+export function hasBlueskyKeys(keys) {
+  const k = keys || blueskyKeys()
+  return Boolean(k.handle && k.password)
 }
 
 export function clipBlueskyText(text, max = TEXT_MAX) {
@@ -80,7 +83,7 @@ async function createSession({ handle, password, pds }) {
 export async function postBluesky({ imageBuffer, quote, caption, aspectRatio }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   if (imageBuffer.length > BLOB_MAX) throw new Error('Bluesky images must be under 1 MB')
-  const keys = blueskyKeys()
+  const keys = await resolveBlueskyKeys()
   if (!hasBlueskyKeys(keys)) throw new Error('Bluesky not configured')
 
   const { accessJwt, did } = await createSession(keys)

@@ -282,6 +282,22 @@ export default function SocialPost({ slug, initialRetry = [] }) {
           </span>
         </p>
       ) : null}
+      {networks.some((n) => n.id === 'pinterest' && (n.connectable || n.ready || n.reconnect)) ? (
+        <p className="text-sm">
+          <a href="/api/social/pinterest/connect" className="text-paper underline-offset-2 hover:underline">
+            {networks.some((n) => n.id === 'pinterest' && (n.ready || n.reconnect))
+              ? 'Reconnect Pinterest'
+              : 'Connect Pinterest'}
+          </a>{' '}
+          <span className="text-quiet">
+            or manage tokens on{' '}
+            <a href="/dashboard/integrations" className="underline-offset-2 hover:underline">
+              Integrations
+            </a>
+            .
+          </span>
+        </p>
+      ) : null}
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
       {previewUrl ? (
         <video

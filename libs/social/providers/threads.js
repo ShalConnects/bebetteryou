@@ -1,9 +1,12 @@
+import { resolveThreadsKeys } from '@/libs/integrations/credentials'
+
 /** Threads: create container → wait ready → publish. Needs a public imageUrl. */
 const GRAPH = 'https://graph.threads.net/v1.0'
 
 /** Gap between root and each reply — Meta’s reply pipeline needs settle time. */
 const THREAD_GAP_MS = 12_000
 
+/** Sync env-only (tests). Prefer resolveThreadsKeys() at runtime. */
 export function threadsKeys() {
   return {
     token: process.env.THREADS_ACCESS_TOKEN,
@@ -11,8 +14,9 @@ export function threadsKeys() {
   }
 }
 
-export function hasThreadsKeys(keys = threadsKeys()) {
-  return Boolean(keys.token && keys.userId)
+export function hasThreadsKeys(keys) {
+  const k = keys || threadsKeys()
+  return Boolean(k.token && k.userId)
 }
 
 /** Threads captions cap at 500 characters (emoji count as UTF-8 bytes). */
@@ -44,7 +48,7 @@ export async function postThreads({ imageUrl, caption, replyToId }) {
     throw new Error('Threads needs a public image URL (set SITE_URL to your live domain)')
   }
 
-  const { token, userId } = threadsKeys()
+  const { token, userId } = await resolveThreadsKeys()
   if (!hasThreadsKeys({ token, userId })) throw new Error('Threads not configured')
 
   const text = clipThreadsText(caption)

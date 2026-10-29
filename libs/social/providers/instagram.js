@@ -1,9 +1,10 @@
+import { resolveInstagramKeys } from '@/libs/integrations/credentials'
+
 /** Instagram Graph: create media container → wait ready → publish. Needs public imageUrl. */
 const GRAPH = 'https://graph.facebook.com/v21.0'
 
-function igCredentials() {
-  const token = process.env.META_ACCESS_TOKEN
-  const igUserId = process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID
+async function igCredentials() {
+  const { token, igUserId } = await resolveInstagramKeys()
   if (!token || !igUserId) throw new Error('Instagram not configured')
   return { token, igUserId, base: `${GRAPH}/${igUserId}` }
 }
@@ -42,7 +43,7 @@ async function publishContainer(base, token, creationId) {
 
 export async function postInstagram({ imageUrl, caption }) {
   assertPublicImageUrl(imageUrl)
-  const { token, base } = igCredentials()
+  const { token, base } = await igCredentials()
 
   const create = await fetch(`${base}/media`, {
     method: 'POST',
@@ -70,7 +71,7 @@ export async function postInstagramCarousel({ imageUrls = [], caption }) {
   if (urls.length === 1) return postInstagram({ imageUrl: urls[0], caption })
   if (urls.length > 10) throw new Error('Instagram carousels support at most 10 images')
 
-  const { token, base } = igCredentials()
+  const { token, base } = await igCredentials()
 
   const childIds = []
   for (const imageUrl of urls) {

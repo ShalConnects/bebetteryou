@@ -1,9 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { getSiteUrl } from '@/libs/site-url'
-import { networkStatus } from '@/config/social'
-import { youtubeClient } from '@/libs/social/youtube-oauth'
-import { probeYoutubeRefreshToken, resolveYoutubeRefreshToken } from '@/libs/social/youtube-store'
+import { listIntegrationStatus } from '@/libs/integrations/status'
 import { readQuotes } from '@/libs/quotes-store'
 import { quoteOneLine } from '@/libs/quote-text'
 import { hashtagsForTags } from '@/libs/tag-lane'
@@ -32,24 +30,17 @@ const providers = {
   telegram: postTelegram,
 }
 
-/** Env keys plus a YouTube refresh token that still refreshes (Connect/Mongo preferred). */
+/** Env + Integrations store; YouTube probes refresh; Pinterest may be OAuth-connected. */
 export async function readyNetworks() {
-  const { clientId, clientSecret } = youtubeClient()
-  const configured = Boolean(clientId && clientSecret)
-  const token = configured ? await resolveYoutubeRefreshToken() : ''
-  const hasToken = Boolean(token)
-  const youtubeReady = configured && hasToken && (await probeYoutubeRefreshToken(token))
-  return networkStatus().map((n) => {
-    if (n.id !== 'youtube') return n
-    return {
-      ...n,
-      ready: youtubeReady,
-      pending: false,
-      connectable: configured && !youtubeReady,
-      /** Token on file but Google rejected it — show Reconnect, not Connect. */
-      reconnect: configured && hasToken && !youtubeReady,
-    }
-  })
+  const { social } = await listIntegrationStatus()
+  return social.map(({ id, label, ready, pending, connectable, reconnect }) => ({
+    id,
+    label,
+    ready: Boolean(ready),
+    pending: Boolean(pending),
+    connectable: Boolean(connectable),
+    reconnect: Boolean(reconnect),
+  }))
 }
 
 export async function quoteCaption(quote, networkId) {

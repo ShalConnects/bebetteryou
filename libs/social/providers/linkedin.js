@@ -1,12 +1,11 @@
 import { brand } from '@/config/site'
+import { resolveLinkedInKeys } from '@/libs/integrations/credentials'
 
 /** LinkedIn image share via Assets + UGC Posts (company page or personal profile). */
 export async function postLinkedIn({ caption, imageBuffer }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
 
-  const token = process.env.LINKEDIN_ACCESS_TOKEN
-  const orgId = process.env.LINKEDIN_ORG_ID
-  const memberId = process.env.LINKEDIN_MEMBER_ID
+  const { token, orgId, memberId } = await resolveLinkedInKeys()
   if (!token || (!orgId && !memberId)) throw new Error('LinkedIn not configured')
   const owner = orgId ? `urn:li:organization:${orgId}` : `urn:li:person:${memberId}`
   const headers = {

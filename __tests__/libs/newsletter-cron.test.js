@@ -15,14 +15,18 @@ jest.mock('@/libs/logger', () => ({
   logError: jest.fn(),
 }))
 
+jest.mock('@/libs/newsletter-cleanup', () => ({
+  cleanupSuppressedNewsletterSubscribers: jest.fn(),
+}))
+
 jest.mock('@/libs/social/schedule-store', () => ({
-  findEarliestDoneScheduleForUtcDay: jest.fn(),
+  findDoneSchedulesForUtcDay: jest.fn(),
 }))
 
 import { getQuote } from '@/libs/content'
 import { notifyQuoteSubscribers } from '@/libs/newsletter'
 import { pickQuoteForEmailCron, runQuoteEmailCron } from '@/libs/newsletter-cron'
-import { findEarliestDoneScheduleForUtcDay } from '@/libs/social/schedule-store'
+import { findDoneSchedulesForUtcDay } from '@/libs/social/schedule-store'
 
 describe('newsletter cron', () => {
   beforeEach(() => {
@@ -30,11 +34,14 @@ describe('newsletter cron', () => {
   })
 
   it('uses today social schedule slug when done', async () => {
-    findEarliestDoneScheduleForUtcDay.mockResolvedValue({
-      slug: 'bby-5',
-      status: 'done',
-      runAt: '2026-09-21T14:00:00.000Z',
-    })
+    findDoneSchedulesForUtcDay.mockResolvedValue([
+      {
+        slug: 'bby-5',
+        status: 'done',
+        runAt: '2026-09-21T14:00:00.000Z',
+        results: [{ id: 'telegram', ok: true }],
+      },
+    ])
     getQuote.mockResolvedValue({ n: 5, slug: 'bby-5', src: '/5.jpg', text: 'Five' })
 
     const picked = await pickQuoteForEmailCron(new Date('2026-09-21T15:00:00.000Z'))
@@ -46,39 +53,52 @@ describe('newsletter cron', () => {
   })
 
   it('skips when no successful social send today', async () => {
-    findEarliestDoneScheduleForUtcDay.mockResolvedValue(null)
+    findDoneSchedulesForUtcDay.mockResolvedValue([])
     await expect(pickQuoteForEmailCron(new Date('2026-09-21T15:00:00.000Z'))).resolves.toBeNull()
     await expect(runQuoteEmailCron()).resolves.toEqual({ skipped: true, reason: 'no_social_send' })
     expect(notifyQuoteSubscribers).not.toHaveBeenCalled()
   })
 
   it('skips when social slug is not a usable public quote', async () => {
-    findEarliestDoneScheduleForUtcDay.mockResolvedValue({ slug: 'bby-5', status: 'done' })
+    findDoneSchedulesForUtcDay.mockResolvedValue([{ slug: 'bby-5', status: 'done', results: [] }])
     getQuote.mockResolvedValue(null)
     await expect(pickQuoteForEmailCron()).resolves.toBeNull()
     expect(notifyQuoteSubscribers).not.toHaveBeenCalled()
   })
 
-  it('notifies subscribers and reports source', async () => {
-    findEarliestDoneScheduleForUtcDay.mockResolvedValue({ slug: 'bby-5', status: 'done' })
-    getQuote.mockResolvedValue({ n: 5, slug: 'bby-5', src: '/q.jpg', text: 'Hi' })
+  it('picks the strongest social card when several finished today', async () => {
+    findDoneSchedulesForUtcDay.mockResolvedValue([
+      {
+        slug: 'bby-1',
+        status: 'done',
+        runAt: '2026-09-21T03:00:00.000Z',
+        results: [{ id: 'linkedin', ok: true }],
+      },
+      {
+        slug: 'bby-5',
+        status: 'done',
+        runAt: '2026-09-21T14:00:00.000Z',
+        results: [
+          { id: 'instagram', ok: true },
+          { id: 'telegram', ok: true },
+          { id: 'pinterest', ok: false },
+        ],
+      },
+    ])
+    getQuote.mockImplementation(async (slug) => ({ n: slug === 'bby-5' ? 5 : 1, slug, src: '/q.jpg', text: 'Hi' }))
     notifyQuoteSubscribers.mockResolvedValue({
-      total: 2,
-      sent: 2,
+      total: 1,
+      sent: 1,
       failed: 0,
       eligible: 50,
-      batchSize: 100,
     })
-    const result = await runQuoteEmailCron()
-    expect(notifyQuoteSubscribers).toHaveBeenCalledWith(
-      expect.objectContaining({ slug: 'bby-5', n: 5 })
-    )
+    const result = await runQuoteEmailCron(new Date('2026-09-21T15:00:00.000Z'))
+    expect(notifyQuoteSubscribers).toHaveBeenCalledWith(expect.objectContaining({ slug: 'bby-5' }))
     expect(result).toMatchObject({
       skipped: false,
       slug: 'bby-5',
       source: 'social_schedule',
-      sent: 2,
-      total: 2,
+      sent: 1,
     })
   })
 })

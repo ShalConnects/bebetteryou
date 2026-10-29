@@ -35,6 +35,7 @@ export function oauth1Header(method, url, params, { consumerKey, consumerSecret,
   return header
 }
 
+/** Sync env-only (tests). Prefer resolveXKeys() at runtime. */
 export function xKeys() {
   return {
     consumerKey: process.env.X_API_KEY,
@@ -44,6 +45,7 @@ export function xKeys() {
   }
 }
 
-export function hasXKeys(keys = xKeys()) {
-  return Boolean(keys.consumerKey && keys.consumerSecret && keys.token && keys.tokenSecret)
+export function hasXKeys(keys) {
+  const k = keys || xKeys()
+  return Boolean(k.consumerKey && k.consumerSecret && k.token && k.tokenSecret)
 }

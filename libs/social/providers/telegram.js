@@ -1,8 +1,10 @@
-/** Telegram channel post via Bot API. Uploads the JPEG (works on localhost). */
+import { resolveTelegramKeys } from '@/libs/integrations/credentials'
 
+/** Telegram channel post via Bot API. Uploads the JPEG (works on localhost). */
 const API = 'https://api.telegram.org'
 const CAPTION_MAX = 1024
 
+/** Sync env-only (tests). Prefer resolveTelegramKeys() at runtime. */
 export function telegramKeys() {
   return {
     token: process.env.TELEGRAM_BOT_TOKEN,
@@ -10,8 +12,9 @@ export function telegramKeys() {
   }
 }
 
-export function hasTelegramKeys(keys = telegramKeys()) {
-  return Boolean(keys.token && keys.chatId)
+export function hasTelegramKeys(keys) {
+  const k = keys || telegramKeys()
+  return Boolean(k.token && k.chatId)
 }
 
 export function clipTelegramCaption(text, max = CAPTION_MAX) {
@@ -35,7 +38,7 @@ function messageUrl(chat, messageId) {
 /** Post quote JPEG + caption to a Telegram channel (bot must be channel admin). */
 export async function postTelegram({ caption, imageBuffer }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
-  const { token, chatId } = telegramKeys()
+  const { token, chatId } = await resolveTelegramKeys()
   if (!hasTelegramKeys({ token, chatId })) throw new Error('Telegram not configured')
 
   const form = new FormData()

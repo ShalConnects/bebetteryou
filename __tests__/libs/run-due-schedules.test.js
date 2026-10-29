@@ -67,7 +67,7 @@ describe('runDueSocialSchedules', () => {
     expect(JSON.parse(fs.readFileSync('data/quotes.json', 'utf8'))[0].status).toBe('published')
   })
 
-  it('requeues when some networks succeed and others fail', async () => {
+  it('marks done when some networks succeed so quote email can still fire', async () => {
     const social = await import('@/libs/social')
     social.postQuote.mockImplementationOnce(async () => [
       { id: 'bluesky', ok: true, url: 'https://bsky.app/1' },
@@ -89,9 +89,9 @@ describe('runDueSocialSchedules', () => {
 
     const result = await runDueSocialSchedules({ now: new Date(Date.now() + 120_000), limit: 5 })
     expect(result.outcomes[0].partial).toBe(true)
-    expect(result.outcomes[0].ok).toBe(false)
+    expect(result.outcomes[0].ok).toBe(true)
     const rows = JSON.parse(fs.readFileSync('data/social-schedules.json', 'utf8'))
-    expect(rows[0].status).toBe('pending')
+    expect(rows[0].status).toBe('done')
     expect(rows[0].error).toContain('youtube')
   })
 })

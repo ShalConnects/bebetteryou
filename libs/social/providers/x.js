@@ -1,4 +1,5 @@
-import { hasXKeys, oauth1Header, xKeys } from '../oauth'
+import { resolveXKeys } from '@/libs/integrations/credentials'
+import { hasXKeys, oauth1Header } from '../oauth'
 
 function trimCaption(text, max = 280) {
   const s = String(text || '').trim()
@@ -40,7 +41,7 @@ async function createTweet(text, mediaId, keys) {
 /** X/Twitter: upload JPEG + tweet (OAuth 1.0a user context). */
 export async function postX({ caption, imageBuffer }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
-  const keys = xKeys()
+  const keys = await resolveXKeys()
   if (!hasXKeys(keys)) throw new Error('X API keys not configured')
 
   const mediaId = await uploadMedia(imageBuffer, keys)

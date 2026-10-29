@@ -374,34 +374,44 @@ export function utcDayRange(now = new Date()) {
 }
 
 /**
- * Earliest successful social schedule for the given UTC calendar day.
- * Used by the newsletter cron so email matches today's social card.
+ * Successful social schedules for the given UTC calendar day, earliest first.
+ * The newsletter cron turns these into one quote email.
  */
-export async function findEarliestDoneScheduleForUtcDay(now = new Date()) {
+export async function findDoneSchedulesForUtcDay(now = new Date()) {
   const { start, end } = utcDayRange(now)
   try {
     if (mongoUri()) {
       const SocialSchedule = await model()
-      const row = await SocialSchedule.findOne({
+      const rows = await SocialSchedule.find({
         status: 'done',
         runAt: { $gte: start, $lt: end },
       })
         .sort({ runAt: 1 })
         .lean()
-      return publicRow(row)
+      return rows.map((row) => publicRow(row)).filter(Boolean)
     }
-    if (process.env.VERCEL) return null
+    if (process.env.VERCEL) return []
 
-    const rows = readLocal()
+    return readLocal()
       .filter((row) => {
         if (row.status !== 'done') return false
         const t = new Date(row.runAt).getTime()
         return t >= start.getTime() && t < end.getTime()
       })
       .sort((a, b) => new Date(a.runAt) - new Date(b.runAt))
-    return rows[0] ? publicRow(rows[0]) : null
+      .map((row) => publicRow(row))
+      .filter(Boolean)
   } catch (error) {
-    logError('Find done social schedule for day failed', error)
-    return null
+    logError('Find done social schedules for day failed', error)
+    return []
   }
+}
+
+/**
+ * Earliest successful social schedule for the given UTC calendar day.
+ * Used by the newsletter cron so email matches today's social card.
+ */
+export async function findEarliestDoneScheduleForUtcDay(now = new Date()) {
+  const rows = await findDoneSchedulesForUtcDay(now)
+  return rows[0] || null
 }

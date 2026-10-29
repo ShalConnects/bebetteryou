@@ -23,6 +23,11 @@ export const adminNav = [
   },
   { href: '/dashboard/print-orders', label: 'Print', match: (p) => p.startsWith('/dashboard/print-orders') },
   { href: '/dashboard/subscribers', label: 'Subscribers', match: (p) => p.startsWith('/dashboard/subscribers') },
+  {
+    href: '/dashboard/integrations',
+    label: 'Integrations',
+    match: (p) => p.startsWith('/dashboard/integrations'),
+  },
   ...(appConfig.features.enablePractice
     ? [{ href: '/dashboard/practice', label: 'Practice', match: (p) => p.startsWith('/dashboard/practice') }]
     : []),

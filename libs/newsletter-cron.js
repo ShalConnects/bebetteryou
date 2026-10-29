@@ -2,25 +2,45 @@ import { getQuote } from '@/libs/content'
 import { cleanupSuppressedNewsletterSubscribers } from '@/libs/newsletter-cleanup'
 import { notifyQuoteSubscribers } from '@/libs/newsletter'
 import { logError, logInfo } from '@/libs/logger'
-import { findEarliestDoneScheduleForUtcDay } from '@/libs/social/schedule-store'
+import { findDoneSchedulesForUtcDay } from '@/libs/social/schedule-store'
+
+function successCount(schedule) {
+  return (schedule?.results || []).filter((row) => row?.ok).length
+}
 
 /**
- * Quote for the daily email cron: only today's earliest successful social send
- * (scheduled cron or immediate dashboard Post). No fallback to latest public.
+ * Quote for the daily email cron: today's strongest successful social send.
+ * Prefers the card with the most network successes so one-off test posts
+ * (e.g. LinkedIn-only) do not steal the daily email.
  * @returns {Promise<{ quote: object, source: 'social_schedule' }|null>}
  */
 export async function pickQuoteForEmailCron(now = new Date()) {
-  const schedule = await findEarliestDoneScheduleForUtcDay(now)
-  const scheduledSlug = schedule?.slug ? String(schedule.slug).trim() : ''
-  if (!scheduledSlug) return null
+  const schedules = await findDoneSchedulesForUtcDay(now)
+  if (!schedules.length) return null
 
-  const fromSocial = await getQuote(scheduledSlug)
-  if (fromSocial?.slug && fromSocial?.src) {
-    return { quote: fromSocial, source: 'social_schedule' }
+  const ranked = [...schedules].sort((a, b) => {
+    const byOk = successCount(b) - successCount(a)
+    if (byOk) return byOk
+    return new Date(a.runAt).getTime() - new Date(b.runAt).getTime()
+  })
+
+  for (const schedule of ranked) {
+    const slug = schedule?.slug ? String(schedule.slug).trim() : ''
+    if (!slug) continue
+    const quote = await getQuote(slug)
+    if (quote?.slug && quote?.src) {
+      return { quote, source: 'social_schedule' }
+    }
+    logInfo('Quote email cron: social slug not public/usable', { slug })
   }
-
-  logInfo('Quote email cron: social slug not public/usable', { slug: scheduledSlug })
   return null
+}
+
+/** @deprecated use pickQuoteForEmailCron */
+export async function pickQuotesForEmailCron(now = new Date()) {
+  const picked = await pickQuoteForEmailCron(now)
+  if (!picked?.quote) return null
+  return { quotes: [picked.quote], source: picked.source }
 }
 
 /**

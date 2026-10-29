@@ -1,7 +1,7 @@
 import { postQuote, readyNetworks } from '@/libs/social'
 import { networksNeedingPost } from '@/libs/social/post-log'
 import { readPosts } from '@/libs/social/post-store'
-import { claimDueSchedules, finishSchedule, requeueSchedule } from '@/libs/social/schedule-store'
+import { claimDueSchedules, finishSchedule } from '@/libs/social/schedule-store'
 import { publishQuote } from '@/libs/quotes-store'
 import { logError } from '@/libs/logger'
 
@@ -41,15 +41,17 @@ export async function runDueSocialSchedules({ now = new Date(), limit = 5 } = {}
       const results = [...skipped, ...posted]
       const failed = results.filter((r) => !r.ok)
       const error = failed.map((r) => `${r.id}: ${r.error || 'Failed'}`).join('; ')
-      const allOk = results.length > 0 && failed.length === 0
-      const partial = !allOk && results.some((r) => r.ok)
-      if (partial) {
-        await requeueSchedule(id, { results, error })
-        outcomes.push({ id, slug: job.slug, ok: false, partial: true, skipped: skipped.length, results })
-      } else {
-        await finishSchedule(id, { ok: allOk, results, error })
-        outcomes.push({ id, slug: job.slug, ok: allOk, skipped: skipped.length, results })
-      }
+      /** Any success → done so quote email can fire (Hobby cron cannot retry +15m requeues). */
+      const anyOk = results.some((r) => r.ok)
+      await finishSchedule(id, { ok: anyOk, results, error })
+      outcomes.push({
+        id,
+        slug: job.slug,
+        ok: anyOk,
+        partial: anyOk && failed.length > 0,
+        skipped: skipped.length,
+        results,
+      })
     } catch (error) {
       logError('Scheduled social post failed', error, { id, slug: job.slug })
       await finishSchedule(id, { ok: false, results: [], error: error.message || 'Failed' })

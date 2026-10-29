@@ -1,5 +1,6 @@
 import { getSiteUrl } from '@/libs/site-url'
 import { quoteAlt, quoteOneLine } from '@/libs/quote-text'
+import { resolvePinterestKeys } from '@/libs/integrations/credentials'
 
 export function pinterestApiBase() {
   const sandbox = process.env.PINTEREST_SANDBOX
@@ -8,6 +9,7 @@ export function pinterestApiBase() {
     : 'https://api.pinterest.com'
 }
 
+/** Sync env-only (tests). Prefer resolvePinterestKeys() at runtime. */
 export function pinterestKeys() {
   return {
     token: process.env.PINTEREST_ACCESS_TOKEN,
@@ -15,8 +17,9 @@ export function pinterestKeys() {
   }
 }
 
-export function hasPinterestKeys(keys = pinterestKeys()) {
-  return Boolean(keys.token && keys.boardId)
+export function hasPinterestKeys(keys) {
+  const k = keys || pinterestKeys()
+  return Boolean(k.token && k.boardId)
 }
 
 export function clipPinText(text, max) {
@@ -32,7 +35,7 @@ export function pinterestTitle(quote) {
 /** Pinterest pin via API v5. Uploads the JPEG (works on localhost). */
 export async function postPinterest({ caption, imageBuffer, quote, title, link: linkOverride, altText }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
-  const { token, boardId } = pinterestKeys()
+  const { token, boardId } = await resolvePinterestKeys()
   if (!hasPinterestKeys({ token, boardId })) throw new Error('Pinterest not configured')
 
   const slug = quote?.slug

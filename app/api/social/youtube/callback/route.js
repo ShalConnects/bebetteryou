@@ -6,7 +6,7 @@ import { saveYoutubeRefreshToken } from '@/libs/social/youtube-store'
 
 export async function GET(req) {
   const origin = requestOrigin(req)
-  const dashboard = `${origin}/dashboard`
+  const dashboard = `${origin}/dashboard/integrations`
   const auth = await requireAdmin()
   if (auth instanceof NextResponse) {
     return NextResponse.redirect(`${dashboard}?youtube=signin`)
