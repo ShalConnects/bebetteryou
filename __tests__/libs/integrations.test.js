@@ -4,6 +4,7 @@
 
 jest.mock('@/libs/integrations/store', () => ({
   getIntegration: jest.fn(async () => null),
+  saveIntegration: jest.fn(async () => null),
 }))
 jest.mock('@/libs/social/youtube-store', () => ({
   resolveYoutubeRefreshToken: jest.fn(async () => ''),
@@ -12,6 +13,11 @@ jest.mock('@/libs/social/youtube-store', () => ({
 jest.mock('@/libs/social/youtube-oauth', () => ({
   youtubeClient: () => ({ clientId: '', clientSecret: '' }),
 }))
+jest.mock('@/libs/social/pinterest-oauth', () => ({
+  probePinterestAccessToken: jest.fn(async (token) => Boolean(token)),
+  refreshPinterestAccessToken: jest.fn(async () => null),
+  pinterestApp: () => ({ appId: '', appSecret: '' }),
+}))
 jest.mock('@/libs/ses', () => ({
   sesConfigured: () => false,
 }))
@@ -19,6 +25,7 @@ jest.mock('@/libs/ses', () => ({
 import { fieldsToPatch, resolvePinterestKeys, resolveTelegramKeys } from '@/libs/integrations/credentials'
 import { listIntegrationStatus } from '@/libs/integrations/status'
 import { getIntegration } from '@/libs/integrations/store'
+import { probePinterestAccessToken } from '@/libs/social/pinterest-oauth'
 
 describe('integrations credentials', () => {
   beforeEach(() => {
@@ -47,6 +54,7 @@ describe('integrations credentials', () => {
       accessToken: 'stored-token',
       extras: { boardId: 'stored-board' },
     })
+    probePinterestAccessToken.mockResolvedValueOnce(true)
     await expect(resolvePinterestKeys()).resolves.toEqual({
       token: 'stored-token',
       boardId: 'stored-board',
@@ -54,6 +62,18 @@ describe('integrations credentials', () => {
     })
     if (prev === undefined) delete process.env.PINTEREST_ACCESS_TOKEN
     else process.env.PINTEREST_ACCESS_TOKEN = prev
+  })
+
+  it('returns empty token when probe and refresh both fail', async () => {
+    process.env.PINTEREST_ACCESS_TOKEN = 'dead'
+    process.env.PINTEREST_BOARD_ID = 'board'
+    getIntegration.mockResolvedValueOnce({ extras: { boardId: 'board' } })
+    probePinterestAccessToken.mockResolvedValueOnce(false)
+    await expect(resolvePinterestKeys()).resolves.toEqual({
+      token: '',
+      boardId: 'board',
+      refreshToken: '',
+    })
   })
 
   it('falls back to env for telegram', async () => {

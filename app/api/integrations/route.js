@@ -43,7 +43,8 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Provide at least one field' }, { status: 400 })
     }
 
-    await saveIntegration(network, { ...patch, lastError: '', lastOkAt: new Date() })
+    /** Board/id saves are not an auth success — only OAuth sets lastOkAt. */
+    await saveIntegration(network, { ...patch, lastError: '' })
     return NextResponse.json({ ok: true, ...(await listIntegrationStatus()) })
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })

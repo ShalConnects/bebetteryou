@@ -36,6 +36,10 @@ export function pinterestTitle(quote) {
 export async function postPinterest({ caption, imageBuffer, quote, title, link: linkOverride, altText }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
   const { token, boardId } = await resolvePinterestKeys()
+  if (!boardId) throw new Error('Pinterest board id missing — save it under Integrations')
+  if (!token) {
+    throw new Error('Pinterest token expired or missing — Connect Pinterest under Integrations')
+  }
   if (!hasPinterestKeys({ token, boardId })) throw new Error('Pinterest not configured')
 
   const slug = quote?.slug

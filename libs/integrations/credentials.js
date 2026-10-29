@@ -45,13 +45,45 @@ export async function resolveXKeys() {
   }
 }
 
+/**
+ * Prefer Mongo OAuth tokens; refresh when the access token is dead.
+ * Board id may come from Integrations extras or env.
+ * Returns an empty token when auth is dead so callers fail clearly (not a cryptic API 401).
+ */
 export async function resolvePinterestKeys() {
   const stored = await getIntegration('pinterest')
-  return {
-    token: stored?.accessToken || process.env.PINTEREST_ACCESS_TOKEN || '',
-    boardId: stored?.extras?.boardId || process.env.PINTEREST_BOARD_ID || '',
-    refreshToken: stored?.refreshToken || process.env.PINTEREST_REFRESH_TOKEN || '',
+  let token = stored?.accessToken || process.env.PINTEREST_ACCESS_TOKEN || ''
+  let refreshToken = stored?.refreshToken || process.env.PINTEREST_REFRESH_TOKEN || ''
+  const boardId = stored?.extras?.boardId || process.env.PINTEREST_BOARD_ID || ''
+
+  const { probePinterestAccessToken, refreshPinterestAccessToken } = await import(
+    '@/libs/social/pinterest-oauth'
+  )
+  if (token && (await probePinterestAccessToken(token))) {
+    return { token, boardId, refreshToken }
   }
+
+  if (refreshToken) {
+    const refreshed = await refreshPinterestAccessToken(refreshToken)
+    if (refreshed?.access_token) {
+      token = refreshed.access_token
+      if (refreshed.refresh_token) refreshToken = refreshed.refresh_token
+      try {
+        const { saveIntegration } = await import('@/libs/integrations/store')
+        await saveIntegration('pinterest', {
+          accessToken: token,
+          refreshToken,
+          lastError: '',
+          lastOkAt: new Date(),
+        })
+      } catch {
+        /* posting can still use the in-memory token */
+      }
+      return { token, boardId, refreshToken }
+    }
+  }
+
+  return { token: '', boardId, refreshToken }
 }
 
 export async function resolveBlueskyKeys() {

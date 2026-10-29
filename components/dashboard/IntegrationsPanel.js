@@ -28,10 +28,13 @@ function ServiceCard({ row, values, onChange, onSave, onClear, busy }) {
       {row.lastError ? <p className="mt-1 text-sm text-red-400">{row.lastError}</p> : null}
 
       {row.connectHref ? (
-        <p className="mt-4">
-          <a href={row.connectHref} className="text-sm text-paper underline-offset-2 hover:underline">
+        <p className="mt-4 text-sm">
+          <a href={row.connectHref} className="text-paper underline-offset-2 hover:underline">
             {connectLabel}
           </a>
+          {row.id === 'pinterest' && !row.ready ? (
+            <span className="text-quiet"> — board id alone is not enough; Pinterest needs a fresh OAuth token.</span>
+          ) : null}
         </p>
       ) : null}
 

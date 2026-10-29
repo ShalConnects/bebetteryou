@@ -19,16 +19,50 @@ function envTruthy(key) {
 
 async function pinterestReady() {
   const stored = await getIntegration('pinterest')
-  const token = stored?.accessToken || process.env.PINTEREST_ACCESS_TOKEN
   const boardId = stored?.extras?.boardId || process.env.PINTEREST_BOARD_ID
   const pending = envTruthy('PINTEREST_SANDBOX')
   const appReady = envOn('PINTEREST_APP_ID') && envOn('PINTEREST_APP_SECRET')
+  const { resolvePinterestKeys } = await import('@/libs/integrations/credentials')
+  const { probePinterestAccessToken } = await import('@/libs/social/pinterest-oauth')
+  const { token } = await resolvePinterestKeys()
+  const tokenOk = Boolean(token) && (await probePinterestAccessToken(token))
+  const hasStoredOauth = Boolean(stored?.accessToken || stored?.refreshToken)
+
+  if (pending) {
+    return {
+      ready: false,
+      pending: true,
+      connectable: appReady,
+      reconnect: false,
+      detail: 'Sandbox mode on',
+    }
+  }
+  if (!boardId) {
+    return {
+      ready: false,
+      pending: false,
+      connectable: appReady,
+      reconnect: hasStoredOauth || Boolean(token),
+      detail: 'Board id missing — save it below',
+    }
+  }
+  if (!tokenOk) {
+    return {
+      ready: false,
+      pending: false,
+      connectable: appReady,
+      reconnect: appReady && (hasStoredOauth || Boolean(token) || envOn('PINTEREST_ACCESS_TOKEN')),
+      detail: appReady
+        ? 'Token expired or missing — use Connect Pinterest'
+        : 'Not connected (set PINTEREST_APP_ID / SECRET)',
+    }
+  }
   return {
-    ready: Boolean(token && boardId) && !pending,
-    pending,
+    ready: true,
+    pending: false,
     connectable: appReady,
-    reconnect: Boolean(token) && !pending,
-    detail: pending ? 'Sandbox mode on' : token ? (boardId ? '' : 'Board id missing') : 'Not connected',
+    reconnect: appReady,
+    detail: hasStoredOauth ? '' : 'Using env token — Connect to store a refreshable one',
   }
 }
 
