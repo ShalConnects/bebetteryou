@@ -12,19 +12,24 @@ export default function PrintOrderActions({ order, onStatus }) {
   async function post(path, status) {
     setBusy(path)
     setError('')
-    const res = await fetch(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderNumber: order.orderNumber }),
-    })
-    const data = await res.json().catch(() => ({}))
-    if (res.ok) {
-      if (onStatus) onStatus(data.status || status)
-      else router.refresh()
-    } else {
-      setError(data.reason || data.error || 'Failed.')
+    try {
+      const res = await fetch(path, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderNumber: order.orderNumber }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        if (onStatus) onStatus(data.status || status)
+        else router.refresh()
+      } else {
+        setError(data.reason || data.error || 'Failed.')
+      }
+    } catch (err) {
+      setError(err.message || 'Failed.')
+    } finally {
+      setBusy('')
     }
-    setBusy('')
   }
 
   if (!order.canMarkPaid && !order.canFulfill && !error) return null

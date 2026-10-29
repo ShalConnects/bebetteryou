@@ -158,4 +158,37 @@ describe('social schedule store (local)', () => {
     })
     expect(recorded).toBeNull()
   })
+
+  it('listAllSchedules keeps pending when many done rows exist', async () => {
+    const file = path.join(process.cwd(), 'data/social-schedules.json')
+    const done = Array.from({ length: 12 }, (_, i) => ({
+      id: `done-${i}`,
+      slug: `bby-done-${i}`,
+      networks: ['telegram'],
+      runAt: new Date(Date.UTC(2026, 0, i + 1, 14)).toISOString(),
+      status: 'done',
+      results: [{ id: 'telegram', ok: true }],
+    }))
+    const pending = {
+      id: 'pending-1',
+      slug: 'bby-1',
+      networks: ['bluesky'],
+      runAt: new Date(Date.UTC(2026, 11, 1, 14)).toISOString(),
+      status: 'pending',
+    }
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.writeFileSync(file, JSON.stringify([...done, pending], null, 2))
+
+    const listed = await store.listAllSchedules({ limit: 5 })
+    expect(listed.filter((r) => r.status === 'pending').map((r) => r.slug)).toEqual(['bby-1'])
+    const recent = listed.filter((r) => r.status !== 'pending')
+    expect(recent).toHaveLength(5)
+    expect(recent.map((r) => r.slug)).toEqual([
+      'bby-done-11',
+      'bby-done-10',
+      'bby-done-9',
+      'bby-done-8',
+      'bby-done-7',
+    ])
+  })
 })

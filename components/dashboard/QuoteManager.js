@@ -60,13 +60,15 @@ export default function QuoteManager({
     selectedRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
   }, [slug])
 
+  /** Deep-link once per slug — do not reset the open form when `items` updates after save. */
   useEffect(() => {
     if (!initialSlug) return
     const quote = items.find((x) => x.slug === initialSlug)
     if (!quote) return
     setSlug(initialSlug)
     setForm(formFromQuote(quote))
-  }, [initialSlug, items])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: ignore `items` churn
+  }, [initialSlug])
 
   function pick(quote) {
     if (slug === quote.slug) {

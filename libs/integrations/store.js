@@ -1,11 +1,13 @@
 import fs from 'fs'
 import path from 'path'
+import { postNetworks } from '@/config/social'
 import { mongoUri } from '@/libs/mongo-uri'
 
 const dataDir = path.join(process.cwd(), 'data/integrations')
+const knownNetworks = new Set(postNetworks.map((n) => n.id))
 
 function localPath(network) {
-  return path.join(dataDir, `${network}.json`)
+  return path.join(dataDir, `${path.basename(String(network || ''))}.json`)
 }
 
 function readLocal(network) {
@@ -121,7 +123,7 @@ export async function saveIntegration(network, patch = {}) {
 
 export async function clearIntegration(network) {
   const key = String(network || '').trim()
-  if (!key) return
+  if (!knownNetworks.has(key)) return
   try {
     fs.unlinkSync(localPath(key))
   } catch {

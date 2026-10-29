@@ -66,32 +66,30 @@ export async function listSchedules(slug) {
   }
 }
 
-/** All schedules across quotes — pending first, then by runAt. */
+/** Pending (all, soonest first) + recent finished (newest first). Never bury Upcoming under old `done` rows. */
 export async function listAllSchedules({ limit = 100 } = {}) {
   try {
     if (mongoUri()) {
       const SocialSchedule = await model()
-      const rows = await SocialSchedule.find()
-        .sort({ status: 1, runAt: 1 })
-        .limit(limit)
-        .lean()
-      return rows
-        .map(publicRow)
-        .sort((a, b) => {
-          const pending = Number(b.status === 'pending') - Number(a.status === 'pending')
-          if (pending) return pending
-          return new Date(a.runAt) - new Date(b.runAt)
-        })
+      const [pending, recent] = await Promise.all([
+        SocialSchedule.find({ status: 'pending' }).sort({ runAt: 1 }).lean(),
+        SocialSchedule.find({ status: { $ne: 'pending' } })
+          .sort({ runAt: -1 })
+          .limit(limit)
+          .lean(),
+      ])
+      return [...pending, ...recent].map(publicRow)
     }
     if (process.env.VERCEL) return []
-    return readLocal()
-      .map(publicRow)
-      .sort((a, b) => {
-        const pending = Number(b.status === 'pending') - Number(a.status === 'pending')
-        if (pending) return pending
-        return new Date(a.runAt) - new Date(b.runAt)
-      })
+    const rows = readLocal().map(publicRow)
+    const pending = rows
+      .filter((r) => r.status === 'pending')
+      .sort((a, b) => new Date(a.runAt) - new Date(b.runAt))
+    const recent = rows
+      .filter((r) => r.status !== 'pending')
+      .sort((a, b) => new Date(b.runAt) - new Date(a.runAt))
       .slice(0, limit)
+    return [...pending, ...recent]
   } catch (error) {
     logError('Social schedule list-all failed', error)
     return []

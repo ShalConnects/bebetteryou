@@ -33,17 +33,18 @@ export async function POST(req) {
   if (!networks.length) return NextResponse.json({ error: 'networks required' }, { status: 400 })
 
   try {
-    /** Site + social go live together on Post now / Mark posted. */
+    const statusList = await readyNetworks()
+    const known = new Set(statusList.map((n) => n.id))
+    const invalid = networks.filter((id) => !known.has(id))
+    if (invalid.length) {
+      return NextResponse.json({ error: `Unknown network: ${invalid.join(', ')}` }, { status: 400 })
+    }
+
+    /** Site + social go live together on Post now / Mark posted — only after networks are valid. */
     await publishQuote(slug)
 
     /** Admin posted outside the app (e.g. X while API credits are depleted). */
     if (body?.manual) {
-      const statusList = await readyNetworks()
-      const known = new Set(statusList.map((n) => n.id))
-      const invalid = networks.filter((id) => !known.has(id))
-      if (invalid.length) {
-        return NextResponse.json({ error: `Unknown network: ${invalid.join(', ')}` }, { status: 400 })
-      }
       const labels = Object.fromEntries(statusList.map((n) => [n.id, n.label]))
       const results = manualPostResults(slug, networks, labels)
       for (const row of results) await recordPost(slug, row)

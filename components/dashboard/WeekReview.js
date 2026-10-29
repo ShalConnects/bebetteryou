@@ -20,14 +20,9 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
 
   function trace(msg, extra) {
     const line = extra != null ? `${msg} ${typeof extra === 'string' ? extra : JSON.stringify(extra)}` : msg
-    console.log(`[week-review] ${msg}`, extra ?? '')
     setStatus(msg)
     setLog((prev) => [...prev.slice(-12), `${new Date().toLocaleTimeString()} · ${line}`])
   }
-
-  useEffect(() => {
-    console.log('[week-review] mount', { count: quotes.length, mode, from, to, slugs: quotes.map((q) => q.slug) })
-  }, [quotes, mode, from, to])
 
   useEffect(() => {
     return () => {
@@ -38,7 +33,6 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
   async function onPreview(e) {
     e?.preventDefault?.()
     e?.stopPropagation?.()
-    console.log('[week-review] Preview clicked', { empty, count: quotes.length, busy })
     if (empty) {
       setError('Nothing to preview — no cards loaded for this window.')
       trace('Blocked: empty quote list')
@@ -52,24 +46,17 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
       trace('1/2 Fetching collage preview…', { count: quotes.length, mode })
       const res = await fetch('/api/quotes/week-review?preview=1')
       const data = await res.json().catch(() => ({}))
-      console.log('[week-review] collage response', { ok: res.ok, status: res.status, data })
       if (!res.ok) throw new Error(data.reason || data.error || `Preview failed (${res.status})`)
       setPreview(data)
       trace(`1/2 Collage ok (${data.quotes?.length || 0} cards, ${data.collage || 'no file'})`)
 
       trace('2/2 Encoding Short (can take ~30s)…')
       const shortRes = await fetch('/api/quotes/week-review?preview=1&part=short')
-      console.log('[week-review] short response', {
-        ok: shortRes.ok,
-        status: shortRes.status,
-        type: shortRes.headers.get('content-type'),
-      })
       if (!shortRes.ok) {
         const err = await shortRes.json().catch(() => ({}))
         throw new Error(err.error || `Short preview failed (${shortRes.status})`)
       }
       const blob = await shortRes.blob()
-      console.log('[week-review] short blob', { bytes: blob.size, type: blob.type })
       const url = URL.createObjectURL(blob)
       setShortUrl((prev) => {
         if (prev) URL.revokeObjectURL(prev)
@@ -77,7 +64,6 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
       })
       trace('Done — collage + Short ready.')
     } catch (err) {
-      console.error('[week-review] preview failed', err)
       setError(err.message || String(err))
       setStatus('')
       setLog((prev) => [...prev, `${new Date().toLocaleTimeString()} · ERROR ${err.message}`])
@@ -112,12 +98,10 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
       trace('Publishing week in review…')
       const res = await fetch('/api/quotes/week-review', { method: 'POST' })
       const data = await res.json()
-      console.log('[week-review] publish response', { ok: res.ok, status: res.status, data })
       if (!res.ok) throw new Error(data.reason || data.error || 'Failed')
       setResult(data)
       trace('Publish finished.')
     } catch (err) {
-      console.error('[week-review] publish failed', err)
       setError(err.message)
       setStatus('')
     } finally {
