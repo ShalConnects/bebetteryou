@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { exchangeYoutubeCode, requestOrigin, youtubeClient, youtubeOauthCookie } from '@/libs/social/youtube-oauth'
 import { saveYoutubeRefreshToken } from '@/libs/social/youtube-store'
+import { refreshNetworkStatus } from '@/libs/social/status-cache'
 
 export async function GET(req) {
   const origin = requestOrigin(req)
@@ -39,6 +40,7 @@ export async function GET(req) {
       clientSecret,
     })
     await saveYoutubeRefreshToken(tokens.refresh_token)
+    refreshNetworkStatus()
     return NextResponse.redirect(`${dashboard}?youtube=connected`)
   } catch (error) {
     return NextResponse.redirect(`${dashboard}?youtube=token`)

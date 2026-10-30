@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import PracticeSaved from '@/components/practice/PracticeSaved'
 import { Page, PageIntro } from '@/components/site/ui'
-import { appConfig } from '@/config/app'
-import { practiceCopy } from '@/config/practice'
+import { appConfig, getUrl } from '@/config/app'
+import { practiceCopy, practiceDiscoverable } from '@/config/practice'
 import { buildMetadata, noIndex } from '@/libs/seo'
 import { listPracticeItems } from '@/libs/practice'
 
@@ -11,7 +11,8 @@ export async function generateMetadata() {
   return buildMetadata({
     title: practiceCopy.savedTitle,
     description: practiceCopy.progressSub,
-    url: `${appConfig.siteUrl.replace(/\/$/, '')}/practice/saved`,
+    url: getUrl('/practice/saved'),
+    index: practiceDiscoverable,
   })
 }
 

@@ -6,8 +6,8 @@ import NotifySubscribers from '@/components/dashboard/NotifySubscribers'
 import QuoteSendFailures from '@/components/dashboard/QuoteSendFailures'
 import SubscriberTable from '@/components/dashboard/SubscriberTable'
 import TestNewsletterMail from '@/components/dashboard/TestNewsletterMail'
-import { DashSection } from '@/components/dashboard/ui'
-import { PageIntro } from '@/components/site/ui'
+import { DashPage, DashPanel } from '@/components/dashboard/ui'
+import { audienceTabs, pickTab } from '@/config/dashboard'
 import { listPosts } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
 import { requireAdminPage } from '@/libs/dashboard-auth'
@@ -20,7 +20,7 @@ import {
 import { listNewsletterDeliveryEvents } from '@/libs/resend-webhook'
 import { readQuotes } from '@/libs/quotes-store'
 
-export const metadata = { title: 'Subscribers' }
+export const metadata = { title: 'Audience' }
 export const dynamic = 'force-dynamic'
 
 const DEFAULT_PAGE_SIZE = 50
@@ -41,169 +41,127 @@ function parsePageSize(value) {
   return Math.min(Math.max(n, 10), 200)
 }
 
+const str = (v) => (v ? String(v) : null)
+
+const subscriberRow = (row) => ({
+  email: row.email,
+  prefs: row.prefs || { quotes: false, blog: false, books: false },
+  unsubscribedAt: str(row.unsubscribedAt),
+  createdAt: str(row.createdAt),
+})
+
+const failureRow = (row) => ({
+  id: String(row._id),
+  email: row.email,
+  kind: row.kind,
+  error: row.error || 'Send failed',
+  createdAt: str(row.createdAt),
+})
+
+const deliveryRow = (row) => ({
+  id: String(row._id),
+  email: row.email,
+  type: row.type,
+  message: row.message || '',
+  bounceType: row.bounceType || '',
+  bounceSubType: row.bounceSubType || '',
+  createdAt: str(row.createdAt),
+})
+
+const pick = (list, label) => list.map((x) => ({ slug: x.slug, label: label(x) }))
+
+/** Each tab reads only its own collections. */
+const tabs = {
+  async list(params) {
+    const { rows, ...meta } = await listNewsletterSubscribersPage({
+      page: parsePage(params.page),
+      pageSize: parsePageSize(params.pageSize),
+      status: parseStatus(params.status),
+    })
+    return (
+      <DashPanel>
+        <SubscriberTable subscribers={rows.map(subscriberRow)} {...meta} />
+      </DashPanel>
+    )
+  },
+  async sends() {
+    const [failures, events] = await Promise.all([listQuoteSendFailures(100), listNewsletterDeliveryEvents(100)])
+    return (
+      <>
+        <DashPanel
+          title={`Failed batch sends (${failures.length})`}
+          description="Resend failures from quote, digest, blog and book batches. Those addresses still sit in that channel’s 30-day cooldown."
+        >
+          <QuoteSendFailures failures={failures.map(failureRow)} />
+        </DashPanel>
+        <DashPanel
+          title={`Bounces & spam (${events.length})`}
+          description="From Resend webhooks. These addresses are auto-unsubscribed."
+        >
+          <CleanupSuppressions />
+          <NewsletterDeliveryEvents events={events.map(deliveryRow)} />
+        </DashPanel>
+      </>
+    )
+  },
+  async tools() {
+    const posts = pick(
+      [...listPosts()].sort((a, b) => String(b.date || '').localeCompare(String(a.date || ''))),
+      (p) => p.title
+    )
+    const books = pick(readBooks(), (b) => (b.author ? `${b.title} — ${b.author}` : b.title))
+    const quotes = pick(
+      (await readQuotes()).filter((q) => q?.slug && q?.src).sort((a, b) => (b.n || 0) - (a.n || 0)),
+      (q) => (q.author ? `#${q.n} — ${q.author}` : `#${q.n}`)
+    )
+    const tools = [
+      ['Import opted-in CSV', <ImportSubscribers key="i" />],
+      [
+        'Send test email',
+        <TestNewsletterMail key="t" emails={await listNewsletterTestEmails(100).catch(() => [])} quotes={quotes} posts={posts} books={books} />,
+      ],
+      ['Quote digest', <DigestNotify key="d" />],
+      ['Notify — one quote', <NotifySubscribers key="q" type="quote" options={quotes} />],
+      ['Notify — blog', <NotifySubscribers key="b" type="blog" options={posts} />],
+      ['Notify — books', <NotifySubscribers key="k" type="book" options={books} />],
+    ]
+    return (
+      <div className="grid gap-4 lg:grid-cols-2">
+        {tools.map(([title, tool]) => (
+          <DashPanel key={title} title={title}>
+            {tool}
+          </DashPanel>
+        ))}
+      </div>
+    )
+  },
+}
+
 export default async function AdminSubscribersPage({ searchParams }) {
   await requireAdminPage()
-
   const params = (await searchParams) || {}
-  const page = parsePage(params.page)
-  const status = parseStatus(params.status)
-  const pageSize = parsePageSize(params.pageSize)
-
-  let list = []
-  let failures = []
-  let deliveryEvents = []
-  let testEmails = []
-  let pageMeta = {
-    page: 1,
-    pageSize: DEFAULT_PAGE_SIZE,
-    totalPages: 1,
-    filteredTotal: 0,
-    status: 'all',
-    activeCount: 0,
-    unsubscribedCount: 0,
-    totalCount: 0,
-  }
-  let dbError = ''
-
+  const active = pickTab(audienceTabs, params.section)
+  let body
   try {
-    const [paged, failureRows, emails, deliveryRows] = await Promise.all([
-      listNewsletterSubscribersPage({ page, pageSize, status }),
-      listQuoteSendFailures(100),
-      listNewsletterTestEmails(100),
-      listNewsletterDeliveryEvents(100),
-    ])
-    pageMeta = {
-      page: paged.page,
-      pageSize: paged.pageSize,
-      totalPages: paged.totalPages,
-      filteredTotal: paged.filteredTotal,
-      status: paged.status,
-      activeCount: paged.activeCount,
-      unsubscribedCount: paged.unsubscribedCount,
-      totalCount: paged.totalCount,
-    }
-    list = paged.rows.map((row) => ({
-      email: row.email,
-      prefs: row.prefs || { quotes: false, blog: false, books: false },
-      unsubscribedAt: row.unsubscribedAt ? String(row.unsubscribedAt) : null,
-      createdAt: row.createdAt ? String(row.createdAt) : null,
-    }))
-    failures = failureRows.map((row) => ({
-      id: String(row._id),
-      email: row.email,
-      kind: row.kind,
-      error: row.error || 'Send failed',
-      createdAt: row.createdAt ? String(row.createdAt) : null,
-    }))
-    deliveryEvents = deliveryRows.map((row) => ({
-      id: String(row._id),
-      email: row.email,
-      type: row.type,
-      message: row.message || '',
-      bounceType: row.bounceType || '',
-      bounceSubType: row.bounceSubType || '',
-      createdAt: row.createdAt ? String(row.createdAt) : null,
-    }))
-    testEmails = emails
+    body = await tabs[active](params)
   } catch (error) {
     logError('Subscribers page: Mongo unavailable', error)
-    dbError =
-      'Could not reach MongoDB (connection timed out). In Atlas → Network Access, allow your current IP (or 0.0.0.0/0 for testing), confirm the cluster is not paused, then refresh.'
+    body = (
+      <p className="text-sm text-red-400">
+        Could not reach MongoDB. In Atlas → Network Access, allow your current IP and confirm the cluster is not
+        paused, then refresh.
+      </p>
+    )
   }
 
-  const posts = listPosts()
-    .slice()
-    .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
-    .map((p) => ({ slug: p.slug, label: p.title }))
-  const books = readBooks().map((b) => ({
-    slug: b.slug,
-    label: b.author ? `${b.title} — ${b.author}` : b.title,
-  }))
-  const quotes = (await readQuotes())
-    .filter((q) => q?.slug && q?.src)
-    .slice()
-    .sort((a, b) => (b.n || 0) - (a.n || 0))
-    .map((q) => ({
-      slug: q.slug,
-      label: q.author ? `#${q.n} — ${q.author}` : `#${q.n}`,
-    }))
-
   return (
-    <div className="space-y-12">
-      <PageIntro title="Subscribers">
-        Quote sends (cron or manual) go to a random 100 people who have not received quote mail in 30 days.
-        The daily email cron only runs when a social schedule or immediate Post succeeds that UTC day. Failed
-        Resend deliveries still count toward that cooldown and are listed below.
-      </PageIntro>
-
-      {dbError ? <p className="text-sm text-red-400">{dbError}</p> : null}
-
-      <DashSection
-        title={`List (${pageMeta.totalCount})`}
-        description="Browse, filter, and unsubscribe. Active vs unsubscribed stay on the list."
-      >
-        <SubscriberTable
-          subscribers={list}
-          page={pageMeta.page}
-          pageSize={pageMeta.pageSize}
-          totalPages={pageMeta.totalPages}
-          filteredTotal={pageMeta.filteredTotal}
-          status={pageMeta.status}
-          activeCount={pageMeta.activeCount}
-          unsubscribedCount={pageMeta.unsubscribedCount}
-          totalCount={pageMeta.totalCount}
-        />
-      </DashSection>
-
-      <DashSection
-        title="Send & import"
-        description="CSV import, test mail, digest, and notify tools."
-        defaultOpen={false}
-      >
-        <div className="space-y-10">
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Import opted-in CSV</h3>
-            <ImportSubscribers />
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Send test email</h3>
-            <TestNewsletterMail emails={testEmails} quotes={quotes} posts={posts} books={books} />
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Quote digest</h3>
-            <DigestNotify />
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — one quote</h3>
-            <NotifySubscribers type="quote" options={quotes} />
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — blog</h3>
-            <NotifySubscribers type="blog" options={posts} />
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Notify — books</h3>
-            <NotifySubscribers type="book" options={books} />
-          </div>
-        </div>
-      </DashSection>
-
-      <DashSection
-        title={`Failed batch sends (${failures.length})`}
-        description="Resend failures from quote/digest/blog/book batches. Those addresses still sit in that channel’s 30-day cooldown."
-        defaultOpen={false}
-      >
-        <QuoteSendFailures failures={failures} />
-      </DashSection>
-
-      <DashSection
-        title={`Bounces & spam (${deliveryEvents.length})`}
-        description="From Resend webhooks. Those addresses are auto-unsubscribed so we stop mailing them."
-        defaultOpen={false}
-      >
-        <CleanupSuppressions />
-        <NewsletterDeliveryEvents events={deliveryEvents} />
-      </DashSection>
-    </div>
+    <DashPage
+      title="Audience"
+      description="Quote sends go to 100 random subscribers who haven’t had quote mail in 30 days, and only on days a social post succeeds."
+      tabs={audienceTabs}
+      active={active}
+    >
+      {body}
+    </DashPage>
   )
 }

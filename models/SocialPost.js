@@ -17,5 +17,7 @@ const SocialPostSchema = new mongoose.Schema(
 )
 
 SocialPostSchema.index({ slug: 1, network: 1 }, { unique: true })
+// "Did this network post today?" checks.
+SocialPostSchema.index({ network: 1, at: -1 })
 
 export default mongoose.models.SocialPost || mongoose.model('SocialPost', SocialPostSchema)

@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import PrintOrderActions from '@/components/dashboard/PrintOrderActions'
-import { PageIntro } from '@/components/site/ui'
+import { DashPage } from '@/components/dashboard/ui'
+import { Button } from '@/components/ui/button'
 import { requireAdminPage } from '@/libs/dashboard-auth'
 import { formatPrintOrderDate, formatStatus, presentPrintOrder } from '@/libs/print-format'
 import { findOrder, printOrdersReady } from '@/libs/print-orders'
@@ -16,18 +17,15 @@ export default async function AdminPrintOrderPage({ params }) {
   const order = presentPrintOrder(raw)
 
   return (
-    <div className="space-y-8">
-      <PageIntro
-        title={order.orderNumber}
-        aside={
-          <Link href="/dashboard/print-orders" className="note">
-            All orders
-          </Link>
-        }
-      >
-        {formatStatus(order.status)}
-        {order.createdAt ? ` · ${formatPrintOrderDate(order.createdAt)}` : ''}
-      </PageIntro>
+    <DashPage
+      title={order.orderNumber}
+      description={`${formatStatus(order.status)}${order.createdAt ? ` · ${formatPrintOrderDate(order.createdAt)}` : ''}`}
+      actions={
+        <Button asChild variant="outline" size="sm">
+          <Link href="/dashboard/print-orders">All orders</Link>
+        </Button>
+      }
+    >
 
       <div className="flex items-start gap-6">
         {order.artSrc ? (
@@ -63,6 +61,6 @@ export default async function AdminPrintOrderPage({ params }) {
           </div>
         </div>
       </div>
-    </div>
+    </DashPage>
   )
 }

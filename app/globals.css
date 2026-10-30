@@ -22,6 +22,8 @@
     --primary: 158 64% 52%;
     --primary-foreground: 144 33% 6%;
     --border: 150 20% 22%;
+    --card: 146 28% 10%;
+    --destructive: 0 72% 51%;
   }
 
   body {
@@ -55,14 +57,6 @@
 
   .shell-inner {
     @apply mx-auto w-full max-w-6xl;
-  }
-
-  .dash-main {
-    @apply min-h-0 flex-1 overflow-y-auto border border-line bg-ink-soft p-6 md:p-8;
-  }
-
-  .dash-label {
-    @apply border-b border-line pb-4 text-[10px] uppercase tracking-[0.32em] text-quiet/70;
   }
 
   .section {
@@ -598,5 +592,69 @@
   .mock-ink,
   .hero-deal .hero-scatter-card img {
     animation: none;
+  }
+}
+
+/* Admin dashboard: app-style type and controls layered over the site's marketing classes,
+   so every existing panel restyles without touching its markup. */
+@layer components {
+  .dash {
+    @apply bg-background text-sm text-foreground/90;
+    font-variant-numeric: tabular-nums;
+  }
+  .dash .uppercase {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .dash :is(.text-\[10px\], .text-\[11px\]) {
+    font-size: 0.75rem;
+  }
+  .dash :is(.heading, .heading-sm) {
+    @apply font-sans text-base font-semibold tracking-normal text-foreground;
+  }
+  .dash .lede {
+    @apply mt-1 text-sm text-muted-foreground;
+  }
+  /* `:where()` keeps these at class weight, so a button's own utilities still win. */
+  :where(.dash) .btn {
+    @apply inline-flex h-9 items-center justify-center rounded-md border-0 bg-primary px-4 text-sm font-medium normal-case
+      tracking-normal text-primary-foreground hover:bg-primary/90 disabled:opacity-50;
+  }
+  :where(.dash) .btn-outline {
+    @apply border border-border bg-transparent text-foreground hover:bg-muted;
+  }
+  :where(.dash) .btn-danger {
+    @apply bg-destructive/15 text-red-300 hover:bg-destructive hover:text-white;
+  }
+  :where(.dash) :is(.tag, .tag-active) {
+    @apply min-h-8 rounded-md px-3 py-1 text-sm normal-case tracking-normal;
+  }
+  :where(.dash) .tag-active {
+    @apply bg-muted text-foreground;
+  }
+  .dash :is(input:not([type='checkbox']):not([type='radio']):not([type='file']), textarea, select) {
+    @apply rounded-md;
+  }
+  .dash :is(input, textarea, select, button, a):focus-visible {
+    @apply outline-none ring-2 ring-ring;
+  }
+  .dash th {
+    @apply font-medium text-muted-foreground;
+  }
+  .dash tbody tr {
+    @apply transition-colors hover:bg-muted/40;
+  }
+
+  /* Inner scroll areas: thin thumb, hidden until the pointer is over the area (or it has focus). */
+  .scroll-quiet {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .scroll-quiet:is(:hover, :focus-within) {
+    scrollbar-color: hsl(var(--border)) transparent;
+  }
+
+  [lang='ar'] {
+    font-family: var(--font-quranic), serif;
   }
 }

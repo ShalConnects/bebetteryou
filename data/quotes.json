@@ -1,5 +1,47 @@
 [
   {
+    "slug": "bby-30",
+    "n": 30,
+    "src": "/quotes/bby30.jpg",
+    "text": "Don't waste your energy explaining yourself to people;\nthey will anyway think what they want to think.",
+    "author": "",
+    "tags": [
+      "Yourself"
+    ],
+    "rev": 7,
+    "status": "scheduled",
+    "createdAt": "2026-10-30T10:41:18.164Z",
+    "theme": "self-worth",
+    "publishAt": "2026-11-05T14:00:00.000Z"
+  },
+  {
+    "slug": "bby-29",
+    "n": 29,
+    "src": "/quotes/bby29.jpg",
+    "text": "When you really decide,\nand not just wish.\nWhen you really commit,\nand not just cry.\nWhen you really take responsibility,\nand not just hope…\nThat's when the miracles happen.",
+    "author": "",
+    "tags": [],
+    "rev": 7,
+    "status": "scheduled",
+    "createdAt": "2026-10-30T10:41:16.052Z",
+    "publishAt": "2026-11-04T14:00:00.000Z"
+  },
+  {
+    "slug": "bby-28",
+    "n": 28,
+    "src": "/quotes/bby28.jpg",
+    "text": "Your time is Precious.\nDon't waste it on someone who doesn't realize that you are, too.",
+    "author": "",
+    "tags": [
+      "Yourself"
+    ],
+    "rev": 7,
+    "status": "scheduled",
+    "createdAt": "2026-10-30T10:41:13.929Z",
+    "publishAt": "2026-11-02T14:00:00.000Z",
+    "theme": "self-worth"
+  },
+  {
     "slug": "bby-20",
     "n": 20,
     "src": "/quotes/bby20.jpg",

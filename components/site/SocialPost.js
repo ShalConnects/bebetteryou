@@ -33,12 +33,13 @@ function formatWhen(iso) {
   }
 }
 
-export default function SocialPost({ slug, initialRetry = [] }) {
+/** `postDate` (YYYY-MM-DD) pre-picks a day, e.g. from an empty calendar slot; past days fall back. */
+export default function SocialPost({ slug, initialRetry = [], postDate: wanted }) {
   const [networks, setNetworks] = useState([])
   const [posts, setPosts] = useState({})
   const [schedules, setSchedules] = useState([])
   const [selected, setSelected] = useState([])
-  const [postDate, setPostDate] = useState(nextPostDate)
+  const [postDate, setPostDate] = useState(() => (wanted >= nextPostDate() ? wanted : nextPostDate()))
   const [busy, setBusy] = useState(false)
   const [previewUrl, setPreviewUrl] = useState('')
   const [results, setResults] = useState(null)

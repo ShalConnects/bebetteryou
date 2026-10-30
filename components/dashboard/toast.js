@@ -27,7 +27,7 @@ export function ToastHost() {
   return (
     <div
       role="status"
-      className="fixed bottom-6 left-1/2 z-[60] max-w-[min(92vw,24rem)] -translate-x-1/2 border border-line bg-ink px-4 py-3 text-sm text-paper shadow-lg"
+      className="fixed bottom-24 left-1/2 md:bottom-6 z-[60] max-w-[min(92vw,24rem)] -translate-x-1/2 border border-line bg-ink px-4 py-3 text-sm text-paper shadow-lg"
     >
       {msg}
     </div>

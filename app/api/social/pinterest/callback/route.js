@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { requireAdmin } from '@/libs/auth-helpers'
 import { saveIntegration } from '@/libs/integrations/store'
+import { refreshNetworkStatus } from '@/libs/social/status-cache'
 import {
   exchangePinterestCode,
   pinterestApp,
@@ -49,6 +50,7 @@ export async function GET(req) {
       lastError: '',
       lastOkAt: new Date(),
     })
+    refreshNetworkStatus()
     return NextResponse.redirect(`${dashboard}?pinterest=connected`)
   } catch {
     return NextResponse.redirect(`${dashboard}?pinterest=token`)

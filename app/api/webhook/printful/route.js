@@ -1,7 +1,7 @@
-import { timingSafeEqual } from 'crypto'
 import { NextResponse } from 'next/server'
 import { logError, logInfo } from '@/libs/logger'
 import { advanceOrder } from '@/libs/print-orders'
+import { safeEqual } from '@/libs/secret'
 
 /**
  * Printful v1 webhooks are not HMAC-signed, so the URL itself is the credential:
@@ -15,15 +15,9 @@ const statusByEvent = {
 }
 
 function authorized(request) {
-  const expected = process.env.PRINTFUL_WEBHOOK_SECRET
-  if (!expected) return false
   const provided =
-    request.headers.get('x-pf-webhook-secret') ||
-    new URL(request.url).searchParams.get('secret') ||
-    ''
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
+    request.headers.get('x-pf-webhook-secret') || new URL(request.url).searchParams.get('secret')
+  return safeEqual(provided, process.env.PRINTFUL_WEBHOOK_SECRET)
 }
 
 export async function POST(request) {

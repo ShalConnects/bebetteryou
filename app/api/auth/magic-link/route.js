@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { requestMagicLink } from '@/libs/magic-link'
-import { rateLimit, rateLimitPresets } from '@/libs/rate-limit'
+import { hit, rateLimit, rateLimitPresets } from '@/libs/rate-limit'
 import { magicLinkSchema, validateSchema } from '@/libs/validation-schemas'
 import { handleApiError } from '@/libs/api'
 
@@ -22,7 +22,11 @@ export async function POST(request) {
       )
     }
 
-    await requestMagicLink(result.data.email)
+    // Per-inbox cap too, so nobody can flood one address from many IPs.
+    const { limit, windowMs } = rateLimitPresets.strict
+    if (!(await hit(`magic:${result.data.email.toLowerCase()}`, limit / 2, windowMs))) {
+      await requestMagicLink(result.data.email)
+    }
     // Always succeed to avoid email enumeration
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -1,7 +1,8 @@
 import { getQuote, listQuotes, neighbors } from '@/libs/content'
-import { quoteAlt, quoteLabel, quoteOneLine } from '@/libs/quote-text'
+import { quoteAlt, quoteLabel, quoteOneLine, quoteTitle } from '@/libs/quote-text'
 import { relatedForQuote } from '@/libs/related'
-import { buildMetadata } from '@/libs/seo'
+import { buildMetadata, quoteJsonLd } from '@/libs/seo'
+import JsonLd from '@/components/site/JsonLd'
 import { appConfig, getUrl } from '@/config/app'
 import QuoteAside from '@/components/site/QuoteAside'
 import QuoteDetailMedia from '@/components/site/QuoteDetailMedia'
@@ -17,9 +18,10 @@ export async function generateMetadata({ params }) {
   const quote = await getQuote(slug)
   if (!quote) return buildMetadata({ title: 'Quote' })
   return buildMetadata({
-    title: `#${quote.n}`,
+    title: quoteTitle(quote),
     description: quoteOneLine(quote.text) || `Quote card #${quote.n}`,
     image: quote.src,
+    url: getUrl(`/quotes/${quote.slug}`),
   })
 }
 
@@ -40,6 +42,7 @@ export default async function QuotePage({ params }) {
 
   return (
     <Page as="article">
+      <h1 className="sr-only">{quoteTitle(quote)}</h1>
       <div className="quote-detail-grid">
         <QuoteDetailMedia quote={quote} share={share} alt={quoteAlt(quote)} priority />
         <QuoteAside
@@ -51,6 +54,7 @@ export default async function QuotePage({ params }) {
           posts={posts}
         />
       </div>
+      <JsonLd data={quoteJsonLd(quote, share.url)} />
     </Page>
   )
 }

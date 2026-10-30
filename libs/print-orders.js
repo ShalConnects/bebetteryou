@@ -6,7 +6,7 @@ import { sourcesOf } from './print-status'
 
 const localFile = path.join(process.cwd(), 'data/print-orders.json')
 
-function useMongo() {
+function mongoBacked() {
   return Boolean(mongoUri())
 }
 
@@ -25,7 +25,7 @@ function writeLocal(orders) {
 
 /** Mongo when the URI is real; local JSON off Vercel, same split as the quote catalog. */
 export function printOrdersReady() {
-  return useMongo() || !process.env.VERCEL
+  return mongoBacked() || !process.env.VERCEL
 }
 
 /** Sortable, quotable to a customer, and unique enough to be Printful's dedupe key. */
@@ -46,7 +46,7 @@ function asDraft(fields) {
 /** Written before any payment call so a charge can never exist without a record. */
 export async function createDraftOrder(fields) {
   const doc = asDraft(fields)
-  if (useMongo()) {
+  if (mongoBacked()) {
     await connectDB()
     return PrintOrder.create(doc)
   }
@@ -56,7 +56,7 @@ export async function createDraftOrder(fields) {
 }
 
 export async function findOrder(orderNumber) {
-  if (useMongo()) {
+  if (mongoBacked()) {
     await connectDB()
     return PrintOrder.findOne({ orderNumber })
   }
@@ -64,7 +64,7 @@ export async function findOrder(orderNumber) {
 }
 
 export async function listOrders(limit = 100) {
-  if (useMongo()) {
+  if (mongoBacked()) {
     await connectDB()
     return PrintOrder.find().sort({ createdAt: -1 }).limit(limit).lean()
   }
@@ -90,7 +90,7 @@ function finishAdvance(current, orderNumber, status) {
  * and clobber each other. Reading first and saving after would let them.
  */
 export async function advanceOrder(orderNumber, status, extra = {}) {
-  if (useMongo()) {
+  if (mongoBacked()) {
     await connectDB()
     const updated = await PrintOrder.findOneAndUpdate(
       { orderNumber, status: { $in: sourcesOf(status) } },
@@ -105,7 +105,7 @@ export async function advanceOrder(orderNumber, status, extra = {}) {
   const index = orders.findIndex((order) => order.orderNumber === orderNumber)
   const current = orders[index]
   if (current && sourcesOf(status).includes(current.status)) {
-    orders[index] = { ...current, ...extra, status }
+    orders[index] = { ...current, ...extra, status, updatedAt: new Date().toISOString() }
     writeLocal(orders)
     return orders[index]
   }

@@ -1,5 +1,5 @@
-import { DashPanel } from '@/components/dashboard/ui'
-import { PageIntro } from '@/components/site/ui'
+import { DashPage, DashPanel } from '@/components/dashboard/ui'
+import { settingsTabs } from '@/config/dashboard'
 import { appConfig } from '@/config/app'
 import { practiceCategories, practiceMonetization } from '@/config/practice'
 import { requireAdminPage } from '@/libs/dashboard-auth'
@@ -20,10 +20,8 @@ export default async function DashboardPracticePage() {
   }))
 
   return (
-    <>
-      <PageIntro title="Practice">Catalog and monetization hooks (read-only).</PageIntro>
-
-      <div className="space-y-6">
+    <DashPage title="Settings" description="Practice catalog and monetization hooks (read-only)." tabs={settingsTabs} active="practice">
+      <div className="space-y-4">
         <DashPanel title="Practice catalog">
           <p className="text-sm text-body/75">
             {items.length} items in <code className="text-quiet">data/practice/items.json</code>. Core reset
@@ -69,6 +67,6 @@ export default async function DashboardPracticePage() {
           </ul>
         </DashPanel>
       </div>
-    </>
+    </DashPage>
   )
 }

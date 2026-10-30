@@ -55,7 +55,7 @@ async function handlePost(request) {
         prefs: validation.data.prefs,
       })
       try {
-        await sendWelcomeIfNeeded(lead)
+        if (!lead.unsubscribedAt) await sendWelcomeIfNeeded(lead)
       } catch (error) {
         logError('Newsletter welcome failed', error, { email: lead.email })
       }

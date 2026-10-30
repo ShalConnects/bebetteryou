@@ -7,14 +7,17 @@ export const printOrderFlow = {
    * Printful can accept and ship an order while our own status write is lost.
    * Without it a shipping webhook would be an illegal jump and strand the order.
    */
-  paid: ['submitted', 'submit_failed', 'shipped'],
-  submitted: ['fulfilled', 'shipped', 'submit_failed'],
-  fulfilled: ['shipped'],
+  paid: ['submitting', 'submitted', 'submit_failed', 'shipped'],
+  /** Claimed by one submit call, so a double click or retry can't create a second Printful order. */
+  submitting: ['submitted', 'submit_failed', 'shipped'],
+  /** Printful can still cancel after accepting (out of stock, address problem). */
+  submitted: ['fulfilled', 'shipped', 'submit_failed', 'cancelled'],
+  fulfilled: ['shipped', 'cancelled'],
   shipped: ['delivered'],
   delivered: [],
   payment_failed: [],
   /** Retryable by an admin from the dashboard. */
-  submit_failed: ['submitted', 'shipped', 'cancelled'],
+  submit_failed: ['submitting', 'submitted', 'shipped', 'cancelled'],
   cancelled: [],
 }
 

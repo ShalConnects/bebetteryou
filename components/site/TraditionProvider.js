@@ -11,6 +11,23 @@ const SHOW = 'bby-scripture-show'
 const TRANS = 'bby-translation'
 
 const Ctx = createContext(null)
+const WEEK = 7 * 24 * 60 * 60 * 1000
+
+/** Storage can throw (private mode, blocked cookies) — prefs then just don't persist. */
+const store = {
+  get: (k) => {
+    try {
+      return localStorage.getItem(k)
+    } catch {
+      return null
+    }
+  },
+  set: (k, v) => {
+    try {
+      localStorage.setItem(k, v)
+    } catch {}
+  },
+}
 
 async function fetchPrefs() {
   const res = await fetch('/api/user/tradition')
@@ -37,14 +54,25 @@ export function TraditionProvider({ children }) {
   const [promptOpen, setPromptOpen] = useState(false)
   const [syncError, setSyncError] = useState(false)
   const [ready, setReady] = useState(false)
+  /** Per-quote "Another passage" steps, shared so share text matches what's on screen. */
+  const [offsets, setOffsets] = useState({})
+  const nextPassage = useCallback((key) => setOffsets((o) => ({ ...o, [key]: (o[key] || 0) + 1 })), [])
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE)
-    const skipped = localStorage.getItem(SKIP) === '1'
+    const stored = store.get(STORAGE)
+    // '1' = skipped for good; a timestamp = "maybe later" until then.
+    const skip = store.get(SKIP)
     setTradition(stored && traditionIds.has(stored) ? stored : null)
-    setShowPassages(localStorage.getItem(SHOW) !== '0')
-    setTranslation(localStorage.getItem(TRANS) || 'niv')
-    setPromptOpen(!skipped && !stored)
+    setShowPassages(store.get(SHOW) !== '0')
+    setTranslation(store.get(TRANS) || 'niv')
+    setPromptOpen(!stored && skip !== '1' && !(Number(skip) > Date.now()))
+    setReady(true)
+  }, [])
+
+  // The passage book is only worth downloading once a reader has picked a tradition.
+  const wantsBook = Boolean(tradition && tradition !== 'none')
+  useEffect(() => {
+    if (!wantsBook || scriptureBook) return
     fetch('/api/scripture')
       .then((r) => r.json())
       .then((d) => {
@@ -52,8 +80,7 @@ export function TraditionProvider({ children }) {
         if (d.themes) setTagThemesMap(d.themes)
       })
       .catch(() => {})
-      .finally(() => setReady(true))
-  }, [])
+  }, [wantsBook, scriptureBook])
 
   useEffect(() => {
     if (!ready || status !== 'authenticated') return
@@ -64,16 +91,16 @@ export function TraditionProvider({ children }) {
         if (cancelled) return
         setSyncError(false)
         if (remote.tradition) {
-          localStorage.setItem(STORAGE, remote.tradition)
+          store.set(STORAGE, remote.tradition)
           setTradition(remote.tradition)
         }
         setShowPassages(remote.showPassages !== false)
-        localStorage.setItem(SHOW, remote.showPassages === false ? '0' : '1')
+        store.set(SHOW, remote.showPassages === false ? '0' : '1')
         if (remote.translation) {
           setTranslation(remote.translation)
-          localStorage.setItem(TRANS, remote.translation)
+          store.set(TRANS, remote.translation)
         }
-        const local = localStorage.getItem(STORAGE)
+        const local = store.get(STORAGE)
         if (local && traditionIds.has(local) && !remote.tradition) await savePrefs({ tradition: local })
       } catch {
         if (!cancelled) setSyncError(true)
@@ -100,8 +127,8 @@ export function TraditionProvider({ children }) {
   const pick = useCallback(
     (id) => {
       if (!traditionIds.has(id)) return
-      localStorage.setItem(STORAGE, id)
-      localStorage.setItem(SKIP, '1')
+      store.set(STORAGE, id)
+      store.set(SKIP, '1')
       setTradition(id)
       // Changing an existing choice keeps the dialog open to adjust the rest.
       if (!tradition) setPromptOpen(false)
@@ -110,8 +137,9 @@ export function TraditionProvider({ children }) {
     [sync, tradition]
   )
 
-  const dismiss = useCallback(() => {
-    localStorage.setItem(SKIP, '1')
+  /** forever = "Skip"; otherwise ask again in a week. */
+  const dismiss = useCallback((forever = true) => {
+    store.set(SKIP, forever ? '1' : String(Date.now() + WEEK))
     setPromptOpen(false)
   }, [])
 
@@ -120,7 +148,7 @@ export function TraditionProvider({ children }) {
   const togglePassages = useCallback(() => {
     setShowPassages((on) => {
       const next = !on
-      localStorage.setItem(SHOW, next ? '1' : '0')
+      store.set(SHOW, next ? '1' : '0')
       sync({ showPassages: next })
       return next
     })
@@ -129,7 +157,7 @@ export function TraditionProvider({ children }) {
   const setTranslationPref = useCallback(
     (id) => {
       if (!translationsFor('christianity').some((t) => t.id === id)) return
-      localStorage.setItem(TRANS, id)
+      store.set(TRANS, id)
       setTranslation(id)
       sync({ translation: id })
     },
@@ -152,6 +180,8 @@ export function TraditionProvider({ children }) {
         openPicker,
         togglePassages,
         setTranslationPref,
+        offsets,
+        nextPassage,
       }}
     >
       {children}
@@ -166,11 +196,13 @@ export function useTradition() {
 }
 
 export function useScriptureQuote({ tags, slug, n, theme }) {
-  const { tradition, showPassages, translation, scriptureBook, tagThemesMap, ready } = useTradition()
+  const { tradition, showPassages, translation, scriptureBook, tagThemesMap, ready, offsets } = useTradition()
+  const key = slug ?? n
+  const offset = offsets[key] || 0
   return useMemo(() => {
     if (!ready || !showPassages || !scriptureBook || !quoteShowsScripture(tags, theme, tagThemesMap)) return null
     if (!tradition || tradition === 'none') return null
     const translationId = translationsFor(tradition).length ? translation : null
-    return scriptureFor(scriptureBook, tradition, tags, slug ?? n, translationId, theme, tagThemesMap)
-  }, [ready, showPassages, scriptureBook, tagThemesMap, tradition, translation, tags, slug, n, theme])
+    return scriptureFor(scriptureBook, tradition, tags, key, translationId, theme, tagThemesMap, offset)
+  }, [ready, showPassages, scriptureBook, tagThemesMap, tradition, translation, tags, key, theme, offset])
 }

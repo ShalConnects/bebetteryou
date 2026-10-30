@@ -1,6 +1,8 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import { traditions, translationsFor } from '@/config/traditions'
+import { bindFocusTrap, focusables } from '@/libs/focus-trap'
 import TraditionPicker from './TraditionPicker'
 import { useTradition } from './TraditionProvider'
 
@@ -17,6 +19,13 @@ export default function TraditionPrompt() {
     togglePassages,
     setTranslationPref,
   } = useTradition()
+  const panel = useRef(null)
+  const later = () => dismiss(false)
+  useEffect(() => {
+    if (!promptOpen) return
+    focusables(panel.current)[0]?.focus()
+    return bindFocusTrap(panel.current, { onEscape: () => dismiss(false) })
+  }, [promptOpen, dismiss])
   if (!promptOpen) return null
 
   const chosen = traditions.find((t) => t.id === tradition)?.label
@@ -24,8 +33,8 @@ export default function TraditionPrompt() {
 
   return (
     <div className="tradition-modal" role="dialog" aria-labelledby="tradition-title" aria-modal="true">
-      <button type="button" className="tradition-modal-backdrop" aria-label="Close" onClick={dismiss} />
-      <div className="tradition-modal-panel shell-inner">
+      <button type="button" className="tradition-modal-backdrop" aria-label="Close" tabIndex={-1} onClick={later} />
+      <div ref={panel} className="tradition-modal-panel shell-inner">
         <p id="tradition-title" className="font-display text-lg text-paper md:text-xl">
           {chosen ? 'Your tradition' : 'Personalize motivation with words from your tradition?'}
         </p>
@@ -64,11 +73,11 @@ export default function TraditionPrompt() {
         ) : null}
         <div className="mt-6 flex flex-wrap gap-4">
           {chosen ? (
-            <button type="button" className="btn" onClick={dismiss}>Done</button>
+            <button type="button" className="btn" onClick={() => dismiss()}>Done</button>
           ) : (
             <>
-              <button type="button" className="btn" onClick={dismiss}>Maybe later</button>
-              <button type="button" className="tag" onClick={dismiss}>Skip</button>
+              <button type="button" className="btn" onClick={later}>Maybe later</button>
+              <button type="button" className="tag" onClick={() => dismiss()}>Don&apos;t ask again</button>
             </>
           )}
         </div>

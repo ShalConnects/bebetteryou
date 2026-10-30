@@ -1,14 +1,13 @@
 import Link from 'next/link'
+import { CircleCheck } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { formatStatus } from '@/libs/print-format'
-import { formatScheduleWhen, manageQuotesHref } from '@/libs/dashboard-ops'
+import { formatScheduleWhen, manageQuotesHref, slotStatus } from '@/libs/dashboard-ops'
 
-const link = 'underline-offset-2 hover:underline'
 const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
+const calendar = manageQuotesHref({ section: 'schedules' })
 
-/**
- * Overview “Today”: what needs a hand first (failures, orders), then what runs next.
- * Full detail lives on Quotes → Schedules and Print.
- */
+/** Today's to-dos, worst first. Upcoming posts live on the calendar, so only missed ones show here. */
 export default function AttentionStrip({
   failures = [],
   orders = [],
@@ -16,62 +15,55 @@ export default function AttentionStrip({
   pendingSocial = [],
   shortsBacklog = null,
 }) {
-  const lowShorts = shortsBacklog != null && shortsBacklog < 3
-  if (
-    !failures.length &&
-    !orders.length &&
-    !upcoming.length &&
-    !pendingSocial.length &&
-    !lowShorts
-  ) {
-    return <p className="text-sm text-quiet">Nothing needs attention.</p>
+  const overdue = upcoming.filter((row) => slotStatus(row) === 'overdue')
+  const items = [
+    failures.length && ['danger', 'Failed', `${plural(failures.length, 'schedule')} failed — retry from the calendar`, calendar],
+    overdue.length && [
+      'danger',
+      'Overdue',
+      `${overdue.map((r) => r.slug).join(', ')} missed ${formatScheduleWhen(overdue[0].runAt)} — goes out with the next 8 pm run`,
+      calendar,
+    ],
+    shortsBacklog != null && shortsBacklog < 3 && [
+      shortsBacklog ? 'warn' : 'danger',
+      'Shorts',
+      `YouTube Shorts queue: ${plural(shortsBacklog, 'day')} left — publish more cards`,
+      manageQuotesHref({ section: 'new' }),
+    ],
+    ...orders.map((o) => [
+      o.canFulfill ? 'danger' : 'warn',
+      'Order',
+      `${o.orderNumber} — ${formatStatus(o.status)} · ${o.customerName || o.customerEmail}`,
+      o.href,
+    ]),
+    pendingSocial.length && [
+      'muted',
+      'Pending',
+      `${pendingSocial.map((n) => n.label).join(', ')} not connected yet`,
+      '/dashboard/integrations',
+    ],
+  ].filter(Boolean)
+
+  if (!items.length) {
+    return (
+      <p className="flex items-center gap-2 text-muted-foreground">
+        <CircleCheck className="size-4 text-primary" aria-hidden /> Nothing needs attention.
+      </p>
+    )
   }
 
   return (
-    <ul className="space-y-2 text-sm">
-      {failures.length ? (
-        <li>
-          <Link href={manageQuotesHref({ section: 'schedules' })} className={`text-red-400 ${link}`}>
-            {plural(failures.length, 'schedule failure')}
+    <ul className="divide-y divide-border">
+      {items.map(([variant, label, text, href]) => (
+        <li key={text}>
+          <Link href={href} className="flex items-center gap-3 py-2.5 hover:text-foreground">
+            <Badge variant={variant} className="w-16 justify-center">
+              {label}
+            </Badge>
+            <span className="min-w-0 sm:truncate">{text}</span>
           </Link>
-          <span className="text-quiet"> — open Schedules to retry</span>
-        </li>
-      ) : null}
-
-      {orders.map((o) => (
-        <li key={o.orderNumber}>
-          <Link href={o.href} className={`${o.canFulfill ? 'text-red-400' : 'text-paper'} ${link}`}>
-            Print order {o.orderNumber}
-          </Link>
-          <span className="text-quiet">
-            {' '}
-            — {formatStatus(o.status)} · {o.customerName || o.customerEmail}
-          </span>
         </li>
       ))}
-
-      {upcoming.map((row, i) => (
-        <li key={row.id} className="text-quiet">
-          {i ? 'Then ' : 'Next post '}
-          <Link href={manageQuotesHref({ section: 'schedules' })} className={`text-body ${link}`}>
-            {row.slug}
-          </Link>{' '}
-          · {formatScheduleWhen(row.runAt)}
-        </li>
-      ))}
-
-      {pendingSocial.length ? (
-        <li className="text-quiet">Pending: {pendingSocial.map((n) => n.label).join(', ')}</li>
-      ) : null}
-
-      {lowShorts ? (
-        <li>
-          <span className={shortsBacklog === 0 ? 'text-red-400' : 'text-quiet'}>
-            YouTube Shorts queue: {plural(shortsBacklog, 'day')} left
-          </span>
-          <span className="text-quiet"> — publish more cards (daily cron, 14:00 UTC)</span>
-        </li>
-      ) : null}
     </ul>
   )
 }

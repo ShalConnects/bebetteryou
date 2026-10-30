@@ -49,7 +49,8 @@ export async function persistScripture(data) {
     const Scripture = (await import('@/models/Scripture')).default
     await connectDB()
     await Scripture.findOneAndUpdate({ key: 'catalog' }, { $set: { data } }, { upsert: true })
-  } catch {
-    /* Mongo optional when unavailable */
+  } catch (error) {
+    // Locally the JSON file already saved it; on Vercel Mongo is the only copy, so say so.
+    if (process.env.VERCEL) throw error
   }
 }

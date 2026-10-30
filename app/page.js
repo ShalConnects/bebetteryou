@@ -5,7 +5,8 @@ import DeckStrip from '@/components/site/DeckStrip'
 import NewsletterForm from '@/components/site/NewsletterForm'
 import ReadDeeper from '@/components/site/ReadDeeper'
 import WearIt from '@/components/site/WearIt'
-import { appConfig } from '@/config/app'
+import JsonLd from '@/components/site/JsonLd'
+import { appConfig, getUrl } from '@/config/app'
 import { practiceCopy, practiceDiscoverable } from '@/config/practice'
 import { copy, heroVideo, shop } from '@/config/site'
 import { listPosts, readingMinutes } from '@/libs/blog'
@@ -14,6 +15,9 @@ import { listBooks } from '@/libs/books'
 import { homeQuoteCount, listMoodIntents, listQuotes } from '@/libs/content'
 import { isPrintableQuote } from '@/libs/quote-text'
 import { sample } from '@/libs/sample'
+import { buildMetadata, siteJsonLd } from '@/libs/seo'
+
+export const metadata = buildMetadata({ url: getUrl('/') })
 
 const HOME_BLOG_COUNT = 2
 
@@ -39,6 +43,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={siteJsonLd()} />
       <Hero quotes={pool} moods={moods} video={heroVideo} />
 
       <DeckStrip items={newest.slice(0, homeQuoteCount)} />

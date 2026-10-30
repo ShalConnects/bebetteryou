@@ -5,6 +5,7 @@ import { logError } from '@/libs/logger'
 import { connectDB } from '@/libs/mongo'
 import Lead from '@/models/Lead'
 import NewsletterSendFailure from '@/models/NewsletterSendFailure'
+import NewsletterDeliveryEvent from '@/models/NewsletterDeliveryEvent'
 import {
   PREF_EMAIL_BATCH_SIZE,
   RESEND_RATE_LIMIT_RETRY_MS,
@@ -65,6 +66,10 @@ export async function upsertNewsletterSubscriber({ email, prefs }) {
   const existing = await Lead.findOne({ email, source: 'newsletter' })
 
   if (existing) {
+    // Bounced or marked as spam: a public form must not put the address back on the list.
+    if (existing.unsubscribedAt && (await NewsletterDeliveryEvent.exists({ email }))) {
+      return { lead: existing, created: false }
+    }
     const token = existing.unsubscribeToken || newUnsubscribeToken()
     existing.prefs = nextPrefs
     existing.unsubscribeToken = token

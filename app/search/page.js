@@ -4,23 +4,20 @@ import { getUrl } from '@/config/app'
 import { param } from '@/libs/content'
 import { SEARCH_MIN_LEN, normalizeQuery, searchSite } from '@/libs/search'
 import { searchHref } from '@/libs/search-url'
-import { buildMetadata, noIndex } from '@/libs/seo'
+import { buildMetadata } from '@/libs/seo'
 
 export async function generateMetadata({ searchParams }) {
   const sp = await searchParams
   const q = normalizeQuery(param(sp?.q))
   const url = getUrl(searchHref({ q }))
-  return {
-    ...buildMetadata({
-      title: q ? `Search: ${q}` : 'Search',
-      description: q
-        ? `Results for “${q}” across quotes, notes, and books.`
-        : 'Search quotes, notes, and books on BeBetterYou.',
-      url,
-    }),
-    ...noIndex,
-    alternates: { canonical: url },
-  }
+  return buildMetadata({
+    title: q ? `Search: ${q}` : 'Search',
+    description: q
+      ? `Results for “${q}” across quotes, notes, and books.`
+      : 'Search quotes, notes, and books on BeBetterYou.',
+    url,
+    index: false,
+  })
 }
 
 function ResultLink({ item }) {

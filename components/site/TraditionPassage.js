@@ -30,7 +30,7 @@ function PassageNote() {
 }
 
 export default function TraditionPassage({ tags, slug, n, theme, className = '' }) {
-  const { tradition, showPassages, ready, openPicker, tagThemesMap } = useTradition()
+  const { tradition, showPassages, ready, openPicker, tagThemesMap, nextPassage } = useTradition()
   const entry = useScriptureQuote({ tags, slug, n, theme })
 
   if (!ready || !quoteShowsScripture(tags, theme, tagThemesMap)) return null
@@ -55,12 +55,21 @@ export default function TraditionPassage({ tags, slug, n, theme, className = '' 
   }
 
   const label = traditions.find((t) => t.id === tradition)?.label
+  const action = 'underline-offset-2 transition-colors hover:text-paper hover:underline'
 
   return (
     <div className={`border-t border-line pt-5 ${className}`} aria-label="From your tradition">
-      <p className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-        From your tradition{label ? ` (${label})` : ''}
+      <p className="flex flex-wrap items-center gap-x-2 text-[11px] uppercase tracking-[0.2em] text-quiet">
+        From your tradition{label ? ` · ${label}` : ''}
+        <button type="button" onClick={openPicker} className={action}>
+          · Change
+        </button>
       </p>
+      {entry.original ? (
+        <p lang={entry.lang || undefined} dir="auto" className="mt-4 text-lg leading-relaxed text-paper/90 md:text-xl">
+          {entry.original}
+        </p>
+      ) : null}
       <blockquote className="mt-4 text-base leading-snug text-paper md:text-lg">{entry.text}</blockquote>
       <p className="mt-3 flex flex-wrap items-center gap-x-2 text-sm text-quiet">
         {entry.url ? (
@@ -70,7 +79,13 @@ export default function TraditionPassage({ tags, slug, n, theme, className = '' 
         ) : (
           entry.ref
         )}
+        {entry.translation ? <span>· {entry.translation}</span> : null}
         <PassageNote />
+        {entry.choices > 1 ? (
+          <button type="button" onClick={() => nextPassage(slug ?? n)} className={`ml-auto ${action}`}>
+            Another passage →
+          </button>
+        ) : null}
       </p>
     </div>
   )

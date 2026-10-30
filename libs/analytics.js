@@ -93,6 +93,12 @@ export function change(current, previous) {
   return previous ? Math.round(((current - previous) / previous) * 100) : null
 }
 
+/** "+12% vs previous 7 days", or null without a baseline. */
+export function changeLabel(current, previous, days) {
+  const pct = change(current, previous)
+  return pct == null ? null : `${pct > 0 ? '+' : ''}${pct}% vs previous ${days} days`
+}
+
 /** "2026-09-18" → "18 Sep" for chart axes (keys are UTC days). */
 export function shortDay(key) {
   const date = new Date(`${key}T00:00:00Z`)

@@ -48,8 +48,9 @@ export async function persistTags(tags) {
     const TagCatalog = (await import('@/models/TagCatalog')).default
     await connectDB()
     await TagCatalog.findOneAndUpdate({ key: 'catalog' }, { $set: { tags: list } }, { upsert: true })
-  } catch {
-    /* Mongo optional when unavailable */
+  } catch (error) {
+    // Locally the JSON file already saved it; on Vercel Mongo is the only copy, so say so.
+    if (process.env.VERCEL) throw error
   }
 }
 

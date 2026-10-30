@@ -1,24 +1,30 @@
 import { appConfig } from '@/config/app'
 import { practiceDiscoverable } from '@/config/practice'
 import { sitePitch } from '@/config/pitch'
-import { listQuotes } from '@/libs/content'
+import { listQuotes, quoteTags } from '@/libs/content'
+import { quotesHref } from '@/libs/quotes-url'
+import { quoteOneLine } from '@/libs/quote-text'
 import { listPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
 
 export { sitePitch }
 
-/** Build Next.js metadata from central app config */
-export function buildMetadata({ title, description, image, url } = {}) {
-  const baseUrl = appConfig.siteUrl.replace(/\/$/, '')
+const siteBase = () => appConfig.siteUrl.replace(/\/$/, '')
+const absolute = (src) => (src.startsWith('http') ? src : `${siteBase()}${src}`)
+
+/**
+ * Build Next.js metadata from central app config. Pass `url` for a page's own canonical
+ * (og:url follows it); without one, neither is set, so pages never claim the homepage's URL.
+ */
+export function buildMetadata({ title, description, image, url, index = true } = {}) {
+  const baseUrl = siteBase()
   const appName = appConfig.name
   const desc = description || sitePitch()
-  const ogImage = image
-    ? image.startsWith('http')
-      ? image
-      : `${baseUrl}${image}`
-    : `${baseUrl}${appConfig.metadata.ogImage}`
+  const ogImage = absolute(image || appConfig.metadata.ogImage)
 
   return {
+    metadataBase: new URL(baseUrl),
+    ...(url ? { alternates: { canonical: url } } : {}),
     title: title ? `${title} | ${appName}` : appConfig.metadata.title,
     description: desc,
     keywords: appConfig.metadata.keywords,
@@ -26,7 +32,7 @@ export function buildMetadata({ title, description, image, url } = {}) {
     openGraph: {
       title: title || appName,
       description: desc,
-      url: url || baseUrl,
+      ...(url ? { url } : {}),
       siteName: appName,
       images: [{ url: ogImage, width: 1200, height: 630, alt: title || appName }],
       locale: 'en_US',
@@ -38,7 +44,7 @@ export function buildMetadata({ title, description, image, url } = {}) {
       description: desc,
       images: [ogImage],
     },
-    robots: { index: true, follow: true },
+    robots: { index, follow: true },
   }
 }
 
@@ -46,7 +52,7 @@ export const noIndex = { robots: { index: false, follow: false } }
 
 /** Static + generated routes for App Router sitemap.js */
 export async function getSitemapEntries() {
-  const base = appConfig.siteUrl.replace(/\/$/, '')
+  const base = siteBase()
   const blog = appConfig.features.enableBlog
   const books = appConfig.features.enableBooks
   const practice = appConfig.features.enablePractice && practiceDiscoverable
@@ -57,19 +63,29 @@ export async function getSitemapEntries() {
     ...(blog ? ['/blog'] : []),
     ...(books ? ['/books'] : []),
     '/about',
-    '/shop',
+    ...(appConfig.features.enablePrintShop ? ['/shop'] : []),
     '/privacy-policy',
     '/tos',
   ]
+  const quotes = await listQuotes()
+  // Pages change when a card is added, so the newest card dates the listings.
+  const latest = quotes.reduce((max, q) => Math.max(max, Date.parse(q.publishAt || q.createdAt) || 0), 0)
+  const listed = latest ? new Date(latest) : undefined
   const staticEntries = paths.map((path) => ({
     url: `${base}${path}`,
-    lastModified: new Date(),
+    ...(path === '' || path === '/quotes' ? { lastModified: listed } : {}),
     changeFrequency: path === '' ? 'daily' : 'weekly',
     priority: path === '' ? 1 : 0.8,
   }))
-  const quoteEntries = (await listQuotes()).map(({ slug }) => ({
+  const tagEntries = (await quoteTags()).map((tag) => ({
+    url: `${base}${quotesHref({ tag })}`,
+    lastModified: listed,
+    changeFrequency: 'weekly',
+    priority: 0.7,
+  }))
+  const quoteEntries = quotes.map(({ slug, publishAt, createdAt }) => ({
     url: `${base}/quotes/${slug}`,
-    lastModified: new Date(),
+    ...(publishAt || createdAt ? { lastModified: new Date(publishAt || createdAt) } : {}),
     changeFrequency: 'monthly',
     priority: 0.6,
   }))
@@ -82,13 +98,45 @@ export async function getSitemapEntries() {
         priority: 0.7,
       }))
     : []
-  return [...staticEntries, ...quoteEntries, ...postEntries]
+  return [...staticEntries, ...tagEntries, ...quoteEntries, ...postEntries]
+}
+
+/** Who we are + sitelinks search box. Rendered once, on the homepage. */
+export function siteJsonLd() {
+  const url = siteBase()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: appConfig.name,
+    url,
+    publisher: { '@type': 'Organization', name: appConfig.name, url, logo: absolute(appConfig.metadata.ogImage) },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${url}/search?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  }
+}
+
+/** A card as a schema.org Quotation (scanned cards have no text, so only the image). */
+export function quoteJsonLd(quote, url) {
+  const text = quoteOneLine(quote.text)
+  const author = quote.author?.trim()
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Quotation',
+    url,
+    image: absolute(quote.src),
+    ...(text ? { text } : {}),
+    ...(author ? { creator: { '@type': 'Person', name: author } } : {}),
+    keywords: (quote.tags || []).join(', ') || undefined,
+    publisher: { '@type': 'Organization', name: appConfig.name },
+  }
 }
 
 /** Article (+ FAQ when the row has one) structured data for a generated post. */
 export function postJsonLd(post, url) {
   const faq = post.blocks?.find((b) => b.type === 'faq' && b.items?.length)
-  const baseUrl = appConfig.siteUrl.replace(/\/$/, '')
   const article = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -101,7 +149,7 @@ export function postJsonLd(post, url) {
     mainEntityOfPage: url,
   }
   if (post.image) {
-    article.image = post.image.startsWith('http') ? post.image : `${baseUrl}${post.image}`
+    article.image = absolute(post.image)
   }
   if (!faq) return article
   return [

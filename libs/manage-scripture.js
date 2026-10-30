@@ -1,14 +1,13 @@
-import { traditions, traditionIds } from '@/config/traditions'
+import { traditionIds } from '@/config/traditions'
 import { readTags } from '@/libs/tags-store'
-import { tagForThemeMap, themeSet, themesMap } from '@/libs/tag-lane'
+import { knownThemes, tagForThemeMap, themeOptions, themesMap } from '@/libs/tag-lane'
 import { readScripture, persistScripture } from '@/libs/scripture-store'
 import { themeEntries, scriptureFor } from '@/libs/scripture-core'
 
-const editableTraditions = traditions.filter((t) => t.id !== 'none')
 
 async function lanes() {
   const tags = await readTags()
-  return { tags, map: themesMap(tags), tagForTheme: tagForThemeMap(tags), themeIds: themeSet(tags) }
+  return { tags, map: themesMap(tags), tagForTheme: tagForThemeMap(tags), themeIds: knownThemes(tags) }
 }
 
 function normalizeEntry(raw, prev) {
@@ -17,6 +16,12 @@ function normalizeEntry(raw, prev) {
   const url = String(raw?.url ?? '').trim()
   if (!ref || !text) throw new Error('Reference and text required')
   const entry = { ref, text, url: url || null }
+  /** Optional provenance: named translation, original-language text (+ BCP-47 lang), reviewer tick. */
+  for (const key of ['translation', 'original', 'lang']) {
+    const value = String(raw?.[key] ?? '').trim()
+    if (value) entry[key] = value
+  }
+  if (raw?.verified) entry.verified = true
   const kjvText = String(raw?.kjvText ?? '').trim()
   if (kjvText) {
     entry.alt = {
@@ -40,6 +45,10 @@ function entryRow(tradition, theme, entry, index, tagForTheme) {
     ref: entry.ref || '',
     text: entry.text || '',
     url: entry.url || '',
+    translation: entry.translation || '',
+    original: entry.original || '',
+    lang: entry.lang || '',
+    verified: Boolean(entry.verified),
     kjvRef: kjv?.ref || '',
     kjvText: kjv?.text || '',
     kjvUrl: kjv?.url || '',
@@ -52,16 +61,6 @@ export async function listScriptureEntries() {
     Object.entries(themes || {}).flatMap(([theme, raw]) =>
       themeEntries(raw).map((entry, index) => entryRow(tradition, theme, entry, index, tagForTheme))
     )
-  )
-}
-
-export async function scriptureGaps() {
-  const [{ tagForTheme, themeIds }, data] = await Promise.all([lanes(), readScripture()])
-  return editableTraditions.flatMap(({ id, label }) =>
-    [...themeIds].flatMap((theme) => {
-      if (themeEntries(data[id]?.[theme]).length) return []
-      return [{ tradition: id, label, theme, tag: tagForTheme[theme] || theme }]
-    })
   )
 }
 
@@ -109,12 +108,5 @@ export async function removeScripture(tradition, theme, index) {
 
 /** Theme options for admin UI — one row per theme from live catalog. */
 export async function scriptureThemeOptions() {
-  const { tags } = await lanes()
-  const byTheme = new Map()
-  for (const t of tags) {
-    if (t.theme && !byTheme.has(t.theme)) {
-      byTheme.set(t.theme, { tag: t.name, theme: t.theme, label: `${t.name} (${t.theme})` })
-    }
-  }
-  return [...byTheme.values()]
+  return themeOptions((await lanes()).tags)
 }

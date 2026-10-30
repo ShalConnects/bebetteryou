@@ -1,11 +1,11 @@
 import { appConfig } from '@/config/app'
-import { rangeStart, summarize } from '@/libs/analytics'
-import { analyticsReady, listEvents } from '@/libs/analytics-store'
+import { rangeStart } from '@/libs/analytics'
+import { analyticsReady, countVisitors } from '@/libs/analytics-store'
 import { logError } from '@/libs/logger'
 import { subscriberCounts } from '@/libs/newsletter'
 import { presentPrintOrder } from '@/libs/print-format'
 import { listOrders, printOrdersReady } from '@/libs/print-orders'
-import { readyNetworks } from '@/libs/social'
+import { cachedReadyNetworks } from '@/libs/social/status-cache'
 import { readPostsBySlugs } from '@/libs/social/post-store'
 import { countYoutubeShortsBacklog } from '@/libs/social/run-daily-youtube-short'
 import { listAllSchedules } from '@/libs/social/schedule-store'
@@ -15,17 +15,6 @@ import {
   upcomingPending,
 } from '@/libs/dashboard-ops'
 import { nextQuoteN } from './quotes-store'
-import { readTags, tagNames } from './tags-store'
-
-export async function quoteStats(quotes) {
-  const total = quotes.length
-  const latest = quotes.reduce((max, q) => Math.max(max, q.n), 0)
-  const catalog = tagNames(await readTags())
-  const tagCounts = Object.fromEntries(
-    catalog.map((tag) => [tag, quotes.filter((q) => q.tags?.includes(tag)).length])
-  )
-  return { total, latest, next: nextQuoteN(quotes), tagCounts }
-}
 
 /** One overview panel failing (Mongo down, analytics off) must not blank the page. */
 async function settle(label, run, fallback) {
@@ -42,15 +31,19 @@ const ordersToAct = async () =>
     ? (await listOrders(50)).map(presentPrintOrder).filter((o) => o.canMarkPaid || o.canFulfill)
     : []
 
-const weekVisitors = async () =>
-  appConfig.features.enableAnalytics && analyticsReady()
-    ? summarize(await listEvents({ since: rangeStart(7) }), { days: 7 }).totals.visitors
-    : null
+/** This week's and last week's unique visitors, for the stat and its trend. */
+async function weekVisitors() {
+  if (!appConfig.features.enableAnalytics || !analyticsReady()) return null
+  const start = rangeStart(7)
+  const [now, prev] = await Promise.all([countVisitors(start), countVisitors(rangeStart(14), start)])
+  return { now, prev }
+}
+
 
 export async function adminOverview(quotes) {
   const [stats, social, schedules, orders, subscribers, visitors] = await Promise.all([
-    quoteStats(quotes),
-    readyNetworks(),
+    { total: quotes.length, next: nextQuoteN(quotes) },
+    settle('social networks', cachedReadyNetworks, []),
     listAllSchedules({ limit: 100 }),
     settle('print orders', ordersToAct, []),
     settle('subscribers', subscriberCounts, null),
@@ -64,6 +57,7 @@ export async function adminOverview(quotes) {
     stats: { ...stats, subscribers, visitors },
     social,
     schedules,
+    postsBySlug,
     networkActivity: networkLastActivity(schedules),
     attention: {
       failures,

@@ -3,6 +3,7 @@ import { logInfo } from '@/libs/logger'
 import { postQuote, readyNetworks } from '@/libs/social'
 import { hasOkNetworkPostInUtcDay, readPostsBySlugs } from '@/libs/social/post-store'
 import { readQuotes } from '@/libs/quotes-store'
+import { postVerseShort } from '@/libs/social/verse-short'
 
 /** Off when `YOUTUBE_DAILY_SHORTS` is 0 / false / off. Unset = on. */
 export function dailyYoutubeShortsEnabled() {
@@ -15,19 +16,22 @@ function isWeekReviewSlug(slug) {
   return String(slug || '').startsWith('week-')
 }
 
+/** Public single-quote cards, oldest `n` first. */
+function shortableQuotes(quotes) {
+  return (quotes || [])
+    .filter((q) => q?.slug && isQuotePublic(q) && !isWeekReviewSlug(q.slug))
+    .sort((a, b) => (Number(a.n) || 0) - (Number(b.n) || 0))
+}
+
+const notOnYoutube = (quotes, postsBySlug = {}) => shortableQuotes(quotes).filter((q) => !postsBySlug[q.slug]?.youtube?.ok)
+
 /** Public single-quote cards not yet ok on YouTube, oldest `n` first. */
 export function pickNextQuoteForYoutubeShort(quotes, postsBySlug = {}) {
-  const eligible = (quotes || [])
-    .filter((q) => q?.slug && isQuotePublic(q) && !isWeekReviewSlug(q.slug))
-    .filter((q) => !postsBySlug[q.slug]?.youtube?.ok)
-    .sort((a, b) => (Number(a.n) || 0) - (Number(b.n) || 0))
-  return eligible[0] || null
+  return notOnYoutube(quotes, postsBySlug)[0] || null
 }
 
 export function countYoutubeShortsBacklog(quotes, postsBySlug = {}) {
-  return (quotes || []).filter(
-    (q) => q?.slug && isQuotePublic(q) && !isWeekReviewSlug(q.slug) && !postsBySlug[q.slug]?.youtube?.ok
-  ).length
+  return notOnYoutube(quotes, postsBySlug).length
 }
 
 /** Single-quote Short already ok on YouTube this UTC day (manual or cron). */
@@ -62,9 +66,16 @@ export async function runDailyYoutubeShort({ now = new Date() } = {}) {
   const backlog = countYoutubeShortsBacklog(quotes, postsBySlug)
   const next = pickNextQuoteForYoutubeShort(quotes, postsBySlug)
 
+  // Every card is already up: post a quote + passage pairing instead (one per quote × tradition).
   if (!next) {
-    logInfo('Daily YouTube Short skipped', { reason: 'empty_queue', backlog: 0 })
-    return { skipped: true, reason: 'empty_queue', backlog: 0 }
+    const verse = await postVerseShort(shortableQuotes(quotes), now.getTime())
+    if (!verse) {
+      logInfo('Daily YouTube Short skipped', { reason: 'empty_queue', backlog: 0 })
+      return { skipped: true, reason: 'empty_queue', backlog: 0 }
+    }
+    const { ok, url = null, error = '', slug, tradition } = verse.result
+    logInfo('Daily verse Short finished', { key: verse.key, ok, url, error })
+    return { skipped: false, kind: 'verse', ok, slug, tradition, url, error, backlog: 0, results: [verse.result] }
   }
 
   const results = await postQuote(next.slug, ['youtube'])

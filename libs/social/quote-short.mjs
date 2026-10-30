@@ -117,7 +117,7 @@ export function shortTransitions(seconds, quoteCount, card = quoteShort, { serie
   for (let i = 1; i < n; i++) {
     const intoHook = series && i === quoteStart
     const intoStack = i === quoteStart + 1 && quoteCount > 1
-    const intoEnd = i === quoteStart + quoteCount && i < n
+    const intoEnd = i >= quoteStart + quoteCount // passage and end plates
     const layout = intoHook || intoStack || intoEnd
     const d = clipFade(seconds[i - 1], seconds[i], layout ? card.crossfade : card.lineFade)
     out.push({ type: layout ? 'fadeblack' : 'fade', d })
@@ -356,8 +356,22 @@ export async function renderShortPoster(imageBuffer, quote, card = quoteShort) {
   throw new Error('Poster needs quote text or an image')
 }
 
-/** Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text. */
-export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
+/** Passage plate for verse Shorts: same card, smaller type, reference in the credit line. */
+async function passageBeat(passage, quote, card) {
+  const { seconds, scale } = card.passage
+  const size = (v) => Math.round(v * scale)
+  const small = { ...card, quote: { ...card.quote, size: size(card.quote.size), firstCharSize: size(card.quote.firstCharSize) } }
+  return {
+    seconds,
+    jpg: await renderQuoteCard({ n: quote.n, text: passage.text, author: passage.ref, tags: quote.tags, card: small }),
+  }
+}
+
+/**
+ * Encode a 9:16 H.264 Short: phrase stills + bed, or cover-fit JPEG if no text.
+ * `passage` ({ text, ref }) adds a scripture plate after the quote (verse Shorts).
+ */
+export async function encodeQuoteShort(imageBuffer, quote, { music, passage } = {}) {
   const ffmpeg = (await import('ffmpeg-static')).default
   if (!ffmpeg) throw new Error('ffmpeg missing — cannot encode YouTube Short')
 
@@ -405,7 +419,8 @@ export async function encodeQuoteShort(imageBuffer, quote, { music } = {}) {
           }),
         }
       : null
-  const beats = [...(seriesBeat ? [seriesBeat] : []), ...quoteBeats, ...(endBeat ? [endBeat] : [])]
+  const verseBeat = passage?.text ? await passageBeat(passage, quote, card) : null
+  const beats = [seriesBeat, ...quoteBeats, verseBeat, endBeat].filter(Boolean)
 
   const seconds = beats.map((b) => b.seconds)
   const transitions = shortTransitions(seconds, quoteBeats.length, card, { series: useSeries })

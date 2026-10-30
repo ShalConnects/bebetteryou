@@ -41,6 +41,7 @@ export function overlayQuote(local, remote) {
   delete next._id
   delete next.__v
   delete next.updatedAt
+  delete next.deleted
   if (next.createdAt) next.createdAt = new Date(next.createdAt).toISOString()
   else delete next.createdAt
   if (next.publishAt) next.publishAt = new Date(next.publishAt).toISOString()
@@ -59,14 +60,13 @@ export async function readQuotes() {
     await connectDB()
     const remote = asList(
       await Quote.find()
-        .select('slug n src text author tags theme related rev status publishAt createdAt')
+        .select('slug n src text author tags theme related rev status publishAt createdAt deleted')
         .lean()
     )
-    if (!remote.length) return local
-
     const map = new Map(local.map((q) => [q.slug, q]))
     for (const q of remote) {
-      if (q?.slug) map.set(q.slug, overlayQuote(map.get(q.slug), q))
+      if (q?.deleted) map.delete(q.slug)
+      else if (q?.slug) map.set(q.slug, overlayQuote(map.get(q.slug), q))
     }
     return sortByN([...map.values()])
   } catch (error) {
@@ -81,7 +81,7 @@ export async function appendQuote(quote) {
     const { connectDB } = await import('./mongo')
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
-    await Quote.findOneAndUpdate({ slug: quote.slug }, quote, {
+    await Quote.findOneAndUpdate({ slug: quote.slug }, { ...quote, deleted: false }, {
       upsert: true,
       setDefaultsOnInsert: true,
     })
@@ -103,7 +103,10 @@ export async function removeQuote(slug) {
     const { connectDB } = await import('./mongo')
     const Quote = (await import('@/models/Quote')).default
     await connectDB()
-    await Quote.deleteOne({ slug })
+    // A card bundled in data/quotes.json would come back from the file, so leave a tombstone.
+    if (readLocal().some((q) => q.slug === slug)) {
+      await Quote.updateOne({ slug }, { $set: { deleted: true } }, { upsert: true })
+    } else await Quote.deleteOne({ slug })
   }
 
   if (!process.env.VERCEL) {

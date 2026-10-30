@@ -8,6 +8,12 @@ import User from '@/models/User'
 import { logError } from './logger'
 import { verifyPassword } from './password'
 import { consumeMagicToken } from './magic-link'
+import { clientIp, hit, rateLimitPresets } from './rate-limit'
+
+const { limit, windowMs } = rateLimitPresets.strict
+/** Brute-force guard: 10 tries per email and 30 per IP every 15 minutes. */
+const loginLimited = async (email, req) =>
+  (await hit(`login:${email}`, limit, windowMs)) || (await hit(`login:${clientIp(req)}`, limit * 3, windowMs))
 
 function oauthProviders() {
   const list = []
@@ -40,9 +46,10 @@ export const authOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         try {
           if (!credentials?.email || !credentials?.password) return null
+          if (await loginLimited(credentials.email.toLowerCase().trim(), req)) return null
           if (isOwnerEmail(credentials.email)) {
             if (!(await matchOwnerPassword(credentials.password))) return null
             return await ensureOwnerUser()
@@ -89,22 +96,22 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (!user?.email) return false
       if (isOwnerEmail(user.email)) return true
       try {
         await connectDB()
+        const email = user.email.toLowerCase()
         await User.findOneAndUpdate(
-          { email: user.email.toLowerCase() },
-          {
-            $setOnInsert: {
-              name: user.name || user.email.split('@')[0],
-              email: user.email.toLowerCase(),
-              image: user.image,
-            },
-          },
+          { email },
+          { $setOnInsert: { name: user.name || email.split('@')[0], email, image: user.image } },
           { upsert: true }
         )
+        // OAuth or a magic link proves the inbox. The first time, drop any password set by
+        // an unverified sign-up, so nobody can pre-register someone else's email.
+        if (account?.provider !== 'credentials') {
+          await User.updateOne({ email, emailVerified: null }, { $set: { emailVerified: new Date() }, $unset: { password: 1 } })
+        }
         return true
       } catch (error) {
         logError('Sign in error', error)

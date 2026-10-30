@@ -74,7 +74,7 @@ export default function NewsletterForm({ quotes, moods = [], compact = false }) 
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="hello@shalconnects.com"
+              placeholder="you@example.com"
               aria-label="Email"
               className="min-w-0 flex-1 border border-line bg-ink px-4 py-3 text-paper outline-none placeholder:text-quiet/45 focus:border-paper/40"
             />

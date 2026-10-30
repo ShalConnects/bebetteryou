@@ -21,6 +21,8 @@ const QuoteSchema = new mongoose.Schema(
     },
     /** When a scheduled quote is meant to go live (ISO via lean docs). */
     publishAt: { type: Date },
+    /** Tombstone for a card that still exists in data/quotes.json (Vercel can't edit the file). */
+    deleted: { type: Boolean },
     related: {
       books: { type: [String], default: undefined },
       posts: { type: [String], default: undefined },

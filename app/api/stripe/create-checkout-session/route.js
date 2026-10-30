@@ -6,6 +6,7 @@ import { createCheckoutSessionSchema, validateSchema } from '@/libs/validation-s
 import { withApiLogging } from '@/libs/api-middleware'
 import { connectDB } from '@/libs/mongo'
 import User from '@/models/User'
+import { appConfig, getUrl } from '@/config/app'
 
 /**
  * @swagger
@@ -48,6 +49,7 @@ import User from '@/models/User'
  */
 async function handlePost(request) {
   try {
+    if (!appConfig.features.enablePricing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     // Require authentication
     const authResult = await requireAuth()
     if (authResult instanceof NextResponse) {
@@ -80,6 +82,10 @@ async function handlePost(request) {
     
     // Use validated data from schema
     const { priceId } = validation.data
+    // Only our own plans: a client-chosen price could buy access for a few cents.
+    if (!Object.values(appConfig.stripePrices).includes(priceId)) {
+      return NextResponse.json({ error: 'Unknown plan' }, { status: 400 })
+    }
     
     // Get or create Stripe customer
     await connectDB()
@@ -106,9 +112,6 @@ async function handlePost(request) {
         { new: true }
       )
     }
-    
-    const { getUrl } = await import('@/config/app')
-    const appConfig = (await import('@/config/app')).appConfig
     
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: 'subscription',

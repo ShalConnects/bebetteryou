@@ -49,4 +49,8 @@ export const timestampsPlugin = (schema) => {
     this.updatedAt = Date.now()
     next()
   })
+  // Query updates skip 'save' hooks, so stamp those too.
+  schema.pre(['findOneAndUpdate', 'updateOne', 'updateMany'], function () {
+    this.set({ updatedAt: new Date() })
+  })
 }

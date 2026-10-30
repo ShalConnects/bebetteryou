@@ -1,23 +1,27 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect } from 'react'
+import { Page } from '@/components/site/ui'
 
+/** Same look as the 404: a calm line and a way back, not a stack trace. */
 export default function Error({ error, reset }) {
   useEffect(() => {
     console.error(error)
   }, [error])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4 text-foreground">Something went wrong!</h2>
-        <button
-          onClick={() => reset()}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-        >
+    <Page className="items-center justify-center py-20 text-center">
+      <h1 className="font-display text-3xl tracking-wide text-paper md:text-4xl">Something slipped.</h1>
+      <p className="lede mx-auto mt-3 max-w-sm">Give it another go — it usually works the second time.</p>
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+        <button type="button" onClick={reset} className="btn bg-accent text-accent-ink hover:bg-accent/90">
           Try again
         </button>
+        <Link href="/" className="tag">
+          Home
+        </Link>
       </div>
-    </div>
+    </Page>
   )
 }

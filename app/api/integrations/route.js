@@ -3,6 +3,7 @@ import { requireAdmin } from '@/libs/auth-helpers'
 import { fieldsToPatch } from '@/libs/integrations/credentials'
 import { listIntegrationStatus } from '@/libs/integrations/status'
 import { clearIntegration, saveIntegration } from '@/libs/integrations/store'
+import { refreshNetworkStatus } from '@/libs/social/status-cache'
 
 export async function GET() {
   const auth = await requireAdmin()
@@ -31,6 +32,7 @@ export async function POST(req) {
   try {
     if (body?.clear) {
       await clearIntegration(network)
+      refreshNetworkStatus()
       return NextResponse.json({ ok: true, cleared: true, ...(await listIntegrationStatus()) })
     }
 
@@ -45,6 +47,7 @@ export async function POST(req) {
 
     /** Board/id saves are not an auth success — only OAuth sets lastOkAt. */
     await saveIntegration(network, { ...patch, lastError: '' })
+    refreshNetworkStatus()
     return NextResponse.json({ ok: true, ...(await listIntegrationStatus()) })
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })

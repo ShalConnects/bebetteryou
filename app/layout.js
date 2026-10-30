@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
-import { Iceberg, Jost } from 'next/font/google'
+import { Amiri_Quran, Iceberg, Jost } from 'next/font/google'
 import './globals.css'
 import LayoutClient from '@/components/LayoutClient'
 import { brand } from '@/config/site'
@@ -19,6 +19,14 @@ const iceberg = Iceberg({
   display: 'swap',
 })
 
+/** Quranic Arabic with its pause marks; only fetched when a passage in `lang="ar"` shows. */
+const quranic = Amiri_Quran({
+  weight: '400',
+  subsets: ['arabic'],
+  variable: '--font-quranic',
+  preload: false,
+})
+
 export const metadata = {
   ...buildMetadata(),
   icons: { icon: brand.favicon },
@@ -26,7 +34,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${jost.variable} ${iceberg.variable}`}>
+    <html lang="en" className={`${jost.variable} ${iceberg.variable} ${quranic.variable}`}>
       <body className="font-sans">
         <LayoutClient>{children}</LayoutClient>
         <Analytics />

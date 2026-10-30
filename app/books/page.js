@@ -18,16 +18,13 @@ export async function generateMetadata({ searchParams }) {
   const { page, total, pageSize } = pageBooks(tag, param(sp?.page))
   const range = pageRange(page, pageSize, total)
   const url = getUrl(booksHref({ tag, page }))
-  return {
-    ...buildMetadata({
-      title: tag ? `${formatTag(tag)} books` : 'Books',
-      description: range
-        ? `${booksIntro} Books ${range.start}–${range.end} of ${range.total}.`
-        : booksIntro,
-      url,
-    }),
-    alternates: { canonical: url },
-  }
+  return buildMetadata({
+    title: tag ? `${formatTag(tag)} books` : 'Books',
+    description: range
+      ? `${booksIntro} Books ${range.start}–${range.end} of ${range.total}.`
+      : booksIntro,
+    url,
+  })
 }
 
 export default async function BooksPage({ searchParams }) {

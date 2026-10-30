@@ -1,12 +1,15 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { quoteCard } from '@/config/quote-card'
 import { filterQuotes } from '@/config/dashboard'
+import { Badge } from '@/components/ui/badge'
+import { Sheet } from '@/components/ui/sheet'
 import { clampQuoteInput, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
 import { useQuotePreview } from '@/components/site/useQuotePreview'
 import TagPicker from '@/components/site/TagPicker'
+import ThemeSelect from '@/components/site/ThemeSelect'
 import SocialPost from '@/components/site/SocialPost'
 import EmailQuoteList from '@/components/dashboard/EmailQuoteList'
 import { toast } from '@/components/dashboard/toast'
@@ -31,10 +34,12 @@ export default function QuoteManager({
   tagOptions = [],
   initialSlug = null,
   initialRetry = [],
+  initialTag = '',
+  themeOptions = [],
 }) {
   const [items, setItems] = useState(initial)
   const [q, setQ] = useState('')
-  const [tag, setTag] = useState('')
+  const [tag, setTag] = useState(initialTag)
   const [slug, setSlug] = useState(initialSlug)
   const [form, setForm] = useState(() => {
     if (!initialSlug) return null
@@ -42,7 +47,6 @@ export default function QuoteManager({
     return quote ? formFromQuote(quote) : null
   })
   const [busy, setBusy] = useState(false)
-  const selectedRef = useRef(null)
   const { preview, previewing, error, setError } = useQuotePreview(
     form?.text || '',
     form?.author || '',
@@ -54,11 +58,6 @@ export default function QuoteManager({
   const chars = form ? quoteMetrics(form.text).chars : 0
   const lines = preview?.lines
   const overLines = Boolean(form && lines != null && lines > maxLines)
-
-  useEffect(() => {
-    if (!slug || !selectedRef.current) return
-    selectedRef.current.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
-  }, [slug])
 
   /** Deep-link once per slug — do not reset the open form when `items` updates after save. */
   useEffect(() => {
@@ -186,23 +185,28 @@ export default function QuoteManager({
       {!filtered.length ? (
         <p className="text-sm text-quiet">No quotes match.</p>
       ) : (
-        <ul className="max-h-[min(70vh,48rem)] divide-y divide-line overflow-y-auto border border-line">
+        <ul className="max-h-[min(70vh,48rem)] divide-y divide-line overflow-y-auto rounded-lg border border-line">
           {filtered.map((quote) => {
             const open = slug === quote.slug && form && current
             return (
-              <li key={quote.slug} ref={open ? selectedRef : null}>
+              <li key={quote.slug}>
                 <button
                   type="button"
                   onClick={() => pick(quote)}
-                  aria-expanded={open}
-                  className={`flex w-full items-baseline justify-between gap-4 px-4 py-3 text-left transition-colors hover:bg-paper/5 ${
+                  aria-haspopup="dialog"
+                  className={`flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition-colors hover:bg-paper/5 ${
                     open ? 'bg-paper/5' : ''
                   }`}
                 >
-                  <div className="min-w-0">
+                  {quote.src ? (
+                    <img src={quote.src} alt="" loading="lazy" className="size-12 shrink-0 rounded object-cover" />
+                  ) : null}
+                  <div className="min-w-0 flex-1">
                     <span className="text-paper">#{quote.n}</span>
                     {quote.status === 'draft' || quote.status === 'scheduled' ? (
-                      <span className="ml-2 text-xs text-quiet">{quote.status}</span>
+                      <Badge variant={quote.status === 'draft' ? 'muted' : 'default'} className="ml-2">
+                        {quote.status}
+                      </Badge>
                     ) : null}
                     {!quote.text ? <span className="ml-2 text-xs text-quiet">no text</span> : null}
                     <p className="truncate text-sm text-body/85">{quote.text?.split('\n')[0] || '—'}</p>
@@ -210,144 +214,6 @@ export default function QuoteManager({
                   <span className="shrink-0 text-xs text-quiet">{quote.author || '—'}</span>
                 </button>
 
-                {open ? (
-                  <div className="space-y-4 border-t border-line bg-ink/40 px-4 py-5 sm:px-6">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <h2 className="heading-sm">Edit #{current.n}</h2>
-                      <div className="flex flex-wrap items-center gap-4">
-                        {current.status === 'draft' || current.status === 'scheduled' ? (
-                          <span className="text-xs text-quiet">
-                            {current.status === 'scheduled' ? 'Scheduled — not on site yet' : 'Draft — not on site yet'}
-                          </span>
-                        ) : (
-                          <Link href={`/quotes/${current.slug}`} className="nav-link">
-                            View on site
-                          </Link>
-                        )}
-                        <button
-                          type="button"
-                          onClick={close}
-                          className="text-xs text-quiet transition-colors hover:text-paper"
-                        >
-                          Close
-                        </button>
-                      </div>
-                    </div>
-
-                    {current.src ? (
-                      <img
-                        src={current.src}
-                        alt={`Quote #${current.n}`}
-                        className="mx-auto max-h-48 w-auto border border-line"
-                      />
-                    ) : null}
-
-                    <label className="block">
-                      <span className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        <span>Quote</span>
-                        <span className={`normal-case tracking-normal${overLines ? ' text-red-400' : ''}`}>
-                          {chars}/{maxChars} · {lines ?? 0}/{maxLines}
-                        </span>
-                      </span>
-                      <textarea
-                        rows={4}
-                        maxLength={maxChars}
-                        value={form.text}
-                        onChange={(e) => setForm({ ...form, text: clampQuoteInput(e.target.value) })}
-                        className={`${inputClass} resize-none`}
-                      />
-                    </label>
-
-                    <label className="block">
-                      <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        Author
-                      </span>
-                      <input
-                        value={form.author}
-                        onChange={(e) => setForm({ ...form, author: e.target.value })}
-                        placeholder="Optional"
-                        className={inputClass}
-                      />
-                    </label>
-
-                    <TagPicker
-                      options={tagOptions}
-                      value={form.tags}
-                      onChange={(tags) => setForm({ ...form, tags })}
-                    />
-
-                    <label className="block">
-                      <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        Scripture theme (optional pin)
-                      </span>
-                      <input
-                        value={form.theme}
-                        onChange={(e) => setForm({ ...form, theme: e.target.value })}
-                        placeholder="e.g. perseverance — blank = from tags"
-                        className={inputClass}
-                      />
-                    </label>
-
-                    <label className="block">
-                      <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        Pin books (slugs)
-                      </span>
-                      <input
-                        value={form.relatedBooks}
-                        onChange={(e) => setForm({ ...form, relatedBooks: e.target.value })}
-                        placeholder="atomic-habits, cant-hurt-me"
-                        className={inputClass}
-                      />
-                    </label>
-
-                    <label className="block">
-                      <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
-                        Pin posts (slugs)
-                      </span>
-                      <input
-                        value={form.relatedPosts}
-                        onChange={(e) => setForm({ ...form, relatedPosts: e.target.value })}
-                        placeholder="discipline-for-men"
-                        className={inputClass}
-                      />
-                    </label>
-
-                    {overLines ? (
-                      <p className="text-sm text-red-400">{quoteLinesOverflowMessage(lines)}</p>
-                    ) : null}
-                    {error ? <p className="text-sm text-red-400">{error}</p> : null}
-
-                    <div className="flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        disabled={busy || overLines || previewing}
-                        onClick={() => save(false)}
-                        className="btn disabled:opacity-50"
-                      >
-                        Save
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy || !form.text.trim() || overLines || previewing}
-                        onClick={() => save(true)}
-                        className="btn disabled:opacity-50"
-                      >
-                        Save & regenerate
-                      </button>
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={remove}
-                        className="btn disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
-                    </div>
-
-                    <SocialPost slug={slug} initialRetry={slug === initialSlug ? initialRetry : []} />
-                    <EmailQuoteList slug={slug} />
-                  </div>
-                ) : null}
               </li>
             )
           })}
@@ -355,6 +221,123 @@ export default function QuoteManager({
       )}
 
       {!slug ? <p className="text-sm text-quiet">Select a quote to edit.</p> : null}
+
+      {form && current ? (
+        <Sheet title={`Edit #${current.n}`} onClose={close}>
+          {current.status === 'draft' || current.status === 'scheduled' ? (
+            <p className="text-xs text-quiet">
+              {current.status === 'scheduled' ? 'Scheduled — not on site yet' : 'Draft — not on site yet'}
+            </p>
+          ) : (
+            <Link href={`/quotes/${current.slug}`} className="nav-link">
+              View on site
+            </Link>
+          )}
+
+          {current.src ? (
+            <img
+              src={current.src}
+              alt={`Quote #${current.n}`}
+              className="mx-auto max-h-48 w-auto border border-line"
+            />
+          ) : null}
+
+          <label className="block">
+            <span className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-quiet">
+              <span>Quote</span>
+              <span className={`normal-case tracking-normal${overLines ? ' text-red-400' : ''}`}>
+                {chars}/{maxChars} · {lines ?? 0}/{maxLines}
+              </span>
+            </span>
+            <textarea
+              rows={4}
+              maxLength={maxChars}
+              value={form.text}
+              onChange={(e) => setForm({ ...form, text: clampQuoteInput(e.target.value) })}
+              className={`${inputClass} resize-none`}
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Author
+            </span>
+            <input
+              value={form.author}
+              onChange={(e) => setForm({ ...form, author: e.target.value })}
+              placeholder="Optional"
+              className={inputClass}
+            />
+          </label>
+
+          <TagPicker
+            options={tagOptions}
+            value={form.tags}
+            onChange={(tags) => setForm({ ...form, tags })}
+          />
+
+          <ThemeSelect value={form.theme} onChange={(e) => setForm({ ...form, theme: e.target.value })} options={themeOptions} />
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Pin books (slugs)
+            </span>
+            <input
+              value={form.relatedBooks}
+              onChange={(e) => setForm({ ...form, relatedBooks: e.target.value })}
+              placeholder="atomic-habits, cant-hurt-me"
+              className={inputClass}
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
+              Pin posts (slugs)
+            </span>
+            <input
+              value={form.relatedPosts}
+              onChange={(e) => setForm({ ...form, relatedPosts: e.target.value })}
+              placeholder="discipline-for-men"
+              className={inputClass}
+            />
+          </label>
+
+          {overLines ? (
+            <p className="text-sm text-red-400">{quoteLinesOverflowMessage(lines)}</p>
+          ) : null}
+          {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              disabled={busy || overLines || previewing}
+              onClick={() => save(false)}
+              className="btn disabled:opacity-50"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              disabled={busy || !form.text.trim() || overLines || previewing}
+              onClick={() => save(true)}
+              className="btn btn-outline disabled:opacity-50"
+            >
+              Save & regenerate
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={remove}
+              className="btn btn-danger disabled:opacity-50"
+            >
+              Delete
+            </button>
+          </div>
+
+          <SocialPost slug={slug} initialRetry={slug === initialSlug ? initialRetry : []} />
+          <EmailQuoteList slug={slug} />
+        </Sheet>
+      ) : null}
     </div>
   )
 }

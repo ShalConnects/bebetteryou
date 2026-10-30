@@ -2,190 +2,72 @@ import { NextResponse } from 'next/server'
 import { isRedisReady, getRedisClient } from './redis'
 import { logError } from './logger'
 
-/**
- * Rate limiter for Next.js App Router
- * Supports both Redis (for multi-instance) and in-memory (fallback)
- */
-
-// Store requests in memory (cleared on server restart) - fallback
+/** Sliding-window limiter: Redis when available (multi-instance), memory otherwise. */
 const requestStore = new Map()
 
-/**
- * Clean up old entries periodically
- */
-function cleanupOldEntries(windowMs) {
-  const now = Date.now()
-  const cutoff = now - windowMs
-  
-  for (const [key, requests] of requestStore.entries()) {
-    const validRequests = requests.filter(time => time > cutoff)
-    if (validRequests.length === 0) {
-      requestStore.delete(key)
-    } else {
-      requestStore.set(key, validRequests)
-    }
-  }
+export function clientIp(request) {
+  const h = request.headers
+  const get = (k) => (typeof h?.get === 'function' ? h.get(k) : h?.[k])
+  return get('x-forwarded-for')?.split(',')[0].trim() || get('x-real-ip') || 'unknown'
 }
 
-/**
- * Get client identifier from request
- */
-function getClientId(request) {
-  // Try to get IP from various headers (for proxies/load balancers)
-  const forwarded = request.headers.get('x-forwarded-for')
-  const realIp = request.headers.get('x-real-ip')
-  const remoteAddr = request.headers.get('remote-addr')
-  
-  if (forwarded) {
-    // x-forwarded-for can contain multiple IPs, take the first one
-    return forwarded.split(',')[0].trim()
-  }
-  
-  if (realIp) {
-    return realIp
-  }
-  
-  if (remoteAddr) {
-    return remoteAddr
-  }
-  
-  // Fallback to a default identifier (not ideal, but better than nothing)
-  return 'unknown'
-}
-
-/**
- * Rate limiting with Redis (for multi-instance deployments)
- */
-async function rateLimitWithRedis(clientId, limit, windowMs) {
+async function redisHit(key, limit, windowMs, now) {
+  const redis = getRedisClient()
+  if (!redis || !isRedisReady()) return undefined
   try {
-    const redis = getRedisClient()
-    if (!redis || !isRedisReady()) {
-      return null // Fallback to in-memory
-    }
-
-    const key = `rate_limit:${clientId}`
-    const now = Date.now()
-    const windowStart = now - windowMs
-
-    // Get current count (requests within the time window)
-    const count = await redis.zCount(key, windowStart, '+inf')
-
-    if (count >= limit) {
-      // Get the oldest request time to calculate retry-after
-      const oldest = await redis.zRange(key, 0, 0, { REV: false })
-      const oldestTime = oldest.length > 0 ? parseInt(oldest[0]) : now
-      const retryAfter = Math.ceil((oldestTime + windowMs - now) / 1000)
-
-      return NextResponse.json(
-        {
-          error: 'Too Many Requests',
-          message: `Rate limit exceeded. Maximum ${limit} requests per ${Math.round(windowMs / 1000 / 60)} minutes.`,
-          retryAfter
-        },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': String(retryAfter),
-            'X-RateLimit-Limit': String(limit),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': String(Math.ceil((oldestTime + windowMs) / 1000))
-          }
-        }
-      )
-    }
-
-    // Add current request
-    await redis.zAdd(key, { score: now, value: String(now) })
-    // Set expiration on the key
-    await redis.expire(key, Math.ceil(windowMs / 1000))
-
-    const remaining = limit - count - 1
-    return { remaining, reset: Math.ceil((now + windowMs) / 1000) }
+    const rkey = `rate_limit:${key}`
+    await redis.zRemRangeByScore(rkey, 0, now - windowMs)
+    const [oldest] = await redis.zRangeWithScores(rkey, 0, 0)
+    if ((await redis.zCard(rkey)) >= limit) return oldest?.score ?? now
+    // Unique member: two requests in the same millisecond must both count.
+    await redis.zAdd(rkey, { score: now, value: `${now}-${Math.random()}` })
+    await redis.expire(rkey, Math.ceil(windowMs / 1000))
+    return null
   } catch (error) {
     logError('Redis rate limit error', error)
-    return null // Fallback to in-memory on error
+    return undefined
   }
 }
 
+function memoryHit(key, limit, windowMs, now) {
+  const hits = (requestStore.get(key) || []).filter((t) => t > now - windowMs)
+  if (Math.random() < 0.01) {
+    for (const [k, v] of requestStore) if (!v.some((t) => t > now - windowMs)) requestStore.delete(k)
+  }
+  const over = hits.length >= limit
+  requestStore.set(key, over ? hits : [...hits, now])
+  return over ? hits[0] : null
+}
+
+/** Records one hit for `key`; returns seconds until retry when over the limit, else 0. */
+export async function hit(key, limit, windowMs) {
+  const now = Date.now()
+  const redis = await redisHit(key, limit, windowMs, now)
+  const oldest = redis === undefined ? memoryHit(key, limit, windowMs, now) : redis
+  return oldest == null ? 0 : Math.max(1, Math.ceil((oldest + windowMs - now) / 1000))
+}
+
 /**
- * Rate limiting middleware for Next.js App Router
- * @param {number} limit - Maximum number of requests
- * @param {number} windowMs - Time window in milliseconds (default: 15 minutes)
- * @returns {Promise<NextResponse|null>} - Returns NextResponse if rate limited, null if allowed
+ * Route limiter keyed by IP + path, so one chatty endpoint (analytics) can't use up
+ * the allowance of a strict one (sign-in, checkout). Returns a 429 response or null.
  */
 export async function rateLimit(request, limit = 100, windowMs = 15 * 60 * 1000) {
-  const clientId = getClientId(request)
-  const now = Date.now()
-  const windowStart = now - windowMs
-
-  // Try Redis first (for multi-instance deployments)
-  if (isRedisReady()) {
-    const redisResult = await rateLimitWithRedis(clientId, limit, windowMs)
-    if (redisResult instanceof NextResponse) {
-      return redisResult
-    }
-    if (redisResult) {
-      // Request allowed via Redis
-      return null
-    }
-    // Fall through to in-memory if Redis failed
-  }
-
-  // Fallback to in-memory rate limiting
-  if (!requestStore.has(clientId)) {
-    requestStore.set(clientId, [])
-  }
-
-  const requests = requestStore.get(clientId)
-  const validRequests = requests.filter(time => time > windowStart)
-
-  if (validRequests.length >= limit) {
-    if (Math.random() < 0.01) {
-      cleanupOldEntries(windowMs)
-    }
-
-    return NextResponse.json(
-      {
-        error: 'Too Many Requests',
-        message: `Rate limit exceeded. Maximum ${limit} requests per ${Math.round(windowMs / 1000 / 60)} minutes.`,
-        retryAfter: Math.ceil((validRequests[0] + windowMs - now) / 1000)
-      },
-      {
-        status: 429,
-        headers: {
-          'Retry-After': String(Math.ceil((validRequests[0] + windowMs - now) / 1000)),
-          'X-RateLimit-Limit': String(limit),
-          'X-RateLimit-Remaining': '0',
-          'X-RateLimit-Reset': String(Math.ceil((validRequests[0] + windowMs) / 1000))
-        }
-      }
-    )
-  }
-
-  validRequests.push(now)
-  requestStore.set(clientId, validRequests)
-
-  if (Math.random() < 0.01) {
-    cleanupOldEntries(windowMs)
-  }
-
-  return null // Request allowed
+  const path = new URL(request.url).pathname
+  const retryAfter = await hit(`${clientIp(request)}:${path}`, limit, windowMs)
+  if (!retryAfter) return null
+  return NextResponse.json(
+    { error: 'Too Many Requests', message: 'Too many requests. Please try again later.', retryAfter },
+    { status: 429, headers: { 'Retry-After': String(retryAfter), 'X-RateLimit-Limit': String(limit) } }
+  )
 }
 
-/**
- * Rate limit configuration presets
- */
+/** Presets: requests per 15 minutes. */
+const quarterHour = 15 * 60 * 1000
 export const rateLimitPresets = {
-  // Strict: 10 requests per 15 minutes
-  strict: { limit: 10, windowMs: 15 * 60 * 1000 },
-  // Moderate: 50 requests per 15 minutes
-  moderate: { limit: 50, windowMs: 15 * 60 * 1000 },
-  // Standard: 100 requests per 15 minutes
-  standard: { limit: 100, windowMs: 15 * 60 * 1000 },
-  // Lenient: 200 requests per 15 minutes
-  lenient: { limit: 200, windowMs: 15 * 60 * 1000 },
-  // Analytics: one beacon per page view adds up fast, and offices and phone
-  // networks share an IP — this only needs to stop a flood, not police browsing.
-  analytics: { limit: 600, windowMs: 15 * 60 * 1000 },
+  strict: { limit: 10, windowMs: quarterHour },
+  moderate: { limit: 50, windowMs: quarterHour },
+  standard: { limit: 100, windowMs: quarterHour },
+  lenient: { limit: 200, windowMs: quarterHour },
+  // One beacon per page view adds up fast, and offices share an IP — this only stops a flood.
+  analytics: { limit: 600, windowMs: quarterHour },
 }
-

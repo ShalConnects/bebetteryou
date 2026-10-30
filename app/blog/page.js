@@ -17,14 +17,11 @@ export async function generateMetadata({ searchParams }) {
   const { page, total, pageSize } = pagePosts(topic, param(sp?.page))
   const range = pageRange(page, pageSize, total)
   const url = getUrl(blogHref({ topic, page }))
-  return {
-    ...buildMetadata({
-      title: blogListTitle({ label, page }),
-      description: range ? `${blogIntro} Posts ${range.start}–${range.end} of ${range.total}.` : blogIntro,
-      url,
-    }),
-    alternates: { canonical: url },
-  }
+  return buildMetadata({
+    title: blogListTitle({ label, page }),
+    description: range ? `${blogIntro} Posts ${range.start}–${range.end} of ${range.total}.` : blogIntro,
+    url,
+  })
 }
 
 export default async function BlogPage({ searchParams }) {

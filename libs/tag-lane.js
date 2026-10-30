@@ -1,4 +1,5 @@
 /** Tag lane helpers — pure, isomorphic (no I/O). Catalog tags route quote ↔ scripture ↔ blog ↔ social. */
+import { themeLabel, themeLanes } from '@/config/themes'
 
 export function normalizeTheme(raw) {
   return String(raw ?? '')
@@ -35,16 +36,31 @@ export function themeSet(tags) {
   return new Set(Object.values(themesMap(tags)))
 }
 
-/** Validate theme against catalog lanes; empty if unknown. */
+/** Every theme a card or passage may use: the tag lanes plus the finer themes under them. */
+export function knownThemes(tags) {
+  return new Set([...themeSet(tags), ...Object.values(themeLanes).flat()])
+}
+
+/** Picker rows grouped by tag: its lane theme first, then the finer themes under it. */
+export function themeOptions(tags) {
+  return (tags || [])
+    .filter((t) => t?.name && t?.theme)
+    .flatMap((t) =>
+      [t.theme, ...(themeLanes[t.theme] || [])].map((theme) => ({ tag: t.name, theme, label: `${t.name} · ${themeLabel(theme)}` }))
+    )
+}
+
+/** Validate theme against catalog lanes and their finer themes; empty if unknown. */
 export function resolveKnownTheme(theme, tagsOrSet) {
   const resolved = normalizeTheme(theme)
   if (!resolved) return ''
-  const known = tagsOrSet instanceof Set ? tagsOrSet : themeSet(tagsOrSet)
+  const known = tagsOrSet instanceof Set ? tagsOrSet : knownThemes(tagsOrSet)
   return known.has(resolved) ? resolved : ''
 }
 
+/** Theme → owning tag name, finer themes included (they belong to their lane's tag). */
 export function tagForThemeMap(tags) {
-  return Object.fromEntries(Object.entries(themesMap(tags)).map(([tag, theme]) => [theme, tag]))
+  return Object.fromEntries(themeOptions(tags).map(({ tag, theme }) => [theme, tag]))
 }
 
 /** Rename or drop one catalog name (`to` empty → remove). */

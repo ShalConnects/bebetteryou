@@ -3,6 +3,8 @@ import { mapPostTags, mapTopicTags, readGrid, readPosts } from '@/libs/blog-stor
 import { mapBookTags, readBooks } from '@/libs/books-store'
 import { readScripture, persistScripture } from '@/libs/scripture-store'
 import { themeEntries } from '@/libs/scripture-core'
+import { themeLanes } from '@/config/themes'
+import { traditions } from '@/config/traditions'
 import { retargetName, retargetNames, themeSet } from '@/libs/tag-lane'
 import { appendQuote, readQuotes } from './quotes-store'
 import { addTag, readTags, removeTag, updateTag } from './tags-store'
@@ -42,9 +44,12 @@ async function syncScriptureTheme(from, to, remainingTags) {
   if (changed) await persistScripture(data)
 }
 
-function passageCount(book, theme) {
-  if (!theme) return 0
-  return Object.values(book || {}).reduce((n, themes) => n + themeEntries(themes?.[theme]).length, 0)
+/** Passages across a tag's lane theme and the finer themes under it, plus empty tradition × theme cells. */
+function passageStats(book, theme) {
+  const cells = theme
+    ? traditions.filter((t) => t.id !== 'none').flatMap((t) => [theme, ...(themeLanes[theme] || [])].map((th) => themeEntries(book?.[t.id]?.[th]).length))
+    : []
+  return { passages: cells.reduce((a, n) => a + n, 0), gaps: cells.filter((n) => !n).length }
 }
 
 export function revalidateTags() {
@@ -72,7 +77,7 @@ export async function listTagsWithUsage() {
     quotes: quoteCounts[t.name] || 0,
     posts: postCounts[t.name] || 0,
     books: bookCounts[t.name] || 0,
-    passages: passageCount(book, t.theme),
+    ...passageStats(book, t.theme),
     /** @deprecated use `quotes` — kept for older UI callers */
     count: quoteCounts[t.name] || 0,
   }))

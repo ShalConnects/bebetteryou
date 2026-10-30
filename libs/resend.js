@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { appConfig, getUrl } from '@/config/app'
 import { logError } from './logger'
+import { escapeHtml } from './newsletter-email'
 
 let client
 
@@ -146,13 +147,14 @@ export const sendMagicLinkEmail = async ({ to, url }) => {
 }
 
 export const sendLeadNotification = async (lead) => {
+  const [name, email, message] = [lead.name, lead.email, lead.message].map(escapeHtml)
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h1>New Lead Received</h1>
-      <p><strong>Name:</strong> ${lead.name}</p>
-      <p><strong>Email:</strong> ${lead.email}</p>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
       <p><strong>Message:</strong></p>
-      <p>${lead.message}</p>
+      <p>${message}</p>
       <p><strong>Date:</strong> ${new Date(lead.createdAt).toLocaleString()}</p>
     </div>
   `

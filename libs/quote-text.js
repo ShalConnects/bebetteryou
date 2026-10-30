@@ -26,6 +26,15 @@ export function isPrintableQuote(quote) {
   return Boolean(quoteOneLine(quote?.text))
 }
 
+/** Page title: the opening words + credit, short enough for a search result. */
+export function quoteTitle(quote, max = 60) {
+  const text = quoteOneLine(quote.text)
+  if (!text) return `Motivational quote card #${quote.n}`
+  const short = text.length > max ? `${text.slice(0, max).replace(/\s+\S*$/, '')}…` : text
+  const credit = quote.author?.trim()
+  return credit ? `${short} — ${credit}` : short
+}
+
 /** Share copy — falls back to the brand when a quote has no stored text. */
 export function quoteLabel(quote) {
   return quoteOneLine(quote.text) || `Quote #${quote.n} — ${brand.name}`

@@ -1,8 +1,9 @@
 import { notFound } from 'next/navigation'
 import PracticeHome from '@/components/practice/PracticeHome'
+import JsonLd from '@/components/site/JsonLd'
 import { Page, PageIntro } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
-import { practiceCopy, practiceIntents } from '@/config/practice'
+import { practiceCopy, practiceDiscoverable, practiceIntents } from '@/config/practice'
 import { buildMetadata, noIndex } from '@/libs/seo'
 import {
   getPracticeItem,
@@ -20,6 +21,7 @@ export async function generateMetadata({ searchParams }) {
     title: item?.title || practiceCopy.homeTitle,
     description: item?.thought || practiceCopy.homeSub,
     url,
+    index: practiceDiscoverable, // stays out of search until the public launch
   })
 }
 
@@ -39,10 +41,7 @@ export default async function PracticePage({ searchParams }) {
     <Page narrow>
       <PageIntro title={practiceCopy.homeTitle}>{practiceCopy.homeSub}</PageIntro>
       <PracticeHome resetItem={resetItem} pinnedItem={pinnedItem} intentItems={intentItems} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(practiceItemJsonLd(jsonItem, url)) }}
-      />
+      <JsonLd data={practiceItemJsonLd(jsonItem, url)} />
     </Page>
   )
 }

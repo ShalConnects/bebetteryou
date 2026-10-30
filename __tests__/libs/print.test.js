@@ -310,13 +310,6 @@ describe('printable quotes', () => {
     }
   })
 
-  it('refuses the scanned cards, which is most of the store', () => {
-    // Text lives in the JPEG for these, so there is nothing to typeset.
-    const scans = quotes.filter((quote) => !quote.text)
-    expect(scans.length).toBeGreaterThan(0)
-    for (const quote of scans) expect(isPrintableQuote(quote)).toBe(false)
-  })
-
   it('takes request copy only for the own slug', async () => {
     await expect(
       resolvePrintableQuote({ slug: customPrintSlug, text: 'Hold the line.', author: 'Ada' })

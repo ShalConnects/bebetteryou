@@ -2,231 +2,3435 @@
   "christianity": {
     "perseverance": [
       {
-        "ref": "Philippians 4:13",
-        "text": "I can do all this through him who gives me strength.",
-        "url": "https://www.biblegateway.com/passage/?search=Philippians+4:13&version=NIV",
+        "ref": "Galatians 6:9",
+        "text": "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.",
+        "url": "https://www.biblegateway.com/passage/?search=Galatians+6%3A9&version=NIV",
+        "translation": "NIV",
+        "verified": true,
         "alt": {
           "kjv": {
-            "ref": "Philippians 4:13",
-            "text": "I can do all things through Christ which strengtheneth me.",
-            "url": "https://www.biblegateway.com/passage/?search=Philippians+4:13&version=KJV"
+            "ref": "Galatians 6:9",
+            "text": "And let us not be weary in well doing: for in due season we shall reap, if we faint not.",
+            "url": "https://www.biblegateway.com/passage/?search=Galatians+6%3A9&version=KJV"
           }
         }
       },
       {
         "ref": "Isaiah 40:31",
-        "text": "Those who hope in the Lord will renew their strength. They will soar on wings like eagles.",
-        "url": "https://www.biblegateway.com/passage/?search=Isaiah+40:31&version=NIV"
+        "text": "but those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.",
+        "url": "https://www.biblegateway.com/passage/?search=Isaiah+40%3A31&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Isaiah 40:31",
+            "text": "But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint.",
+            "url": "https://www.biblegateway.com/passage/?search=Isaiah+40%3A31&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Philippians 4:13",
+        "text": "I can do all this through him who gives me strength.",
+        "url": "https://www.biblegateway.com/passage/?search=Philippians+4%3A13&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Philippians 4:13",
+            "text": "I can do all things through Christ which strengtheneth me.",
+            "url": "https://www.biblegateway.com/passage/?search=Philippians+4%3A13&version=KJV"
+          }
+        }
       }
     ],
-    "clarity": {
-      "ref": "James 1:5",
-      "text": "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault.",
-      "url": "https://www.biblegateway.com/passage/?search=James+1:5&version=NIV"
-    },
-    "growth": {
-      "ref": "2 Peter 3:18",
-      "text": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ.",
-      "url": "https://www.biblegateway.com/passage/?search=2+Peter+3:18&version=NIV"
-    },
-    "love": {
-      "ref": "1 Corinthians 13:4",
-      "text": "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
-      "url": "https://www.biblegateway.com/passage/?search=1+Corinthians+13:4&version=NIV"
-    },
-    "self-worth": {
-      "ref": "Psalm 139:14",
-      "text": "I praise you because I am fearfully and wonderfully made.",
-      "url": "https://www.biblegateway.com/passage/?search=Psalm+139:14&version=NIV"
-    }
+    "courage": [
+      {
+        "ref": "Joshua 1:9",
+        "text": "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the LORD your God will be with you wherever you go.",
+        "url": "https://www.biblegateway.com/passage/?search=Joshua+1%3A9&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Joshua 1:9",
+            "text": "Have not I commanded thee? Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.",
+            "url": "https://www.biblegateway.com/passage/?search=Joshua+1%3A9&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Deuteronomy 31:6",
+        "text": "Be strong and courageous. Do not be afraid or terrified because of them, for the LORD your God goes with you; he will never leave you nor forsake you.",
+        "url": "https://www.biblegateway.com/passage/?search=Deuteronomy+31%3A6&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Deuteronomy 31:6",
+            "text": "Be strong and of a good courage, fear not, nor be afraid of them: for the LORD thy God, he it is that doth go with thee; he will not fail thee, nor forsake thee.",
+            "url": "https://www.biblegateway.com/passage/?search=Deuteronomy+31%3A6&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Isaiah 41:10",
+        "text": "So do not fear, for I am with you; do not be dismayed, for I am your God. I will strengthen you and help you; I will uphold you with my righteous right hand.",
+        "url": "https://www.biblegateway.com/passage/?search=Isaiah+41%3A10&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Isaiah 41:10",
+            "text": "Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee; yea, I will uphold thee with the right hand of my righteousness.",
+            "url": "https://www.biblegateway.com/passage/?search=Isaiah+41%3A10&version=KJV"
+          }
+        }
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Jeremiah 29:11",
+        "text": "For I know the plans I have for you,” declares the LORD, “plans to prosper you and not to harm you, plans to give you hope and a future.",
+        "url": "https://www.biblegateway.com/passage/?search=Jeremiah+29%3A11&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Jeremiah 29:11",
+            "text": "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.",
+            "url": "https://www.biblegateway.com/passage/?search=Jeremiah+29%3A11&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Romans 15:13",
+        "text": "May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.",
+        "url": "https://www.biblegateway.com/passage/?search=Romans+15%3A13&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Romans 15:13",
+            "text": "Now the God of hope fill you with all joy and peace in believing, that ye may abound in hope, through the power of the Holy Ghost.",
+            "url": "https://www.biblegateway.com/passage/?search=Romans+15%3A13&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Lamentations 3:22-23",
+        "text": "Because of the LORD’s great love we are not consumed, for his compassions never fail. They are new every morning; great is your faithfulness.",
+        "url": "https://www.biblegateway.com/passage/?search=Lamentations+3%3A22-23&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Lamentations 3:22-23",
+            "text": "It is of the LORD's mercies that we are not consumed, because his compassions fail not. They are new every morning: great is thy faithfulness.",
+            "url": "https://www.biblegateway.com/passage/?search=Lamentations+3%3A22-23&version=KJV"
+          }
+        }
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "James 1:5",
+        "text": "If any of you lacks wisdom, you should ask God, who gives generously to all without finding fault, and it will be given to you.",
+        "url": "https://www.biblegateway.com/passage/?search=James+1%3A5&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "James 1:5",
+            "text": "If any of you lack wisdom, let him ask of God, that giveth to all men liberally, and upbraideth not; and it shall be given him.",
+            "url": "https://www.biblegateway.com/passage/?search=James+1%3A5&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Proverbs 3:5-6",
+        "text": "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
+        "url": "https://www.biblegateway.com/passage/?search=Proverbs+3%3A5-6&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Proverbs 3:5-6",
+            "text": "Trust in the LORD with all thine heart; and lean not unto thine own understanding. In all thy ways acknowledge him, and he shall direct thy paths.",
+            "url": "https://www.biblegateway.com/passage/?search=Proverbs+3%3A5-6&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Psalm 119:105",
+        "text": "Your word is a lamp for my feet, a light on my path.",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+119%3A105&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 119:105",
+            "text": "Thy word is a lamp unto my feet, and a light unto my path.",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+119%3A105&version=KJV"
+          }
+        }
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Philippians 4:6-7",
+        "text": "Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+        "url": "https://www.biblegateway.com/passage/?search=Philippians+4%3A6-7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Philippians 4:6-7",
+            "text": "Be careful for nothing; but in every thing by prayer and supplication with thanksgiving let your requests be made known unto God. And the peace of God, which passeth all understanding, shall keep your hearts and minds through Christ Jesus.",
+            "url": "https://www.biblegateway.com/passage/?search=Philippians+4%3A6-7&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "John 14:27",
+        "text": "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.",
+        "url": "https://www.biblegateway.com/passage/?search=John+14%3A27&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "John 14:27",
+            "text": "Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid.",
+            "url": "https://www.biblegateway.com/passage/?search=John+14%3A27&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "1 Peter 5:7",
+        "text": "Cast all your anxiety on him because he cares for you.",
+        "url": "https://www.biblegateway.com/passage/?search=1+Peter+5%3A7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "1 Peter 5:7",
+            "text": "Casting all your care upon him; for he careth for you.",
+            "url": "https://www.biblegateway.com/passage/?search=1+Peter+5%3A7&version=KJV"
+          }
+        }
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Psalm 27:14",
+        "text": "Wait for the LORD; be strong and take heart and wait for the LORD.",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+27%3A14&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 27:14",
+            "text": "Wait on the LORD: be of good courage, and he shall strengthen thine heart: wait, I say, on the LORD.",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+27%3A14&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Romans 12:12",
+        "text": "Be joyful in hope, patient in affliction, faithful in prayer.",
+        "url": "https://www.biblegateway.com/passage/?search=Romans+12%3A12&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Romans 12:12",
+            "text": "Rejoicing in hope; patient in tribulation; continuing instant in prayer…",
+            "url": "https://www.biblegateway.com/passage/?search=Romans+12%3A12&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Psalm 37:7",
+        "text": "Be still before the LORD and wait patiently for him…",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+37%3A7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 37:7",
+            "text": "Rest in the LORD, and wait patiently for him…",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+37%3A7&version=KJV"
+          }
+        }
+      }
+    ],
+    "growth": [
+      {
+        "ref": "2 Peter 3:18",
+        "text": "But grow in the grace and knowledge of our Lord and Savior Jesus Christ. …",
+        "url": "https://www.biblegateway.com/passage/?search=2+Peter+3%3A18&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "2 Peter 3:18",
+            "text": "But grow in grace, and in the knowledge of our Lord and Saviour Jesus Christ. …",
+            "url": "https://www.biblegateway.com/passage/?search=2+Peter+3%3A18&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Philippians 1:6",
+        "text": "being confident of this, that he who began a good work in you will carry it on to completion until the day of Christ Jesus.",
+        "url": "https://www.biblegateway.com/passage/?search=Philippians+1%3A6&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Philippians 1:6",
+            "text": "Being confident of this very thing, that he which hath begun a good work in you will perform it until the day of Jesus Christ…",
+            "url": "https://www.biblegateway.com/passage/?search=Philippians+1%3A6&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Romans 12:2",
+        "text": "Do not conform to the pattern of this world, but be transformed by the renewing of your mind. Then you will be able to test and approve what God’s will is—his good, pleasing and perfect will.",
+        "url": "https://www.biblegateway.com/passage/?search=Romans+12%3A2&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Romans 12:2",
+            "text": "And be not conformed to this world: but be ye transformed by the renewing of your mind, that ye may prove what is that good, and acceptable, and perfect, will of God.",
+            "url": "https://www.biblegateway.com/passage/?search=Romans+12%3A2&version=KJV"
+          }
+        }
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Hebrews 12:11",
+        "text": "No discipline seems pleasant at the time, but painful. Later on, however, it produces a harvest of righteousness and peace for those who have been trained by it.",
+        "url": "https://www.biblegateway.com/passage/?search=Hebrews+12%3A11&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Hebrews 12:11",
+            "text": "Now no chastening for the present seemeth to be joyous, but grievous: nevertheless afterward it yieldeth the peaceable fruit of righteousness unto them which are exercised thereby.",
+            "url": "https://www.biblegateway.com/passage/?search=Hebrews+12%3A11&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "2 Timothy 1:7",
+        "text": "For the Spirit God gave us does not make us timid, but gives us power, love and self-discipline.",
+        "url": "https://www.biblegateway.com/passage/?search=2+Timothy+1%3A7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "2 Timothy 1:7",
+            "text": "For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.",
+            "url": "https://www.biblegateway.com/passage/?search=2+Timothy+1%3A7&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Proverbs 25:28",
+        "text": "Like a city whose walls are broken through is a person who lacks self-control.",
+        "url": "https://www.biblegateway.com/passage/?search=Proverbs+25%3A28&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Proverbs 25:28",
+            "text": "He that hath no rule over his own spirit is like a city that is broken down, and without walls.",
+            "url": "https://www.biblegateway.com/passage/?search=Proverbs+25%3A28&version=KJV"
+          }
+        }
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "1 Thessalonians 5:16-18",
+        "text": "Rejoice always, pray continually, give thanks in all circumstances; for this is God’s will for you in Christ Jesus.",
+        "url": "https://www.biblegateway.com/passage/?search=1+Thessalonians+5%3A16-18&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "1 Thessalonians 5:16-18",
+            "text": "Rejoice evermore. Pray without ceasing. In every thing give thanks: for this is the will of God in Christ Jesus concerning you.",
+            "url": "https://www.biblegateway.com/passage/?search=1+Thessalonians+5%3A16-18&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Psalm 107:1",
+        "text": "Give thanks to the LORD, for he is good; his love endures forever.",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+107%3A1&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 107:1",
+            "text": "O give thanks unto the LORD, for he is good: for his mercy endureth for ever.",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+107%3A1&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Colossians 3:17",
+        "text": "And whatever you do, whether in word or deed, do it all in the name of the Lord Jesus, giving thanks to God the Father through him.",
+        "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A17&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Colossians 3:17",
+            "text": "And whatsoever ye do in word or deed, do all in the name of the Lord Jesus, giving thanks to God and the Father by him.",
+            "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A17&version=KJV"
+          }
+        }
+      }
+    ],
+    "love": [
+      {
+        "ref": "1 Corinthians 13:4",
+        "text": "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+        "url": "https://www.biblegateway.com/passage/?search=1+Corinthians+13%3A4&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "1 Corinthians 13:4",
+            "text": "Charity suffereth long, and is kind; charity envieth not; charity vaunteth not itself, is not puffed up…",
+            "url": "https://www.biblegateway.com/passage/?search=1+Corinthians+13%3A4&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "John 13:34",
+        "text": "A new command I give you: Love one another. As I have loved you, so you must love one another.",
+        "url": "https://www.biblegateway.com/passage/?search=John+13%3A34&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "John 13:34",
+            "text": "A new commandment I give unto you, That ye love one another; as I have loved you, that ye also love one another.",
+            "url": "https://www.biblegateway.com/passage/?search=John+13%3A34&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "1 John 4:7",
+        "text": "Dear friends, let us love one another, for love comes from God. Everyone who loves has been born of God and knows God.",
+        "url": "https://www.biblegateway.com/passage/?search=1+John+4%3A7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "1 John 4:7",
+            "text": "Beloved, let us love one another: for love is of God; and every one that loveth is born of God, and knoweth God.",
+            "url": "https://www.biblegateway.com/passage/?search=1+John+4%3A7&version=KJV"
+          }
+        }
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Ephesians 4:32",
+        "text": "Be kind and compassionate to one another, forgiving each other, just as in Christ God forgave you.",
+        "url": "https://www.biblegateway.com/passage/?search=Ephesians+4%3A32&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Ephesians 4:32",
+            "text": "And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ's sake hath forgiven you.",
+            "url": "https://www.biblegateway.com/passage/?search=Ephesians+4%3A32&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Colossians 3:13",
+        "text": "Bear with each other and forgive one another if any of you has a grievance against someone. Forgive as the Lord forgave you.",
+        "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A13&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Colossians 3:13",
+            "text": "Forbearing one another, and forgiving one another, if any man have a quarrel against any: even as Christ forgave you, so also do ye.",
+            "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A13&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "1 John 1:9",
+        "text": "If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.",
+        "url": "https://www.biblegateway.com/passage/?search=1+John+1%3A9&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "1 John 1:9",
+            "text": "If we confess our sins, he is faithful and just to forgive us our sins, and to cleanse us from all unrighteousness.",
+            "url": "https://www.biblegateway.com/passage/?search=1+John+1%3A9&version=KJV"
+          }
+        }
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Isaiah 43:18-19",
+        "text": "Forget the former things; do not dwell on the past. See, I am doing a new thing! Now it springs up; do you not perceive it? …",
+        "url": "https://www.biblegateway.com/passage/?search=Isaiah+43%3A18-19&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Isaiah 43:18-19",
+            "text": "Remember ye not the former things, neither consider the things of old. Behold, I will do a new thing; now it shall spring forth; shall ye not know it? …",
+            "url": "https://www.biblegateway.com/passage/?search=Isaiah+43%3A18-19&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Philippians 3:13-14",
+        "text": "… But one thing I do: Forgetting what is behind and straining toward what is ahead, I press on toward the goal to win the prize for which God has called me heavenward in Christ Jesus.",
+        "url": "https://www.biblegateway.com/passage/?search=Philippians+3%3A13-14&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Philippians 3:13-14",
+            "text": "… this one thing I do, forgetting those things which are behind, and reaching forth unto those things which are before, I press toward the mark for the prize of the high calling of God in Christ Jesus.",
+            "url": "https://www.biblegateway.com/passage/?search=Philippians+3%3A13-14&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "2 Corinthians 5:17",
+        "text": "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",
+        "url": "https://www.biblegateway.com/passage/?search=2+Corinthians+5%3A17&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "2 Corinthians 5:17",
+            "text": "Therefore if any man be in Christ, he is a new creature: old things are passed away; behold, all things are become new.",
+            "url": "https://www.biblegateway.com/passage/?search=2+Corinthians+5%3A17&version=KJV"
+          }
+        }
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Psalm 139:14",
+        "text": "I praise you because I am fearfully and wonderfully made; your works are wonderful, I know that full well.",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+139%3A14&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 139:14",
+            "text": "I will praise thee; for I am fearfully and wonderfully made: marvellous are thy works; and that my soul knoweth right well.",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+139%3A14&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Genesis 1:27",
+        "text": "So God created mankind in his own image, in the image of God he created them; male and female he created them.",
+        "url": "https://www.biblegateway.com/passage/?search=Genesis+1%3A27&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Genesis 1:27",
+            "text": "So God created man in his own image, in the image of God created he him; male and female created he them.",
+            "url": "https://www.biblegateway.com/passage/?search=Genesis+1%3A27&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Luke 12:7",
+        "text": "Indeed, the very hairs of your head are all numbered. Don’t be afraid; you are worth more than many sparrows.",
+        "url": "https://www.biblegateway.com/passage/?search=Luke+12%3A7&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Luke 12:7",
+            "text": "But even the very hairs of your head are all numbered. Fear not therefore: ye are of more value than many sparrows.",
+            "url": "https://www.biblegateway.com/passage/?search=Luke+12%3A7&version=KJV"
+          }
+        }
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Matthew 11:28",
+        "text": "Come to me, all you who are weary and burdened, and I will give you rest.",
+        "url": "https://www.biblegateway.com/passage/?search=Matthew+11%3A28&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Matthew 11:28",
+            "text": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+            "url": "https://www.biblegateway.com/passage/?search=Matthew+11%3A28&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Psalm 23:2-3",
+        "text": "He makes me lie down in green pastures, he leads me beside quiet waters, he refreshes my soul. He guides me along the right paths for his name’s sake.",
+        "url": "https://www.biblegateway.com/passage/?search=Psalm+23%3A2-3&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Psalm 23:2-3",
+            "text": "He maketh me to lie down in green pastures: he leadeth me beside the still waters. He restoreth my soul: he leadeth me in the paths of righteousness for his name's sake.",
+            "url": "https://www.biblegateway.com/passage/?search=Psalm+23%3A2-3&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Mark 6:31",
+        "text": "… he said to them, “Come with me by yourselves to a quiet place and get some rest.”",
+        "url": "https://www.biblegateway.com/passage/?search=Mark+6%3A31&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Mark 6:31",
+            "text": "And he said unto them, Come ye yourselves apart into a desert place, and rest a while: …",
+            "url": "https://www.biblegateway.com/passage/?search=Mark+6%3A31&version=KJV"
+          }
+        }
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Ephesians 2:10",
+        "text": "For we are God’s handiwork, created in Christ Jesus to do good works, which God prepared in advance for us to do.",
+        "url": "https://www.biblegateway.com/passage/?search=Ephesians+2%3A10&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Ephesians 2:10",
+            "text": "For we are his workmanship, created in Christ Jesus unto good works, which God hath before ordained that we should walk in them.",
+            "url": "https://www.biblegateway.com/passage/?search=Ephesians+2%3A10&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Micah 6:8",
+        "text": "He has shown you, O mortal, what is good. And what does the LORD require of you? To act justly and to love mercy and to walk humbly with your God.",
+        "url": "https://www.biblegateway.com/passage/?search=Micah+6%3A8&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Micah 6:8",
+            "text": "He hath shewed thee, O man, what is good; and what doth the LORD require of thee, but to do justly, and to love mercy, and to walk humbly with thy God?",
+            "url": "https://www.biblegateway.com/passage/?search=Micah+6%3A8&version=KJV"
+          }
+        }
+      },
+      {
+        "ref": "Colossians 3:23",
+        "text": "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters…",
+        "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A23&version=NIV",
+        "translation": "NIV",
+        "verified": true,
+        "alt": {
+          "kjv": {
+            "ref": "Colossians 3:23",
+            "text": "And whatsoever ye do, do it heartily, as to the Lord, and not unto men…",
+            "url": "https://www.biblegateway.com/passage/?search=Colossians+3%3A23&version=KJV"
+          }
+        }
+      }
+    ]
   },
   "islam": {
-    "perseverance": {
-      "ref": "Quran 94:5–6",
-      "text": "Indeed, with hardship comes ease. Indeed, with hardship comes ease.",
-      "url": "https://quran.com/94"
-    },
-    "clarity": {
-      "ref": "Quran 20:114",
-      "text": "My Lord, increase me in knowledge.",
-      "url": "https://quran.com/20/114"
-    },
-    "growth": {
-      "ref": "Quran 13:11",
-      "text": "Indeed, Allah will not change the condition of a people until they change what is in themselves.",
-      "url": "https://quran.com/13/11"
-    },
-    "love": {
-      "ref": "Quran 49:10",
-      "text": "The believers are but brothers, so make settlement between your brothers.",
-      "url": "https://quran.com/49/10"
-    },
-    "self-worth": {
-      "ref": "Quran 95:4",
-      "text": "We have certainly created man in the best of stature.",
-      "url": "https://quran.com/95/4"
-    }
+    "perseverance": [
+      {
+        "ref": "Quran 94:5–6",
+        "text": "For indeed, with hardship [will be] ease. Indeed, with hardship [will be] ease.",
+        "url": "https://quran.com/94/5-6",
+        "translation": "Sahih International",
+        "original": "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 3:200",
+        "text": "O you who have believed, persevere and endure and remain stationed and fear Allah that you may be successful.",
+        "url": "https://quran.com/3/200",
+        "translation": "Sahih International",
+        "original": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱصْبِرُوا۟ وَصَابِرُوا۟ وَرَابِطُوا۟ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُفْلِحُونَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 3:139",
+        "text": "So do not weaken and do not grieve, and you will be superior if you are [true] believers.",
+        "url": "https://quran.com/3/139",
+        "translation": "Sahih International",
+        "original": "وَلَا تَهِنُواْ وَلَا تَحۡزَنُواْ وَأَنتُمُ ٱلۡأَعۡلَوۡنَ إِن كُنتُم مُّؤۡمِنِينَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Quran 9:40",
+        "text": "… he said to his companion, \"Do not grieve; indeed Allah is with us.\" …",
+        "url": "https://quran.com/9/40",
+        "translation": "Sahih International",
+        "original": "إِذْ يَقُولُ لِصَـٰحِبِهِۦ لَا تَحْزَنْ إِنَّ ٱللَّهَ مَعَنَا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 3:173",
+        "text": "Those to whom hypocrites said, \"Indeed, the people have gathered against you, so fear them.\" But it [merely] increased them in faith, and they said, \"Sufficient for us is Allah, and [He is] the best Disposer of affairs.\"",
+        "url": "https://quran.com/3/173",
+        "translation": "Sahih International",
+        "original": "ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَـٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 20:46",
+        "text": "[Allah] said, \"Fear not. Indeed, I am with you both; I hear and I see.\"",
+        "url": "https://quran.com/20/46",
+        "translation": "Sahih International",
+        "original": "قَالَ لَا تَخَافَآ ۖ إِنَّنِى مَعَكُمَآ أَسْمَعُ وَأَرَىٰ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Quran 39:53",
+        "text": "Say, \"O My servants who have transgressed against themselves [by sinning], do not despair of the mercy of Allah. Indeed, Allah forgives all sins. …",
+        "url": "https://quran.com/39/53",
+        "translation": "Sahih International",
+        "original": "قُلْ يَـٰعِبَادِىَ ٱلَّذِينَ أَسْرَفُوا۟ عَلَىٰٓ أَنفُسِهِمْ لَا تَقْنَطُوا۟ مِن رَّحْمَةِ ٱللَّهِ ۚ إِنَّ ٱللَّهَ يَغْفِرُ ٱلذُّنُوبَ جَمِيعًا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 12:87",
+        "text": "… and despair not of relief from Allah. Indeed, no one despairs of relief from Allah except the disbelieving people.",
+        "url": "https://quran.com/12/87",
+        "translation": "Sahih International",
+        "original": "وَلَا تَا۟يْـَٔسُوا۟ مِن رَّوْحِ ٱللَّهِ ۖ إِنَّهُۥ لَا يَا۟يْـَٔسُ مِن رَّوْحِ ٱللَّهِ إِلَّا ٱلْقَوْمُ ٱلْكَـٰفِرُونَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 2:186",
+        "text": "And when My servants ask you, [O Muhammad], concerning Me - indeed I am near. I respond to the invocation of the supplicant when he calls upon Me. …",
+        "url": "https://quran.com/2/186",
+        "translation": "Sahih International",
+        "original": "وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ ۖ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Quran 2:269",
+        "text": "He gives wisdom to whom He wills, and whoever has been given wisdom has certainly been given much good. …",
+        "url": "https://quran.com/2/269",
+        "translation": "Sahih International",
+        "original": "يُؤْتِى ٱلْحِكْمَةَ مَن يَشَآءُ ۚ وَمَن يُؤْتَ ٱلْحِكْمَةَ فَقَدْ أُوتِىَ خَيْرًۭا كَثِيرًۭا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 39:9",
+        "text": "… Say, \"Are those who know equal to those who do not know?\" Only they will remember [who are] people of understanding.",
+        "url": "https://quran.com/39/9",
+        "translation": "Sahih International",
+        "original": "قُلْ هَلْ يَسْتَوِى ٱلَّذِينَ يَعْلَمُونَ وَٱلَّذِينَ لَا يَعْلَمُونَ ۗ إِنَّمَا يَتَذَكَّرُ أُو۟لُوا۟ ٱلْأَلْبَـٰبِ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 20:114",
+        "text": "… and say, \"My Lord, increase me in knowledge.\"",
+        "url": "https://quran.com/20/114",
+        "translation": "Sahih International",
+        "original": "وَقُل رَّبِّ زِدْنِى عِلْمًۭا",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Quran 13:28",
+        "text": "Those who have believed and whose hearts are assured by the remembrance of Allah. Unquestionably, by the remembrance of Allah hearts are assured.",
+        "url": "https://quran.com/13/28",
+        "translation": "Sahih International",
+        "original": "ٱلَّذِينَ ءَامَنُوا۟ وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ ٱللَّهِ ۗ أَلَا بِذِكْرِ ٱللَّهِ تَطْمَئِنُّ ٱلْقُلُوبُ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 48:4",
+        "text": "It is He who sent down tranquillity into the hearts of the believers that they would increase in faith along with their [present] faith. …",
+        "url": "https://quran.com/48/4",
+        "translation": "Sahih International",
+        "original": "هُوَ ٱلَّذِىٓ أَنزَلَ ٱلسَّكِينَةَ فِى قُلُوبِ ٱلْمُؤْمِنِينَ لِيَزْدَادُوٓا۟ إِيمَـٰنًۭا مَّعَ إِيمَـٰنِهِمْ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 10:62",
+        "text": "Unquestionably, [for] the allies of Allah there will be no fear concerning them, nor will they grieve.",
+        "url": "https://quran.com/10/62",
+        "translation": "Sahih International",
+        "original": "أَلَآ إِنَّ أَوْلِيَآءَ ٱللَّهِ لَا خَوْفٌ عَلَيْهِمْ وَلَا هُمْ يَحْزَنُونَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Quran 2:153",
+        "text": "O you who have believed, seek help through patience and prayer. Indeed, Allah is with the patient.",
+        "url": "https://quran.com/2/153",
+        "translation": "Sahih International",
+        "original": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ ٱسْتَعِينُوا۟ بِٱلصَّبْرِ وَٱلصَّلَوٰةِ ۚ إِنَّ ٱللَّهَ مَعَ ٱلصَّـٰبِرِينَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 39:10",
+        "text": "… Indeed, the patient will be given their reward without account.",
+        "url": "https://quran.com/39/10",
+        "translation": "Sahih International",
+        "original": "إِنَّمَا يُوَفَّى ٱلصَّـٰبِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍۢ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 11:115",
+        "text": "And be patient, for indeed, Allah does not allow to be lost the reward of those who do good.",
+        "url": "https://quran.com/11/115",
+        "translation": "Sahih International",
+        "original": "وَٱصْبِرْ فَإِنَّ ٱللَّهَ لَا يُضِيعُ أَجْرَ ٱلْمُحْسِنِينَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Quran 13:11",
+        "text": "… Indeed, Allah will not change the condition of a people until they change what is in themselves. …",
+        "url": "https://quran.com/13/11",
+        "translation": "Sahih International",
+        "original": "إِنَّ ٱللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا۟ مَا بِأَنفُسِهِمْ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 87:14",
+        "text": "He has certainly succeeded who purifies himself",
+        "url": "https://quran.com/87/14",
+        "translation": "Sahih International",
+        "original": "قَدْ أَفْلَحَ مَن تَزَكَّىٰ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 29:69",
+        "text": "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allah is with the doers of good.",
+        "url": "https://quran.com/29/69",
+        "translation": "Sahih International",
+        "original": "وَٱلَّذِينَ جَـٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ ٱللَّهَ لَمَعَ ٱلْمُحْسِنِينَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Quran 2:183",
+        "text": "O you who have believed, decreed upon you is fasting as it was decreed upon those before you that you may become righteous",
+        "url": "https://quran.com/2/183",
+        "translation": "Sahih International",
+        "original": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُتِبَ عَلَيْكُمُ ٱلصِّيَامُ كَمَا كُتِبَ عَلَى ٱلَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 94:7",
+        "text": "So when you have finished [your duties], then stand up [for worship].",
+        "url": "https://quran.com/94/7",
+        "translation": "Sahih International",
+        "original": "فَإِذَا فَرَغْتَ فَٱنصَبْ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 29:45",
+        "text": "… Indeed, prayer prohibits immorality and wrongdoing …",
+        "url": "https://quran.com/29/45",
+        "translation": "Sahih International",
+        "original": "إِنَّ ٱلصَّلَوٰةَ تَنْهَىٰ عَنِ ٱلْفَحْشَآءِ وَٱلْمُنكَرِ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Quran 14:7",
+        "text": "And [remember] when your Lord proclaimed, 'If you are grateful, I will surely increase you [in favor]; but if you deny, indeed, My punishment is severe.'",
+        "url": "https://quran.com/14/7",
+        "translation": "Sahih International",
+        "original": "وَإِذْ تَأَذَّنَ رَبُّكُمْ لَئِن شَكَرْتُمْ لَأَزِيدَنَّكُمْ ۖ وَلَئِن كَفَرْتُمْ إِنَّ عَذَابِى لَشَدِيدٌۭ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 2:152",
+        "text": "So remember Me; I will remember you. And be grateful to Me and do not deny Me.",
+        "url": "https://quran.com/2/152",
+        "translation": "Sahih International",
+        "original": "فَٱذْكُرُونِىٓ أَذْكُرْكُمْ وَٱشْكُرُوا۟ لِى وَلَا تَكْفُرُونِ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 16:18",
+        "text": "And if you should count the favors of Allah, you could not enumerate them. Indeed, Allah is Forgiving and Merciful.",
+        "url": "https://quran.com/16/18",
+        "translation": "Sahih International",
+        "original": "وَإِن تَعُدُّوا۟ نِعْمَةَ ٱللَّهِ لَا تُحْصُوهَآ ۗ إِنَّ ٱللَّهَ لَغَفُورٌۭ رَّحِيمٌۭ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Quran 30:21",
+        "text": "And of His signs is that He created for you from yourselves mates that you may find tranquillity in them; and He placed between you affection and mercy. …",
+        "url": "https://quran.com/30/21",
+        "translation": "Sahih International",
+        "original": "وَمِنْ ءَايَـٰتِهِۦٓ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَٰجًۭا لِّتَسْكُنُوٓا۟ إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةًۭ وَرَحْمَةً",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 41:34",
+        "text": "And not equal are the good deed and the bad. Repel [evil] by that [deed] which is better; and thereupon the one whom between you and him is enmity [will become] as though he was a devoted friend.",
+        "url": "https://quran.com/41/34",
+        "translation": "Sahih International",
+        "original": "وَلَا تَسْتَوِى ٱلْحَسَنَةُ وَلَا ٱلسَّيِّئَةُ ۚ ٱدْفَعْ بِٱلَّتِى هِىَ أَحْسَنُ فَإِذَا ٱلَّذِى بَيْنَكَ وَبَيْنَهُۥ عَدَٰوَةٌۭ كَأَنَّهُۥ وَلِىٌّ حَمِيمٌۭ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 49:10",
+        "text": "The believers are but brothers, so make settlement between your brothers. And fear Allah that you may receive mercy.",
+        "url": "https://quran.com/49/10",
+        "translation": "Sahih International",
+        "original": "إِنَّمَا ٱلْمُؤْمِنُونَ إِخْوَةٌۭ فَأَصْلِحُوا۟ بَيْنَ أَخَوَيْكُمْ ۚ وَٱتَّقُوا۟ ٱللَّهَ لَعَلَّكُمْ تُرْحَمُونَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Quran 64:14",
+        "text": "… But if you pardon and overlook and forgive - then indeed, Allah is Forgiving and Merciful.",
+        "url": "https://quran.com/64/14",
+        "translation": "Sahih International",
+        "original": "وَإِن تَعْفُوا۟ وَتَصْفَحُوا۟ وَتَغْفِرُوا۟ فَإِنَّ ٱللَّهَ غَفُورٌۭ رَّحِيمٌ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 42:40",
+        "text": "… whoever pardons and makes reconciliation - his reward is [due] from Allah. …",
+        "url": "https://quran.com/42/40",
+        "translation": "Sahih International",
+        "original": "فَمَنْ عَفَا وَأَصْلَحَ فَأَجْرُهُۥ عَلَى ٱللَّهِ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 3:134",
+        "text": "… who restrain anger and who pardon the people - and Allah loves the doers of good",
+        "url": "https://quran.com/3/134",
+        "translation": "Sahih International",
+        "original": "وَٱلْكَـٰظِمِينَ ٱلْغَيْظَ وَٱلْعَافِينَ عَنِ ٱلنَّاسِ ۗ وَٱللَّهُ يُحِبُّ ٱلْمُحْسِنِينَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Quran 2:216",
+        "text": "… But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah Knows, while you know not.",
+        "url": "https://quran.com/2/216",
+        "translation": "Sahih International",
+        "original": "وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًۭٔا وَهُوَ خَيْرٌۭ لَّكُمْ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًۭٔا وَهُوَ شَرٌّۭ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 65:3",
+        "text": "… And whoever relies upon Allah - then He is sufficient for him. …",
+        "url": "https://quran.com/65/3",
+        "translation": "Sahih International",
+        "original": "وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 2:156",
+        "text": "Who, when disaster strikes them, say, \"Indeed we belong to Allah, and indeed to Him we will return.\"",
+        "url": "https://quran.com/2/156",
+        "translation": "Sahih International",
+        "original": "ٱلَّذِينَ إِذَآ أَصَـٰبَتْهُم مُّصِيبَةٌۭ قَالُوٓا۟ إِنَّا لِلَّهِ وَإِنَّآ إِلَيْهِ رَٰجِعُونَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Quran 17:70",
+        "text": "And We have certainly honored the children of Adam …",
+        "url": "https://quran.com/17/70",
+        "translation": "Sahih International",
+        "original": "وَلَقَدْ كَرَّمْنَا بَنِىٓ ءَادَمَ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 49:13",
+        "text": "… Indeed, the most noble of you in the sight of Allah is the most righteous of you. Indeed, Allah is Knowing and Acquainted.",
+        "url": "https://quran.com/49/13",
+        "translation": "Sahih International",
+        "original": "إِنَّ أَكْرَمَكُمْ عِندَ ٱللَّهِ أَتْقَىٰكُمْ ۚ إِنَّ ٱللَّهَ عَلِيمٌ خَبِيرٌۭ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 95:4",
+        "text": "We have certainly created man in the best of stature",
+        "url": "https://quran.com/95/4",
+        "translation": "Sahih International",
+        "original": "لَقَدْ خَلَقْنَا ٱلْإِنسَـٰنَ فِىٓ أَحْسَنِ تَقْوِيمٍۢ",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Quran 2:286",
+        "text": "Allah does not charge a soul except [with that within] its capacity. …",
+        "url": "https://quran.com/2/286",
+        "translation": "Sahih International",
+        "original": "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 25:47",
+        "text": "And it is He who has made the night for you as clothing and sleep [a means for] rest and has made the day a resurrection.",
+        "url": "https://quran.com/25/47",
+        "translation": "Sahih International",
+        "original": "وَهُوَ ٱلَّذِى جَعَلَ لَكُمُ ٱلَّيْلَ لِبَاسًۭا وَٱلنَّوْمَ سُبَاتًۭا وَجَعَلَ ٱلنَّهَارَ نُشُورًۭا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 78:9",
+        "text": "And made your sleep [a means for] rest",
+        "url": "https://quran.com/78/9",
+        "translation": "Sahih International",
+        "original": "وَجَعَلْنَا نَوْمَكُمْ سُبَاتًۭا",
+        "lang": "ar",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Quran 51:56",
+        "text": "And I did not create the jinn and mankind except to worship Me.",
+        "url": "https://quran.com/51/56",
+        "translation": "Sahih International",
+        "original": "وَمَا خَلَقْتُ ٱلْجِنَّ وَٱلْإِنسَ إِلَّا لِيَعْبُدُونِ",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 67:2",
+        "text": "[He] who created death and life to test you [as to] which of you is best in deed …",
+        "url": "https://quran.com/67/2",
+        "translation": "Sahih International",
+        "original": "ٱلَّذِى خَلَقَ ٱلْمَوْتَ وَٱلْحَيَوٰةَ لِيَبْلُوَكُمْ أَيُّكُمْ أَحْسَنُ عَمَلًۭا",
+        "lang": "ar",
+        "verified": true
+      },
+      {
+        "ref": "Quran 6:162",
+        "text": "Say, \"Indeed, my prayer, my rites of sacrifice, my living and my dying are for Allah, Lord of the worlds.\"",
+        "url": "https://quran.com/6/162",
+        "translation": "Sahih International",
+        "original": "قُلْ إِنَّ صَلَاتِى وَنُسُكِى وَمَحْيَاىَ وَمَمَاتِى لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
+        "lang": "ar",
+        "verified": true
+      }
+    ]
   },
   "judaism": {
-    "perseverance": {
-      "ref": "Psalms 27:14",
-      "text": "Wait for the Lord; be strong, and let your heart take courage.",
-      "url": "https://www.sefaria.org/Psalms.27.14"
-    },
-    "clarity": {
-      "ref": "Proverbs 3:5–6",
-      "text": "Trust in the Lord with all your heart, and do not lean on your own understanding.",
-      "url": "https://www.sefaria.org/Proverbs.3.5"
-    },
-    "growth": {
-      "ref": "Micah 6:8",
-      "text": "What does the Lord require of you? To do justice, love kindness, and walk humbly.",
-      "url": "https://www.sefaria.org/Micah.6.8"
-    },
-    "love": {
-      "ref": "Leviticus 19:18",
-      "text": "You shall love your neighbor as yourself.",
-      "url": "https://www.sefaria.org/Leviticus.19.18"
-    },
-    "self-worth": {
-      "ref": "Psalms 8:5",
-      "text": "You have made them a little lower than the heavenly beings and crowned them with glory and honor.",
-      "url": "https://www.sefaria.org/Psalms.8.5"
-    }
+    "perseverance": [
+      {
+        "ref": "Psalms 27:14",
+        "text": "Wait on the LORD; Be strong, and let thy heart take courage; Yea, wait thou for the LORD.",
+        "url": "https://www.sefaria.org/Psalms.27.14",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "קַוֵּה אֶל־יְהֹוָה חֲזַק וְיַאֲמֵץ לִבֶּךָ וְקַוֵּה אֶל־יְהֹוָה",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Isaiah 40:31",
+        "text": "But they that wait for the LORD shall renew their strength; They shall mount up with wings as eagles; They shall run, and not be weary; They shall walk, and not faint.",
+        "url": "https://www.sefaria.org/Isaiah.40.31",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "וְקוֹיֵ יְהֹוָה יַחֲלִיפוּ כֹחַ יַעֲלוּ אֵבֶר כַּנְּשָׁרִים יָרוּצוּ וְלֹא יִיגָעוּ יֵלְכוּ וְלֹא יִיעָפוּ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Micah 7:8",
+        "text": "Rejoice not against me, O mine enemy; Though I am fallen, I shall arise; Though I sit in darkness, the LORD is a light unto me.",
+        "url": "https://www.sefaria.org/Micah.7.8",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "אַל־תִּשְׂמְחִי אֹיַבְתִּי לִי כִּי נָפַלְתִּי קָמְתִּי כִּי־אֵשֵׁב בַּחֹשֶׁךְ יְהֹוָה אוֹר לִי",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Joshua 1:9",
+        "text": "Have not I commanded thee? Be strong and of good courage; be not affrighted, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.",
+        "url": "https://www.sefaria.org/Joshua.1.9",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "הֲלוֹא צִוִּיתִיךָ חֲזַק וֶאֱמָץ אַל־תַּעֲרֹץ וְאַל־תֵּחָת כִּי עִמְּךָ יְהֹוָה אֱלֹהֶיךָ בְּכֹל אֲשֶׁר תֵּלֵךְ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Deuteronomy 31:6",
+        "text": "Be strong and of good courage, fear not, nor be affrighted at them; for the LORD thy God, He it is that doth go with thee; He will not fail thee, nor forsake thee.",
+        "url": "https://www.sefaria.org/Deuteronomy.31.6",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "חִזְקוּ וְאִמְצוּ אַל־תִּירְאוּ וְאַל־תַּעַרְצוּ מִפְּנֵיהֶם כִּי יְהֹוָה אֱלֹהֶיךָ הוּא הַהֹלֵךְ עִמָּךְ לֹא יַרְפְּךָ וְלֹא יַעַזְבֶךָּ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 27:1",
+        "text": "The LORD is my light and my salvation; whom shall I fear? The LORD is the stronghold of my life; of whom shall I be afraid?",
+        "url": "https://www.sefaria.org/Psalms.27.1",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "יְהֹוָה אוֹרִי וְיִשְׁעִי מִמִּי אִירָא יְהֹוָה מָעוֹז־חַיַּי מִמִּי אֶפְחָד",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Jeremiah 29:11",
+        "text": "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you a future and a hope.",
+        "url": "https://www.sefaria.org/Jeremiah.29.11",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "כִּי אָנֹכִי יָדַעְתִּי אֶת־הַמַּחֲשָׁבֹת אֲשֶׁר אָנֹכִי חֹשֵׁב עֲלֵיכֶם נְאֻם־יְהֹוָה מַחְשְׁבוֹת שָׁלוֹם וְלֹא לְרָעָה לָתֵת לָכֶם אַחֲרִית וְתִקְוָה",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Lamentations 3:22–23",
+        "text": "Surely the LORD’S mercies are not consumed, Surely His compassions fail not. They are new every morning; Great is Thy faithfulness.",
+        "url": "https://www.sefaria.org/Lamentations.3.22-23",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "חַסְדֵי יְהֹוָה כִּי לֹא־תָמְנוּ כִּי לֹא־כָלוּ רַחֲמָיו חֲדָשִׁים לַבְּקָרִים רַבָּה אֱמוּנָתֶךָ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 30:6",
+        "text": "For His anger is but for a moment, His favour is for a life-time; weeping may tarry for the night, but joy cometh in the morning.",
+        "url": "https://www.sefaria.org/Psalms.30.6",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "כִּי רֶגַע בְּאַפּוֹ חַיִּים בִּרְצוֹנוֹ בָּעֶרֶב יָלִין בֶּכִי וְלַבֹּקֶר רִנָּה",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Proverbs 3:5–6",
+        "text": "Trust in the LORD with all thy heart, And lean not upon thine own understanding. In all thy ways acknowledge Him, And He will direct thy paths.",
+        "url": "https://www.sefaria.org/Proverbs.3.5-6",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "בְּטַח אֶל־יְהֹוָה בְּכׇל־לִבֶּךָ וְאֶל־בִּינָתְךָ אַל־תִּשָּׁעֵן בְּכׇל־דְּרָכֶיךָ דָעֵהוּ וְהוּא יְיַשֵּׁר אֹרְחֹתֶיךָ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 119:105",
+        "text": "Thy word is a lamp unto my feet, And a light unto my path.",
+        "url": "https://www.sefaria.org/Psalms.119.105",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "נֵר־לְרַגְלִי דְבָרֶךָ וְאוֹר לִנְתִיבָתִי",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Proverbs 4:7",
+        "text": "The beginning of wisdom is: Get wisdom; Yea, with all thy getting get understanding.",
+        "url": "https://www.sefaria.org/Proverbs.4.7",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "רֵאשִׁית חׇכְמָה קְנֵה חׇכְמָה וּבְכׇל־קִנְיָנְךָ קְנֵה בִינָה",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Isaiah 26:3",
+        "text": "The mind stayed on Thee Thou keepest in perfect peace; Because it trusteth in Thee.",
+        "url": "https://www.sefaria.org/Isaiah.26.3",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "יֵצֶר סָמוּךְ תִּצֹּר שָׁלוֹם שָׁלוֹם כִּי בְךָ בָּטוּחַ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 94:19",
+        "text": "When my cares are many within me, Thy comforts delight my soul.",
+        "url": "https://www.sefaria.org/Psalms.94.19",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "בְּרֹב שַׂרְעַפַּי בְּקִרְבִּי תַּנְחוּמֶיךָ יְשַׁעַשְׁעוּ נַפְשִׁי",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 4:9",
+        "text": "In peace will I both lay me down and sleep; for Thou, LORD, makest me dwell alone in safety.",
+        "url": "https://www.sefaria.org/Psalms.4.9",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "בְּשָׁלוֹם יַחְדָּו אֶשְׁכְּבָה וְאִישָׁן כִּי־אַתָּה יְהֹוָה לְבָדָד לָבֶטַח תּוֹשִׁיבֵנִי",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Psalms 37:7",
+        "text": "Resign thyself unto the LORD, and wait patiently for Him; …",
+        "url": "https://www.sefaria.org/Psalms.37.7",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "דּוֹם לַיהֹוָה וְהִתְחוֹלֵל לוֹ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Ecclesiastes 7:8",
+        "text": "Better is the end of a thing than the beginning thereof; And the patient in spirit is better than the proud in spirit.",
+        "url": "https://www.sefaria.org/Ecclesiastes.7.8",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "טוֹב אַחֲרִית דָּבָר מֵרֵאשִׁיתוֹ טוֹב אֶרֶךְ־רוּחַ מִגְּבַהּ־רוּחַ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Lamentations 3:26",
+        "text": "It is good that a man should quietly wait For the salvation of the LORD.",
+        "url": "https://www.sefaria.org/Lamentations.3.26",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "טוֹב וְיָחִיל וְדוּמָם לִתְשׁוּעַת יְהֹוָה",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Pirkei Avot 4:1",
+        "text": "Ben Zoma said: Who is wise? He who learns from every man, …",
+        "url": "https://www.sefaria.org/Pirkei_Avot.4.1",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "בֶּן זוֹמָא אוֹמֵר, אֵיזֶהוּ חָכָם, הַלּוֹמֵד מִכָּל אָדָם",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Proverbs 9:9",
+        "text": "Give to a wise man, and he will be yet wiser; teach a righteous man, and he will increase in learning.",
+        "url": "https://www.sefaria.org/Proverbs.9.9",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "תֵּן לְחָכָם וְיֶחְכַּם־עוֹד הוֹדַע לְצַדִּיק וְיוֹסֶף לֶקַח",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Proverbs 4:18",
+        "text": "But the path of the righteous is as the light of dawn, That shineth more and more unto the perfect day.",
+        "url": "https://www.sefaria.org/Proverbs.4.18",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "וְאֹרַח צַדִּיקִים כְּאוֹר נֹגַהּ הוֹלֵךְ וָאוֹר עַד־נְכוֹן הַיּוֹם",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Proverbs 16:32",
+        "text": "He that is slow to anger is better than the mighty; And he that ruleth his spirit than he that taketh a city.",
+        "url": "https://www.sefaria.org/Proverbs.16.32",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "טוֹב אֶרֶךְ אַפַּיִם מִגִּבּוֹר וּמֹשֵׁל בְּרוּחוֹ מִלֹּכֵד עִיר",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Proverbs 25:28",
+        "text": "Like a city broken down and without a wall, So is he whose spirit is without restraint.",
+        "url": "https://www.sefaria.org/Proverbs.25.28",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "עִיר פְּרוּצָה אֵין חוֹמָה אִישׁ אֲשֶׁר אֵין מַעְצָר לְרוּחוֹ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Pirkei Avot 1:15",
+        "text": "Shammai used to say: make your [study of the] Torah a fixed practice; speak little, but do much; and receive all men with a pleasant countenance.",
+        "url": "https://www.sefaria.org/Pirkei_Avot.1.15",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "שַׁמַּאי אוֹמֵר, עֲשֵׂה תוֹרָתְךָ קֶבַע. אֱמֹר מְעַט וַעֲשֵׂה הַרְבֵּה, וֶהֱוֵי מְקַבֵּל אֶת כָּל הָאָדָם בְּסֵבֶר פָּנִים יָפוֹת",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Psalms 136:1",
+        "text": "O give thanks unto the LORD, for He is good, For His mercy endureth for ever.",
+        "url": "https://www.sefaria.org/Psalms.136.1",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "הוֹדוּ לַיהֹוָה כִּי־טוֹב כִּי לְעוֹלָם חַסְדּוֹ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 92:2",
+        "text": "It is a good thing to give thanks unto the LORD, And to sing praises unto Thy name, O Most High; …",
+        "url": "https://www.sefaria.org/Psalms.92.2",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "טוֹב לְהֹדוֹת לַיהֹוָה וּלְזַמֵּר לְשִׁמְךָ עֶלְיוֹן",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 103:2",
+        "text": "Bless the LORD, O my soul, And forget not all His benefits; …",
+        "url": "https://www.sefaria.org/Psalms.103.2",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "בָּרְכִי נַפְשִׁי אֶת־יְהֹוָה וְאַל־תִּשְׁכְּחִי כׇּל־גְּמוּלָיו",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Leviticus 19:18",
+        "text": "… thou shalt love thy neighbour as thyself: I am the LORD.",
+        "url": "https://www.sefaria.org/Leviticus.19.18",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "וְאָהַבְתָּ לְרֵעֲךָ כָּמוֹךָ אֲנִי יְהֹוָה",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Leviticus 19:34",
+        "text": "The stranger that sojourneth with you shall be unto you as the home-born among you, and thou shalt love him as thyself; for ye were strangers in the land of Egypt: …",
+        "url": "https://www.sefaria.org/Leviticus.19.34",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "כְּאֶזְרָח מִכֶּם יִהְיֶה לָכֶם הַגֵּר הַגָּר אִתְּכֶם וְאָהַבְתָּ לוֹ כָּמוֹךָ כִּי־גֵרִים הֱיִיתֶם בְּאֶרֶץ מִצְרָיִם",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Pirkei Avot 1:12",
+        "text": "… Hillel used to say: be of the disciples of Aaron, loving peace and pursuing peace, loving mankind and drawing them close to the Torah.",
+        "url": "https://www.sefaria.org/Pirkei_Avot.1.12",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "הִלֵּל אוֹמֵר, הֱוֵי מִתַּלְמִידָיו שֶׁל אַהֲרֹן, אוֹהֵב שָׁלוֹם וְרוֹדֵף שָׁלוֹם, אוֹהֵב אֶת הַבְּרִיּוֹת וּמְקָרְבָן לַתּוֹרָה",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Proverbs 19:11",
+        "text": "It is the discretion of a man to be slow to anger, And it is his glory to pass over a transgression.",
+        "url": "https://www.sefaria.org/Proverbs.19.11",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "שֵׂכֶל אָדָם הֶאֱרִיךְ אַפּוֹ וְתִפְאַרְתּוֹ עֲבֹר עַל־פָּשַׁע",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 103:12",
+        "text": "As far as the east is from the west, So far hath He removed our transgressions from us.",
+        "url": "https://www.sefaria.org/Psalms.103.12",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "כִּרְחֹק מִזְרָח מִמַּעֲרָב הִרְחִיק מִמֶּנּוּ אֶת־פְּשָׁעֵינוּ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Proverbs 10:12",
+        "text": "Hatred stirreth up strifes; but love covereth all transgressions.",
+        "url": "https://www.sefaria.org/Proverbs.10.12",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "שִׂנְאָה תְּעֹרֵר מְדָנִים וְעַל כׇּל־פְּשָׁעִים תְּכַסֶּה אַהֲבָה",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Isaiah 43:18–19",
+        "text": "Remember ye not the former things, Neither consider the things of old. Behold, I will do a new thing; Now shall it spring forth; shall ye not know it? …",
+        "url": "https://www.sefaria.org/Isaiah.43.18-19",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "אַל־תִּזְכְּרוּ רִאשֹׁנוֹת וְקַדְמֹנִיּוֹת אַל־תִּתְבֹּנָנוּ הִנְנִי עֹשֶׂה חֲדָשָׁה עַתָּה תִצְמָח הֲלוֹא תֵּדָעוּהָ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Ecclesiastes 3:6",
+        "text": "A time to seek, and a time to lose; A time to keep, and a time to cast away; …",
+        "url": "https://www.sefaria.org/Ecclesiastes.3.6",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "עֵת לְבַקֵּשׁ וְעֵת לְאַבֵּד עֵת לִשְׁמוֹר וְעֵת לְהַשְׁלִיךְ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Job 1:21",
+        "text": "… The LORD gave, and the LORD hath taken away; Blessed be the name of the LORD.",
+        "url": "https://www.sefaria.org/Job.1.21",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "יְהֹוָה נָתַן וַיהֹוָה לָקָח יְהִי שֵׁם יְהֹוָה מְבֹרָךְ",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Psalms 8:6",
+        "text": "Yet Thou hast made him but little lower than the angels, And hast crowned him with glory and honour.",
+        "url": "https://www.sefaria.org/Psalms.8.6",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "וַתְּחַסְּרֵהוּ מְּעַט מֵאֱלֹהִים וְכָבוֹד וְהָדָר תְּעַטְּרֵהוּ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 139:14",
+        "text": "I will give thanks unto Thee, for I am fearfully and wonderfully made; Wonderful are Thy works; and that my soul knoweth right well.",
+        "url": "https://www.sefaria.org/Psalms.139.14",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "אוֹדְךָ עַל כִּי נוֹרָאוֹת נִפְלֵיתִי נִפְלָאִים מַעֲשֶׂיךָ וְנַפְשִׁי יֹדַעַת מְאֹד",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Pirkei Avot 3:14",
+        "text": "He used to say: Beloved is man for he was created in the image [of God]. Especially beloved is he for it was made known to him that he had been created in the image [of God], …",
+        "url": "https://www.sefaria.org/Pirkei_Avot.3.14",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "הוּא הָיָה אוֹמֵר, חָבִיב אָדָם שֶׁנִּבְרָא בְצֶלֶם. חִבָּה יְתֵרָה נוֹדַעַת לוֹ שֶׁנִּבְרָא בְצֶלֶם",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Psalms 23:2–3",
+        "text": "He maketh me to lie down in green pastures; He leadeth me beside the still waters. He restoreth my soul; …",
+        "url": "https://www.sefaria.org/Psalms.23.2-3",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "בִּנְאוֹת דֶּשֶׁא יַרְבִּיצֵנִי עַל־מֵי מְנֻחוֹת יְנַהֲלֵנִי נַפְשִׁי יְשׁוֹבֵב",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 55:23",
+        "text": "Cast thy burden upon the LORD, and He will sustain thee; …",
+        "url": "https://www.sefaria.org/Psalms.55.23",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "הַשְׁלֵךְ עַל־יְהֹוָה יְהָבְךָ וְהוּא יְכַלְכְּלֶךָ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Psalms 116:7",
+        "text": "Return, O my soul, unto Thy rest; For the LORD hath dealt bountifully with thee.",
+        "url": "https://www.sefaria.org/Psalms.116.7",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "שׁוּבִי נַפְשִׁי לִמְנוּחָיְכִי כִּי־יְהֹוָה גָּמַל עָלָיְכִי",
+        "lang": "he",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Micah 6:8",
+        "text": "It hath been told thee, O man, what is good, And what the LORD doth require of thee: Only to do justly, and to love mercy, and to walk humbly with thy God.",
+        "url": "https://www.sefaria.org/Micah.6.8",
+        "translation": "JPS 1917 (The Holy Scriptures: A New Translation)",
+        "original": "הִגִּיד לְךָ אָדָם מַה־טּוֹב וּמָה־יְהֹוָה דּוֹרֵשׁ מִמְּךָ כִּי אִם־עֲשׂוֹת מִשְׁפָּט וְאַהֲבַת חֶסֶד וְהַצְנֵעַ לֶכֶת עִם־אֱלֹהֶיךָ",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Pirkei Avot 1:14",
+        "text": "He [also] used to say: If I am not for myself, who is for me? But if I am for my own self [only], what am I? And if not now, when?",
+        "url": "https://www.sefaria.org/Pirkei_Avot.1.14",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "הוּא הָיָה אוֹמֵר, אִם אֵין אֲנִי לִי, מִי לִי. וּכְשֶׁאֲנִי לְעַצְמִי, מָה אֲנִי. וְאִם לֹא עַכְשָׁיו, אֵימָתָי",
+        "lang": "he",
+        "verified": true
+      },
+      {
+        "ref": "Pirkei Avot 2:16",
+        "text": "He [Rabbi Tarfon] used to say: It is not your duty to finish the work, but neither are you at liberty to neglect it; …",
+        "url": "https://www.sefaria.org/Pirkei_Avot.2.16",
+        "translation": "Mishnah Yomit by Dr. Joshua Kulp",
+        "original": "הוּא הָיָה אוֹמֵר, לֹא עָלֶיךָ הַמְּלָאכָה לִגְמֹר, וְלֹא אַתָּה בֶן חוֹרִין לִבָּטֵל מִמֶּנָּה",
+        "lang": "he",
+        "verified": true
+      }
+    ]
   },
   "hinduism": {
-    "perseverance": {
-      "ref": "Bhagavad Gita 2:47",
-      "text": "You have a right to perform your duty, but not to the fruits of action.",
-      "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/47"
-    },
-    "clarity": {
-      "ref": "Bhagavad Gita 6:5",
-      "text": "Elevate yourself through the power of your mind, and do not degrade yourself.",
-      "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/5"
-    },
-    "growth": {
-      "ref": "Bhagavad Gita 6:35",
-      "text": "Through practice and detachment, the mind can be restrained.",
-      "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/35"
-    },
-    "love": {
-      "ref": "Bhagavad Gita 12:13",
-      "text": "One who is not envious but is a kind friend to all beings is dear to Me.",
-      "url": "https://www.holy-bhagavad-gita.org/chapter/12/verse/13"
-    },
-    "self-worth": {
-      "ref": "Upanishad teaching",
-      "text": "You are what your deep, driving desire is. As your desire is, so is your will.",
-      "url": "https://www.wisdomlib.org/hinduism/book/chandogya-upanishad"
-    }
+    "perseverance": [
+      {
+        "ref": "Bhagavad Gita 2:40",
+        "text": "Working in this state of consciousness, there is no loss or adverse result, and even a little effort saves one from great danger.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/40",
+        "translation": "Swami Mukundananda",
+        "original": "नेहाभिक्रमनाशोऽस्ति प्रत्यवायो न विद्यते |\nस्वल्पमप्यस्य धर्मस्य त्रायते महतो भयात् || 40||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:40",
+        "text": "The Supreme Lord said: O Parth, one who engages on the spiritual path does not meet with destruction either in this world or the world to come. My dear friend, one who strives for God-realization is never overcome by evil.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/40",
+        "translation": "Swami Mukundananda",
+        "original": "श्रीभगवानुवाच |\nपार्थ नैवेह नामुत्र विनाशस्तस्य विद्यते |\nन हि कल्याणकृत्कश्चिद्दुर्गतिं तात गच्छति || 40||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 18:58",
+        "text": "If you always remember Me, by My grace you shall overcome all obstacles and difficulties.…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/18/verse/58",
+        "translation": "Swami Mukundananda",
+        "original": "मच्चित्त: सर्वदुर्गाणि मत्प्रसादात्तरिष्यसि |\nअथ चेत्वमहङ्कारान्न श्रोष्यसि विनङ्क्ष्यसि || 58||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Bhagavad Gita 2:3",
+        "text": "O Parth, it does not befit you to yield to this unmanliness.… Give up such petty weakness of heart and arise, O vanquisher of enemies.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/3",
+        "translation": "Swami Mukundananda",
+        "original": "क्लैब्यं मा स्म गम: पार्थ नैतत्त्वय्युपपद्यते |\nक्षुद्रं हृदयदौर्बल्यं त्यक्त्वोत्तिष्ठ परन्तप || 3||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 4:42",
+        "text": "Therefore, with the sword of knowledge, cut asunder the doubts that have arisen in your heart. O scion of Bharat, establish yourself in karm yog. Arise, stand up, and take action!",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/4/verse/42",
+        "translation": "Swami Mukundananda",
+        "original": "तस्मादज्ञानसम्भूतं हृत्स्थं ज्ञानासिनात्मन: |\nछित्त्वैनं संशयं योगमातिष्ठोत्तिष्ठ भारत || 42||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:38",
+        "text": "Fight for the sake of duty, treating alike happiness and distress, loss and gain, victory and defeat. Fulfilling your responsibility in this way, you will never incur sin.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/38",
+        "translation": "Swami Mukundananda",
+        "original": "सुखदु:खे समे कृत्वा लाभालाभौ जयाजयौ |\nततो युद्धाय युज्यस्व नैवं पापमवाप्स्यसि || 38||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Bhagavad Gita 9:31",
+        "text": "Quickly they become virtuous, and attain lasting peace. O son of Kunti, declare it boldly that no devotee of Mine is ever lost.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/9/verse/31",
+        "translation": "Swami Mukundananda",
+        "original": "क्षिप्रं भवति धर्मात्मा शश्वच्छान्तिं निगच्छति |\nकौन्तेय प्रतिजानीहि न मे भक्त: प्रणश्यति || 31||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 18:66",
+        "text": "Abandon all varieties of dharmas and simply surrender unto Me alone. I shall liberate you from all sinful reactions; do not fear.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/18/verse/66",
+        "translation": "Swami Mukundananda",
+        "original": "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज |\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुच: || 66||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 4:36",
+        "text": "Even those who are considered the most immoral of all sinners can cross over this ocean of material existence by seating themselves in the boat of divine knowledge.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/4/verse/36",
+        "translation": "Swami Mukundananda",
+        "original": "अपि चेदसि पापेभ्य: सर्वेभ्य: पापकृत्तम: |\nसर्वं ज्ञानप्लवेनैव वृजिनं सन्तरिष्यसि || 36||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Bhagavad Gita 5:16",
+        "text": "But for those whose ignorance is destroyed by divine knowledge, the Supreme Entity is revealed, just as the sun illumines everything when it rises.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/5/verse/16",
+        "translation": "Swami Mukundananda",
+        "original": "ज्ञानेन तु तदज्ञानं येषां नाशितमात्मन: |\nतेषामादित्यवज्ज्ञानं प्रकाशयति तत्परम् || 16||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 10:11",
+        "text": "Out of compassion for them, I, who dwell within their hearts, destroy the darkness born of ignorance, with the luminous lamp of knowledge.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/10/verse/11",
+        "translation": "Swami Mukundananda",
+        "original": "तेषामेवानुकम्पार्थमहमज्ञानजं तम: |\nनाशयाम्यात्मभावस्थो ज्ञानदीपेन भास्वता || 11||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 18:30",
+        "text": "The intellect is said to be in the nature of goodness, O Parth, when it understands what is proper action and improper action, what is duty and non-duty, what is to be feared and what is not to be feared…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/18/verse/30",
+        "translation": "Swami Mukundananda",
+        "original": "प्रवृत्तिंच निवृत्तिं च कार्याकार्ये भयाभये |\nबन्धं मोक्षं च या वेत्तिबुद्धि: सा पार्थ सात्त्विकी || 30||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Bhagavad Gita 2:70",
+        "text": "Just as the ocean remains undisturbed by the incessant flow of waters from rivers merging into it, likewise the sage who is unmoved despite the flow of desirable objects all around him attains peace…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/70",
+        "translation": "Swami Mukundananda",
+        "original": "आपूर्यमाणमचलप्रतिष्ठं\nसमुद्रमाप: प्रविशन्ति यद्वत् |\nतद्वत्कामा यं प्रविशन्ति सर्वे\nस शान्तिमाप्नोति न कामकामी || 70||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:71",
+        "text": "That person, who gives up all material desires and lives free from a sense of greed, proprietorship, and egoism, attains perfect peace.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/71",
+        "translation": "Swami Mukundananda",
+        "original": "विहाय कामान्य: सर्वान्पुमांश्चरति नि:स्पृह: |\nनिर्ममो निरहङ्कार: स शान्तिमधिगच्छति || 71||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:27",
+        "text": "Great transcendental happiness comes to the yogi whose mind is calm, whose passions are subdued, who is without sin, and who sees everything in connection with God.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/27",
+        "translation": "Swami Mukundananda",
+        "original": "प्रशान्तमनसं ह्येनं योगिनं सुखमुत्तमम् |\nउपैति शान्तरजसं ब्रह्मभूतमकल्मषम् || 27||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Bhagavad Gita 2:14",
+        "text": "…These are non-permanent, and come and go like the winter and summer seasons. O descendent of Bharat, one must learn to tolerate them without being disturbed.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/14",
+        "translation": "Swami Mukundananda",
+        "original": "मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदु:खदा: |\nआगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत || 14||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:15",
+        "text": "O Arjun, noblest amongst men, that person who is not affected by happiness and distress, and remains steady in both, becomes eligible for liberation.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/15",
+        "translation": "Swami Mukundananda",
+        "original": "यं हि न व्यथयन्त्येते पुरुषं पुरुषर्षभ |\nसमदु:खसुखं धीरं सोऽमृतत्वाय कल्पते || 15||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 4:38",
+        "text": "In this world, there is nothing as purifying as divine knowledge. One who has attained purity of mind through prolonged practice of Yog, receives such knowledge within the heart, in due course of time.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/4/verse/38",
+        "translation": "Swami Mukundananda",
+        "original": "न हि ज्ञानेन सदृशं पवित्रमिह विद्यते |\nतत्स्वयं योगसंसिद्ध: कालेनात्मनि विन्दति || 38||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Bhagavad Gita 6:5",
+        "text": "Elevate yourself through the power of your mind, and not degrade yourself, for the mind can be the friend and also the enemy of the self.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/5",
+        "translation": "Swami Mukundananda",
+        "original": "उद्धरेदात्मनात्मानं नात्मानमवसादयेत् |\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मन: || 5||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:35",
+        "text": "Lord Krishna said: O mighty-armed son of Kunti, what you say is correct; the mind is indeed very difficult to restrain. But by practice and detachment, it can be controlled.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/35",
+        "translation": "Swami Mukundananda",
+        "original": "श्रीभगवानुवाच |\nअसंशयं महाबाहो मनो दुर्निग्रहं चलम् |\nअभ्यासेन तु कौन्तेय वैराग्येण च गृह्यते || 35||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:45",
+        "text": "With the accumulated merits of many past births, when these yogis engage in sincere endeavors to make further progress, they become purified from material desires and attain perfection in this life itself.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/45",
+        "translation": "Swami Mukundananda",
+        "original": "प्रयत्नाद्यतमानस्तु योगी संशुद्धकिल्बिष: |\nअनेकजन्मसंसिद्धस्ततो याति परां गतिम् || 45||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Bhagavad Gita 6:17",
+        "text": "But those who are temperate in eating and recreation, balanced in work, and regulated in sleep, can mitigate all sorrows by practicing Yog.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/17",
+        "translation": "Swami Mukundananda",
+        "original": "युक्ताहारविहारस्य युक्तचेष्टस्य कर्मसु |\nयुक्तस्वप्नावबोधस्य योगो भवति दु:खहा || 17||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:26",
+        "text": "Whenever and wherever the restless and unsteady mind wanders, one should bring it back and continually focus it on God.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/26",
+        "translation": "Swami Mukundananda",
+        "original": "यतो यतो निश्चरति मनश्चञ्चलमस्थिरम् |\nततस्ततो नियम्यैतदात्मन्येव वशं नयेत् || 26||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:58",
+        "text": "One who is able to withdraw the senses from their objects, just as a tortoise withdraws its limbs into its shell, is established in divine wisdom.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/58",
+        "translation": "Swami Mukundananda",
+        "original": "यदा संहरते चायं कूर्मोऽङ्गानीव सर्वश: |\nइन्द्रियाणीन्द्रियार्थेभ्यस्तस्य प्रज्ञा प्रतिष्ठिता || 58||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Bhagavad Gita 9:26",
+        "text": "If one offers to Me with devotion a leaf, a flower, a fruit, or even water, I delightfully partake of that item offered with love by My devotee in pure consciousness.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/9/verse/26",
+        "translation": "Swami Mukundananda",
+        "original": "पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति |\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मन: || 26||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 3:12",
+        "text": "The celestial gods, being satisfied by the performance of sacrifice, will grant you all the desired necessities of life. But those who enjoy what is given to them, without making offerings in return, are verily thieves.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/3/verse/12",
+        "translation": "Swami Mukundananda",
+        "original": "इष्टान्भोगान्हि वो देवा दास्यन्ते यज्ञभाविता: |\nतैर्दत्तानप्रदायैभ्यो यो भुङ्क्ते स्तेन एव स: || 12||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 9:27",
+        "text": "Whatever you do, whatever you eat, whatever you offer as oblation to the sacred fire, whatever you bestow as a gift, and whatever austerities you perform, O son of Kunti, do them as an offering to Me.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/9/verse/27",
+        "translation": "Swami Mukundananda",
+        "original": "यत्करोषि यदश्नासि यज्जुहोषि ददासि यत् |\nयत्तपस्यसि कौन्तेय तत्कुरुष्व मदर्पणम् || 27||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Bhagavad Gita 12:13–14",
+        "text": "Those devotees are very dear to Me who are free from malice toward all living beings, who are friendly, and compassionate.…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/12/verse/13-14",
+        "translation": "Swami Mukundananda",
+        "original": "अद्वेष्टा सर्वभूतानां मैत्र: करुण एव च |\nनिर्ममो निरहङ्कार: समदु:खसुख: क्षमी || 13||\nसन्तुष्ट: सततं योगी यतात्मा दृढनिश्चय: |\nमय्यर्पितमनोबुद्धिर्यो मद्भक्त: स मे प्रिय: || 14||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 6:32",
+        "text": "I regard them to be perfect yogis who see the true equality of all living beings and respond to the joys and sorrows of others as if they were their own.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/6/verse/32",
+        "translation": "Swami Mukundananda",
+        "original": "आत्मौपम्येन सर्वत्र समं पश्यति योऽर्जुन |\nसुखं वा यदि वा दु:खं स योगी परमो मत: || 32||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 5:25",
+        "text": "Those holy persons, whose sins have been purged, whose doubts are annihilated, whose minds are disciplined, and who are devoted to the welfare of all beings, attain God and are liberated from material existence.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/5/verse/25",
+        "translation": "Swami Mukundananda",
+        "original": "लभन्ते ब्रह्मनिर्वाणमृषय: क्षीणकल्मषा: |\nछिन्नद्वैधा यतात्मान: सर्वभूतहिते रता: || 25||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Bhagavad Gita 11:44",
+        "text": "…As a father tolerates his son, a friend forgives his friend, and a lover pardons the beloved, please forgive me for my offences.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/11/verse/44",
+        "translation": "Swami Mukundananda",
+        "original": "तस्मात्प्रणम्य प्रणिधाय कायं\nप्रसादये त्वामहमीशमीड्यम् |\nपितेव पुत्रस्य सखेव सख्यु:\nप्रिय: प्रियायार्हसि देव सोढुम् || 44||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 9:30",
+        "text": "Even if the vilest sinners worship Me with exclusive devotion, they are to be considered righteous because they have made the proper resolve.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/9/verse/30",
+        "translation": "Swami Mukundananda",
+        "original": "अपि चेत्सुदुराचारो भजते मामनन्यभाक् |\nसाधुरेव स मन्तव्य: सम्यग्व्यवसितो हि स: || 30||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 16:1–3",
+        "text": "…these are the saintly virtues of those endowed with a divine nature—…vigor, forgiveness, fortitude, cleanliness, bearing enmity toward none, and absence of vanity.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/16/verse/1-3",
+        "translation": "Swami Mukundananda",
+        "original": "तेज: क्षमा धृति: शौचमद्रोहोनातिमानिता |\nभवन्ति सम्पदं दैवीमभिजातस्य भारत || 3||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Bhagavad Gita 2:47",
+        "text": "You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions. Never consider yourself to be the cause of the results of your activities, nor be attached to inaction.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/47",
+        "translation": "Swami Mukundananda",
+        "original": "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन |\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि || 47||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:48",
+        "text": "Be steadfast in the performance of your duty, O Arjun, abandoning attachment to success and failure. Such equanimity is called Yog.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/48",
+        "translation": "Swami Mukundananda",
+        "original": "योगस्थ: कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय |\nसिद्ध्यसिद्ध्यो: समो भूत्वा समत्वं योग उच्यते || 48||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 5:10",
+        "text": "Those who dedicate their actions to God, abandoning all attachment, remain untouched by sin, just as a lotus leaf is untouched by water.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/5/verse/10",
+        "translation": "Swami Mukundananda",
+        "original": "ब्रह्मण्याधाय कर्माणि सङ्गं त्यक्त्वा करोति य: |\nलिप्यते न स पापेन पद्मपत्रमिवाम्भसा || 10||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Bhagavad Gita 2:20",
+        "text": "The soul is neither born, nor does it ever die; nor having once existed, does it ever cease to be. The soul is without birth, eternal, immortal, and ageless. It is not destroyed when the body is destroyed.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/20",
+        "translation": "Swami Mukundananda",
+        "original": "न जायते म्रियते वा कदाचि\nनायं भूत्वा भविता वा न भूय: |\nअजो नित्य: शाश्वतोऽयं पुराणो\nन हन्यते हन्यमाने शरीरे || 20||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:23",
+        "text": "Weapons cannot shred the soul, nor can fire burn it. Water cannot wet it, nor can the wind dry it.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/23",
+        "translation": "Swami Mukundananda",
+        "original": "नैनं छिन्दन्ति शस्त्राणि नैनं दहति पावक: |\nन चैनं क्लेदयन्त्यापो न शोषयति मारुत: || 23||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 15:7",
+        "text": "The embodied souls in this material world are My eternal fragmental parts.…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/15/verse/7",
+        "translation": "Swami Mukundananda",
+        "original": "ममैवांशो जीवलोके जीवभूत: सनातन: |\nमन:षष्ठानीन्द्रियाणि प्रकृतिस्थानि कर्षति || 7||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Bhagavad Gita 9:22",
+        "text": "There are those who always think of Me and engage in exclusive devotion to Me. To them, whose minds are always absorbed in Me, I provide what they lack and preserve what they already possess.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/9/verse/22",
+        "translation": "Swami Mukundananda",
+        "original": "अनन्याश्चिन्तयन्तो मां ये जना: पर्युपासते |\nतेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् || 22||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 18:62",
+        "text": "Surrender exclusively unto Him with your whole being, O Bharat. By His grace, you will attain perfect peace and the eternal abode.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/18/verse/62",
+        "translation": "Swami Mukundananda",
+        "original": "तमेव शरणं गच्छ सर्वभावेन भारत |\nतत्प्रसादात्परां शान्तिं स्थानं प्राप्स्यसि शाश्वतम् || 62||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 2:65",
+        "text": "By divine grace comes the peace in which all sorrows end, and the intellect of such a person of tranquil mind soon becomes firmly established in God.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/2/verse/65",
+        "translation": "Swami Mukundananda",
+        "original": "प्रसादे सर्वदु:खानां हानिरस्योपजायते |\nप्रसन्नचेतसो ह्याशु बुद्धि: पर्यवतिष्ठते || 65||",
+        "lang": "sa",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Bhagavad Gita 3:35",
+        "text": "It is far better to perform one’s natural prescribed duty, though tinged with faults, than to perform another’s prescribed duty, though perfectly.…",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/3/verse/35",
+        "translation": "Swami Mukundananda",
+        "original": "श्रेयान्स्वधर्मो विगुण: परधर्मात्स्वनुष्ठितात् |\nस्वधर्मे निधनं श्रेय: परधर्मो भयावह: || 35||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Bhagavad Gita 18:46",
+        "text": "By performing one’s natural occupation, one worships the Creator from whom all living entities have come into being, and by whom the whole universe is pervaded. By such performance of work, a person easily attains perfection.",
+        "url": "https://www.holy-bhagavad-gita.org/chapter/18/verse/46",
+        "translation": "Swami Mukundananda",
+        "original": "यत: प्रवृत्तिर्भूतानां येन सर्वमिदं ततम् |\nस्वकर्मणा तमभ्यर्च्य सिद्धिं विन्दति मानव: || 46||",
+        "lang": "sa",
+        "verified": true
+      },
+      {
+        "ref": "Brihadaranyaka Upanishad 4.4.5",
+        "text": "…The self is identified with desire alone. What it desires, it resolves; what it resolves, it works out; and what it works out, it attains.",
+        "url": "https://www.wisdomlib.org/hinduism/book/the-brihadaranyaka-upanishad/d/doc122058.html",
+        "translation": "Swami Madhavananda",
+        "original": "अथो खल्वाहुः काममय एवायं पुरुष इति;\nस यथाकामो भवति तत्क्रतुर्भवति, यत्क्रतुर्भवति तत्कर्म कुरुते, यत्कर्म कुरुते तदभिसंपद्यते ॥ ५ ॥",
+        "lang": "sa",
+        "verified": true
+      }
+    ]
   },
   "buddhism": {
-    "perseverance": {
-      "ref": "Dhammapada 183",
-      "text": "To cease from evil, to do good, and to purify the mind — this is the teaching of the awakened ones.",
-      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
-    },
-    "clarity": {
-      "ref": "Dhammapada 36",
-      "text": "Let one find joy in vigilance; the wise guard the mind.",
-      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
-    },
-    "growth": {
-      "ref": "Dhammapada 276",
-      "text": "You yourselves must strive; the Buddhas only point the way.",
-      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
-    },
-    "love": {
-      "ref": "Metta Sutta",
-      "text": "May all beings be happy and secure; may their hearts be wholesome.",
-      "url": "https://www.accesstoinsight.org/tipitaka/kn/snp/snp.1.08.than.html"
-    },
-    "self-worth": {
-      "ref": "Dhammapada 104",
-      "text": "Greater in battle than the man who conquers a thousand times a thousand is the one who conquers himself.",
-      "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.html"
-    }
+    "perseverance": [
+      {
+        "ref": "Dhammapada 112",
+        "text": "Better it is to live one day strenuous and resolute than to live a hundred years sluggish and dissipated.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.08.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 25",
+        "text": "By effort and heedfulness, discipline and self-mastery, let the wise one make for himself an island which no flood can overwhelm.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.02.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 23",
+        "text": "The wise ones, ever meditative and steadfastly persevering, alone experience Nibbana, the incomparable freedom from bondage.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.02.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Dhammapada 39",
+        "text": "There is no fear for an awakened one, whose mind is not sodden (by lust) nor afflicted (by hate), and who has gone beyond both merit and demerit.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.03.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 320",
+        "text": "As an elephant in the battlefield withstands arrows shot from bows all around, even so shall I endure abuse.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.23.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 212",
+        "text": "From endearment springs grief, from endearment springs fear. For one who is wholly free from endearment there is no grief, whence then fear?",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.16.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Dhammapada 172",
+        "text": "He who having been heedless is heedless no more, illuminates this world like the moon freed from clouds.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.13.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 2",
+        "text": "Mind precedes all mental states. Mind is their chief; they are all mind-wrought. If with a pure mind a person speaks or acts happiness follows him like his never-departing shadow.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.01.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 122",
+        "text": "Think not lightly of good, saying, \"It will not come to me.\" Drop by drop is the water pot filled. Likewise, the wise man, gathering it little by little, fills himself with good.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.09.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Dhammapada 282",
+        "text": "Wisdom springs from meditation; without meditation wisdom wanes. Having known these two paths of progress and decline, let a man so conduct himself that his wisdom may increase.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.20.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 277",
+        "text": "All conditioned things are impermanent — when one sees this with wisdom, one turns away from suffering. This is the path to purification.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.20.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 252",
+        "text": "Easily seen is the fault of others, but one's own fault is difficult to see.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.18.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Dhammapada 201",
+        "text": "Victory begets enmity; the defeated dwell in pain. Happily the peaceful live, discarding both victory and defeat.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.15.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 96",
+        "text": "Calm is his thought, calm his speech, and calm his deed, who, truly knowing, is wholly freed, perfectly tranquil and wise.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.07.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 81",
+        "text": "Just as a solid rock is not shaken by the storm, even so the wise are not affected by praise or blame.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.06.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Dhammapada 184",
+        "text": "Enduring patience is the highest austerity. 'Nibbana is supreme,' say the Buddhas.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.14.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 399",
+        "text": "He who without resentment endures abuse, beating and punishment; whose power, real might, is patience — him do I call a holy man.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.26.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 222",
+        "text": "He who checks rising anger as a charioteer checks a rolling chariot, him I call a true charioteer. Others only hold the reins.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.17.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Dhammapada 239",
+        "text": "One by one, little by little, moment by moment, a wise man should remove his own impurities, as a smith removes his dross from silver.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.18.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 276",
+        "text": "You yourselves must strive; the Buddhas only point the way. Those meditative ones who tread the path are released from the bonds of Mara.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.20.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 24",
+        "text": "Ever grows the glory of him who is energetic, mindful and pure in conduct, discerning and self-controlled, righteous and heedful.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.02.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Dhammapada 103",
+        "text": "Though one may conquer a thousand times a thousand men in battle, yet he indeed is the noblest victor who conquers himself.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.08.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 160",
+        "text": "One truly is the protector of oneself; who else could the protector be? With oneself fully controlled, one gains a mastery that is hard to gain.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.12.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 36",
+        "text": "Let the discerning man guard the mind, so difficult to detect and extremely subtle, seizing whatever it desires. A guarded mind brings happiness.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.03.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "AN 2.119 (Dullabha Sutta)",
+        "text": "Monks, these two people are hard to find in the world. Which two? The one who is first to do a kindness, and the one who is grateful for a kindness done and feels obligated to repay it.",
+        "url": "https://www.accesstoinsight.org/tipitaka/an/an02/an02.119.than.html",
+        "translation": "Thanissaro Bhikkhu",
+        "verified": true
+      },
+      {
+        "ref": "AN 2.31 (Kataññu Sutta)",
+        "text": "A person of integrity is grateful & thankful. This gratitude, this thankfulness, is advocated by civil people. It is entirely on the level of people of integrity.",
+        "url": "https://www.accesstoinsight.org/tipitaka/an/an02/an02.031.than.html",
+        "translation": "Thanissaro Bhikkhu",
+        "verified": true
+      },
+      {
+        "ref": "Mangala Sutta (Sn 2.4)",
+        "text": "Right reverence and humility / Contentment and a grateful bearing, / Hearing Dhamma when it's timely: / This, the Highest Blessing.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/snp/snp.2.04.soni.html",
+        "translation": "Dr. R.L. Soni",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Karaniya Metta Sutta (Sn 1.8)",
+        "text": "Even as a mother protects with her life / Her child, her only child, / So with a boundless heart / Should one cherish all living beings",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/snp/snp.1.08.amar.html",
+        "translation": "The Amaravati Sangha",
+        "verified": true
+      },
+      {
+        "ref": "Karaniya Metta Sutta (Sn 1.8)",
+        "text": "Wishing: In gladness and in safety, / May all beings be at ease.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/snp/snp.1.08.amar.html",
+        "translation": "The Amaravati Sangha",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 130",
+        "text": "All tremble at violence; life is dear to all. Putting oneself in the place of another, one should not kill nor cause another to kill.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.10.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Dhammapada 5",
+        "text": "Hatred is never appeased by hatred in this world. By non-hatred alone is hatred appeased. This is a law eternal.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.01.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 223",
+        "text": "Overcome the angry by non-anger; overcome the wicked by goodness; overcome the miser by generosity; overcome the liar by truth.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.17.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 173",
+        "text": "He, who by good deeds covers the evil he has done, illuminates this world like the moon freed from clouds.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.13.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Dhammapada 348",
+        "text": "Let go of the past, let go of the future, let go of the present, and cross over to the farther shore of existence. With mind wholly liberated, you shall come no more to birth and death.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.24.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 421",
+        "text": "He who clings to nothing of the past, present and future, who has no attachment and holds on to nothing — him do I call a holy man.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.26.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 221",
+        "text": "One should give up anger, renounce pride, and overcome all fetters. Suffering never befalls him who clings not to mind and body and is detached.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.17.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Udana 5.1",
+        "text": "Searching all directions / with your awareness, / you find no one dearer / than yourself. / In the same way, others / are thickly dear to themselves. / So you shouldn't hurt others / if you love yourself.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/ud/ud.5.01.than.html",
+        "translation": "Thanissaro Bhikkhu",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 393",
+        "text": "Not by matted hair, nor by lineage, nor by birth does one become a holy man. But he in whom truth and righteousness exist — he is pure, he is a holy man.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.26.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 157",
+        "text": "If one holds oneself dear, one should diligently watch oneself.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.12.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "SN 22.22 (Bhara Sutta)",
+        "text": "Taking up the burden in the world is stressful. Casting off the burden is bliss. Having cast off the heavy burden and not taking on another, pulling up craving, along with its root, one is free from hunger, totally unbound.",
+        "url": "https://www.accesstoinsight.org/tipitaka/sn/sn22/sn22.022.than.html",
+        "translation": "Thanissaro Bhikkhu",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 79",
+        "text": "He who drinks deep the Dhamma lives happily with a tranquil mind.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.06.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 90",
+        "text": "The fever of passion exists not for him who has completed the journey, who is sorrowless and wholly set free, and has broken all ties.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.07.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Dhammapada 183",
+        "text": "To avoid all evil, to cultivate good, and to cleanse one's mind — this is the teaching of the Buddhas.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.14.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 166",
+        "text": "Let one not neglect one's own welfare for the sake of another, however great. Clearly understanding one's own welfare, let one be intent upon the good.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.12.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      },
+      {
+        "ref": "Dhammapada 115",
+        "text": "Better it is to live one day seeing the Supreme Truth than to live a hundred years without ever seeing the Supreme Truth.",
+        "url": "https://www.accesstoinsight.org/tipitaka/kn/dhp/dhp.08.budd.html",
+        "translation": "Acharya Buddharakkhita",
+        "verified": true
+      }
+    ]
   },
   "sikhism": {
-    "perseverance": {
-      "ref": "Guru Granth Sahib",
-      "text": "With your own hands carve your destiny.",
-      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
-    },
-    "clarity": {
-      "ref": "Guru Granth Sahib",
-      "text": "Where there is truth, there is righteousness; where there is righteousness, there is divine bliss.",
-      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
-    },
-    "growth": {
-      "ref": "Guru Granth Sahib",
-      "text": "As one learns, so one teaches; as one sows, so one reaps.",
-      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
-    },
-    "love": {
-      "ref": "Guru Granth Sahib",
-      "text": "No one is my enemy, and no one is a stranger. I get along with everyone.",
-      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
-    },
-    "self-worth": {
-      "ref": "Guru Granth Sahib",
-      "text": "Recognize the divine light within all; do not consider anyone inferior.",
-      "url": "https://www.sikhiwiki.org/index.php/Guru_Granth_Sahib"
-    }
+    "perseverance": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1429",
+        "text": "My strength has been restored, and my bonds have been broken; now, I can do everything. Nanak: everything is in Your hands, Lord; You are my Helper and Support.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1429&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਬਲੁ ਹੋਆ ਬੰਧਨ ਛੁਟੇ ਸਭੁ ਕਿਛੁ ਹੋਤ ਉਪਾਇ ॥ ਨਾਨਕ ਸਭੁ ਕਿਛੁ ਤੁਮਰੈ ਹਾਥ ਮੈ ਤੁਮ ਹੀ ਹੋਤ ਸਹਾਇ ॥੫੪॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1379",
+        "text": "My blanket is soaked, drenched with the downpour of the Lord’s Rain. I am going out to meet my Friend, so that my heart will not be broken.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1379&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਭਿਜਉ ਸਿਜਉ ਕੰਬਲੀ ਅਲਹ ਵਰਸਉ ਮੇਹੁ ॥ ਜਾਇ ਮਿਲਾ ਤਿਨਾ ਸਜਣਾ ਤੁਟਉ ਨਾਹੀ ਨੇਹੁ ॥੨੫॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 474",
+        "text": "With our own hands, let us resolve our own affairs.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=474&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਆਪਣ ਹਥੀ ਆਪਣਾ ਆਪੇ ਹੀ ਕਾਜੁ ਸਵਾਰੀਐ ॥੨੦॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1427",
+        "text": "One who does not frighten anyone, and who is not afraid of anyone else - says Nanak, listen, mind: call him spiritually wise.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1427&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਭੈ ਕਾਹੂ ਕਉ ਦੇਤ ਨਹਿ ਨਹਿ ਭੈ ਮਾਨਤ ਆਨ ॥ ਕਹੁ ਨਾਨਕ ਸੁਨਿ ਰੇ ਮਨਾ ਗਿਆਨੀ ਤਾਹਿ ਬਖਾਨਿ ॥੧੬॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1412",
+        "text": "If you desire to play this game of love with Me, then step onto My Path with your head in hand.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1412&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਜਉ ਤਉ ਪ੍ਰੇਮ ਖੇਲਣ ਕਾ ਚਾਉ ॥ ਸਿਰੁ ਧਰਿ ਤਲੀ ਗਲੀ ਮੇਰੀ ਆਉ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1105",
+        "text": "He alone is known as a spiritual hero, who fights in defense of religion. He may be cut apart, piece by piece, but he never leaves the field of battle.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1105&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸੂਰਾ ਸੋ ਪਹਿਚਾਨੀਐ ਜੁ ਲਰੈ ਦੀਨ ਕੇ ਹੇਤ ॥ ਪੁਰਜਾ ਪੁਰਜਾ ਕਟਿ ਮਰੈ ਕਬਹੂ ਨ ਛਾਡੈ ਖੇਤੁ ॥੨॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1429",
+        "text": "My associates and companions have all deserted me; no one remains with me. Says Nanak, in this tragedy, the Lord alone is my Support.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1429&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸੰਗ ਸਖਾ ਸਭਿ ਤਜਿ ਗਏ ਕੋਊ ਨ ਨਿਬਹਿਓ ਸਾਥਿ ॥ ਕਹੁ ਨਾਨਕ ਇਹ ਬਿਪਤਿ ਮੈ ਟੇਕ ਏਕ ਰਘੁਨਾਥ ॥੫੫॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 10",
+        "text": "From rocks and stones He created living beings; He places their nourishment before them.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=10&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸੈਲ ਪਥਰ ਮਹਿ ਜੰਤ ਉਪਾਏ ਤਾ ਕਾ ਰਿਜਕੁ ਆਗੈ ਕਰਿ ਧਰਿਆ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 819",
+        "text": "The hot wind does not even touch one who is under the Protection of the Supreme Lord God. On all four sides I am surrounded by the Lord’s Circle of Protection; pain does not afflict me, O Siblings of Destiny.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=819&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਤਾਤੀ ਵਾਉ ਨ ਲਗਈ ਪਾਰਬ੍ਰਹਮ ਸਰਣਾਈ ॥ ਚਉਗਿਰਦ ਹਮਾਰੈ ਰਾਮ ਕਾਰ ਦੁਖੁ ਲਗੈ ਨ ਭਾਈ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Guru Granth Sahib, Ang 3",
+        "text": "The faithful have intuitive awareness and intelligence. The faithful know about all worlds and realms.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=3&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਮੰਨੈ ਸੁਰਤਿ ਹੋਵੈ ਮਨਿ ਬੁਧਿ ॥ ਮੰਨੈ ਸਗਲ ਭਵਣ ਕੀ ਸੁਧਿ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1378",
+        "text": "Farid, if you have a keen understanding, then do not write black marks against anyone else. Look underneath your own collar instead.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1378&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਫਰੀਦਾ ਜੇ ਤੂ ਅਕਲਿ ਲਤੀਫੁ ਕਾਲੇ ਲਿਖੁ ਨ ਲੇਖ ॥ ਆਪਨੜੇ ਗਿਰੀਵਾਨ ਮਹਿ ਸਿਰੁ ਨੀਂਵਾਂ ਕਰਿ ਦੇਖੁ ॥੬॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1245",
+        "text": "Wisdom leads us to serve our Lord and Master; through wisdom, honor is obtained. Wisdom does not come by reading textbooks; wisdom inspires us to give in charity.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1245&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਅਕਲੀ ਸਾਹਿਬੁ ਸੇਵੀਐ ਅਕਲੀ ਪਾਈਐ ਮਾਨੁ ॥ ਅਕਲੀ ਪੜੑਿ ਕੈ ਬੁਝੀਐ ਅਕਲੀ ਕੀਚੈ ਦਾਨੁ ॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Guru Granth Sahib, Ang 2",
+        "text": "Sing, and listen, and let your mind be filled with love. Your pain shall be sent far away, and peace shall come to your home.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=2&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਗਾਵੀਐ ਸੁਣੀਐ ਮਨਿ ਰਖੀਐ ਭਾਉ ॥ ਦੁਖੁ ਪਰਹਰਿ ਸੁਖੁ ਘਰਿ ਲੈ ਜਾਇ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 10",
+        "text": "Why, O mind, do you plot and plan, when the Dear Lord Himself provides for your care?",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=10&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਕਾਹੇ ਰੇ ਮਨ ਚਿਤਵਹਿ ਉਦਮੁ ਜਾ ਆਹਰਿ ਹਰਿ ਜੀਉ ਪਰਿਆ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1427",
+        "text": "If you yearn for eternal peace, then seek the Sanctuary of the Lord. Says Nanak, listen, mind: this human body is difficult to obtain.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1427&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਜਉ ਸੁਖ ਕਉ ਚਾਹੈ ਸਦਾ ਸਰਨਿ ਰਾਮ ਕੀ ਲੇਹ ॥ ਕਹੁ ਨਾਨਕ ਸੁਨਿ ਰੇ ਮਨਾ ਦੁਰਲਭ ਮਾਨੁਖ ਦੇਹ ॥੨੭॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1384",
+        "text": "Within yourself, make patience the bow, and make patience the bowstring. Make patience the arrow, the Creator will not let you miss the target.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1384&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸਬਰ ਮੰਝ ਕਮਾਣ ਏ ਸਬਰੁ ਕਾ ਨੀਹਣੋ ॥ ਸਬਰ ਸੰਦਾ ਬਾਣੁ ਖਾਲਕੁ ਖਤਾ ਨ ਕਰੀ ॥੧੧੫॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1384",
+        "text": "Let patience be your purpose in life; implant this within your being. In this way, you will grow into a great river; you will not break off into a tiny stream.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1384&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸਬਰੁ ਏਹੁ ਸੁਆਉ ਜੇ ਤੂੰ ਬੰਦਾ ਦਿੜੁ ਕਰਹਿ ॥ ਵਧਿ ਥੀਵਹਿ ਦਰੀਆਉ ਟੁਟਿ ਨ ਥੀਵਹਿ ਵਾਹੜਾ ॥੧੧੭॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 8",
+        "text": "Let self-control be the furnace, and patience the goldsmith.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=8&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਜਤੁ ਪਾਹਾਰਾ ਧੀਰਜੁ ਸੁਨਿਆਰੁ ॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Guru Granth Sahib, Ang 4",
+        "text": "Virtue and vice do not come by mere words; actions repeated, over and over again, are engraved on the soul. You shall harvest what you plant.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=4&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਪੁੰਨੀ ਪਾਪੀ ਆਖਣੁ ਨਾਹਿ ॥ ਕਰਿ ਕਰਿ ਕਰਣਾ ਲਿਖਿ ਲੈ ਜਾਹੁ ॥ ਆਪੇ ਬੀਜਿ ਆਪੇ ਹੀ ਖਾਹੁ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 466",
+        "text": "Ego is a chronic disease, but it contains its own cure as well.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=466&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਹਉਮੈ ਦੀਰਘ ਰੋਗੁ ਹੈ ਦਾਰੂ ਭੀ ਇਸੁ ਮਾਹਿ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 433",
+        "text": "Do not blame anyone else; blame instead your own actions.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=433&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਦਦੈ ਦੋਸੁ ਨ ਦੇਊ ਕਿਸੈ ਦੋਸੁ ਕਰੰਮਾ ਆਪਣਿਆ",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Guru Granth Sahib, Ang 2",
+        "text": "In the Amrit Vaylaa, the ambrosial hours before dawn, chant the True Name, and contemplate His Glorious Greatness.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=2&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਅੰਮ੍ਰਿਤ ਵੇਲਾ ਸਚੁ ਨਾਉ ਵਡਿਆਈ ਵੀਚਾਰੁ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 6",
+        "text": "See the brotherhood of all mankind as the highest order of Yogis; conquer your own mind, and conquer the world.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=6&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਆਈ ਪੰਥੀ ਸਗਲ ਜਮਾਤੀ ਮਨਿ ਜੀਤੈ ਜਗੁ ਜੀਤੁ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1245",
+        "text": "One who works for what he eats, and gives some of what he has - O Nanak! He knows the Path.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1245&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਘਾਲਿ ਖਾਇ ਕਿਛੁ ਹਥਹੁ ਦੇਇ ॥ ਨਾਨਕ ਰਾਹੁ ਪਛਾਣਹਿ ਸੇਇ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1429",
+        "text": "I have not appreciated what You have done for me, Lord; only You can make me worthy. I am unworthy - I have no worth or virtues at all. You have taken pity on me.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1429&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਤੇਰਾ ਕੀਤਾ ਜਾਤੋ ਨਾਹੀ ਮੈਨੋ ਜੋਗੁ ਕੀਤੋਈ ॥ ਮੈ ਨਿਰਗੁਣਿਆਰੇ ਕੋ ਗੁਣੁ ਨਾਹੀ ਆਪੇ ਤਰਸੁ ਪਇਓਈ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 2",
+        "text": "The Guru has given me this one understanding: there is only the One, the Giver of all souls. May I never forget Him!",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=2&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਗੁਰਾ ਇਕ ਦੇਹਿ ਬੁਝਾਈ ॥ ਸਭਨਾ ਜੀਆ ਕਾ ਇਕੁ ਦਾਤਾ ਸੋ ਮੈ ਵਿਸਰਿ ਨ ਜਾਈ ॥੫॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 5",
+        "text": "His Blessings are so abundant that there can be no written account of them. The Great Giver does not hold back anything.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=5&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਬਹੁਤਾ ਕਰਮੁ ਲਿਖਿਆ ਨਾ ਜਾਇ ॥ ਵਡਾ ਦਾਤਾ ਤਿਲੁ ਨ ਤਮਾਇ ॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1299",
+        "text": "No one is my enemy, and no one is a stranger. I get along with everyone.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1299&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਨਾ ਕੋ ਬੈਰੀ ਨਹੀ ਬਿਗਾਨਾ ਸਗਲ ਸੰਗਿ ਹਮ ਕਉ ਬਨਿ ਆਈ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1384",
+        "text": "Do not utter even a single harsh word; your True Lord and Master abides in all. Do not break anyone’s heart; these are all priceless jewels.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1384&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਇਕੁ ਫਿਕਾ ਨ ਗਾਲਾਇ ਸਭਨਾ ਮੈ ਸਚਾ ਧਣੀ ॥ ਹਿਆਉ ਨ ਕੈਹੀ ਠਾਹਿ ਮਾਣਕ ਸਭ ਅਮੋਲਵੇ ॥੧੨੯॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1381",
+        "text": "Farid, the Creator is in the Creation, and the Creation abides in God. Whom can we call bad? There is none without Him.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1381&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਫਰੀਦਾ ਖਾਲਕੁ ਖਲਕ ਮਹਿ ਖਲਕ ਵਸੈ ਰਬ ਮਾਹਿ ॥ ਮੰਦਾ ਕਿਸ ਨੋ ਆਖੀਐ ਜਾਂ ਤਿਸੁ ਬਿਨੁ ਕੋਈ ਨਾਹਿ ॥੭੫॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1382",
+        "text": "Farid, answer evil with goodness; do not fill your mind with anger. Your body shall not suffer from any disease, and you shall obtain everything.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1382&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਫਰੀਦਾ ਬੁਰੇ ਦਾ ਭਲਾ ਕਰਿ ਗੁਸਾ ਮਨਿ ਨ ਹਢਾਇ ॥ ਦੇਹੀ ਰੋਗੁ ਨ ਲਗਈ ਪਲੈ ਸਭੁ ਕਿਛੁ ਪਾਇ ॥੭੮॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1378",
+        "text": "Farid, do not turn around and strike those who strike you with their fists. Kiss their feet, and return to your own home.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1378&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਫਰੀਦਾ ਜੋ ਤੈ ਮਾਰਨਿ ਮੁਕੀਆਂ ਤਿਨੑਾ ਨ ਮਾਰੇ ਘੁੰਮਿ ॥ ਆਪਨੜੈ ਘਰਿ ਜਾਈਐ ਪੈਰ ਤਿਨੑਾ ਦੇ ਚੁੰਮਿ ॥੭॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1372",
+        "text": "Kabir! Where there is spiritual wisdom, there is righteousness and Dharma. Where there is falsehood, there is sin. Where there is greed, there is death. Where there is forgiveness, there is God Himself.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1372&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਕਬੀਰਾ ਜਹਾ ਗਿਆਨੁ ਤਹ ਧਰਮੁ ਹੈ ਜਹਾ ਝੂਠੁ ਤਹ ਪਾਪੁ ॥ ਜਹਾ ਲੋਭੁ ਤਹ ਕਾਲੁ ਹੈ ਜਹਾ ਖਿਮਾ ਤਹ ਆਪਿ ॥੧੫੫॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1429",
+        "text": "People become anxious when something unexpected happens. This is the way of the world, O Nanak; nothing is stable or permanent.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1429&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਚਿੰਤਾ ਤਾ ਕੀ ਕੀਜੀਐ ਜੋ ਅਨਹੋਨੀ ਹੋਇ ॥ ਇਹੁ ਮਾਰਗੁ ਸੰਸਾਰ ਕੋ ਨਾਨਕ ਥਿਰੁ ਨਹੀ ਕੋਇ ॥੫੧॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1",
+        "text": "O Nanak! One who understands His Command, does not speak in ego.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਨਾਨਕ ਹੁਕਮੈ ਜੇ ਬੁਝੈ ਤ ਹਉਮੈ ਕਹੈ ਨ ਕੋਇ ॥੨॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1427",
+        "text": "That mortal, who forsakes egotism, and realizes the Creator Lord - says Nanak, that person is liberated; O mind, know this as true.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1427&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਜਿਹਿ ਪ੍ਰਾਨੀ ਹਉਮੈ ਤਜੀ ਕਰਤਾ ਰਾਮੁ ਪਛਾਨਿ ॥ ਕਹੁ ਨਾਨਕ ਵਹੁ ਮੁਕਤਿ ਨਰੁ ਇਹ ਮਨ ਸਾਚੀ ਮਾਨੁ ॥੧੯॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Guru Granth Sahib, Ang 441",
+        "text": "O my mind! You are the embodiment of the Divine Light - recognize your own origin.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=441&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਮਨ ਤੂੰ ਜੋਤਿ ਸਰੂਪੁ ਹੈ ਆਪਣਾ ਮੂਲੁ ਪਛਾਣੁ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 1349",
+        "text": "First, Allah created the Light; then, by His Creative Power, He made all mortal beings. From the One Light, the entire universe welled up. So, who is good, and who is bad?",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1349&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਅਵਲਿ ਅਲਹ ਨੂਰੁ ਉਪਾਇਆ ਕੁਦਰਤਿ ਕੇ ਸਭ ਬੰਦੇ ॥ ਏਕ ਨੂਰ ਤੇ ਸਭੁ ਜਗੁ ਉਪਜਿਆ ਕਉਨ ਭਲੇ ਕੋ ਮੰਦੇ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 13",
+        "text": "Amongst all is the Light-You are that Light. By this Illumination, that Light is radiant within all.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=13&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸਭ ਮਹਿ ਜੋਤਿ ਜੋਤਿ ਹੈ ਸੋਇ ॥ ਤਿਸ ਦੈ ਚਾਨਣਿ ਸਭ ਮਹਿ ਚਾਨਣੁ ਹੋਇ ॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Guru Granth Sahib, Ang 819",
+        "text": "Dwelling with the humble Holy people, one finds peace, poise and tranquility.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=819&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸਾਧ ਜਨਾ ਕੈ ਸੰਗਿ ਬਸਤ ਸੁਖ ਸਹਜ ਬਿਸ੍ਰਾਮ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 819",
+        "text": "Pain, hunger and skepticism have been dispelled, singing the Name of God.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=819&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਦੂਖ ਭੂਖ ਸੰਸਾ ਮਿਟਿਆ ਗਾਵਤ ਪ੍ਰਭ ਨਾਮ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 3",
+        "text": "Listening-pain and sin are erased.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=3&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਸੁਣਿਐ ਦੂਖ ਪਾਪ ਕਾ ਨਾਸੁ ॥੯॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Guru Granth Sahib, Ang 1",
+        "text": "So, how can you become truthful? And how can the veil of illusion be torn away? O Nanak! It is written that you shall obey the Hukam of His Command, and walk in the Way of His Will.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=1&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਕਿਵ ਸਚਿਆਰਾ ਹੋਈਐ ਕਿਵ ਕੂੜੈ ਤੁਟੈ ਪਾਲਿ ॥ ਹੁਕਮਿ ਰਜਾਈ ਚਲਣਾ ਨਾਨਕ ਲਿਖਿਆ ਨਾਲਿ ॥੧॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 12",
+        "text": "This human body has been given to you. This is your chance to meet the Lord of the Universe.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=12&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਭਈ ਪਰਾਪਤਿ ਮਾਨੁਖ ਦੇਹੁਰੀਆ ॥ ਗੋਬਿੰਦ ਮਿਲਣ ਕੀ ਇਹ ਤੇਰੀ ਬਰੀਆ ॥",
+        "lang": "pa",
+        "verified": true
+      },
+      {
+        "ref": "Guru Granth Sahib, Ang 26",
+        "text": "In the midst of this world, do seva, and you shall be given a place of honor in the Court of the Lord.",
+        "url": "https://www.srigranth.org/servlet/gurbani.gurbani?Action=Page&Param=26&g=1&h=1&r=1&t=1&p=0&k=0",
+        "translation": "Dr. Sant Singh Khalsa",
+        "original": "ਵਿਚਿ ਦੁਨੀਆ ਸੇਵ ਕਮਾਈਐ ॥ ਤਾ ਦਰਗਹ ਬੈਸਣੁ ਪਾਈਐ ॥",
+        "lang": "pa",
+        "verified": true
+      }
+    ]
   },
   "secular": {
-    "perseverance": {
-      "ref": "Marcus Aurelius, Meditations",
-      "text": "You have power over your mind — not outside events. Realize this, and you will find strength.",
-      "url": "https://en.wikisource.org/wiki/Meditations_of_Marcus_Aurelius"
-    },
-    "clarity": {
-      "ref": "Seneca",
-      "text": "We suffer more often in imagination than in reality.",
-      "url": "https://en.wikisource.org/wiki/Moral_letters_to_Lucilius"
-    },
-    "growth": {
-      "ref": "Epictetus",
-      "text": "No great thing is created suddenly.",
-      "url": "https://en.wikisource.org/wiki/Epictetus"
-    },
-    "love": {
-      "ref": "Audre Lorde",
-      "text": "It is not our differences that divide us. It is our inability to recognize and celebrate those differences.",
-      "url": null
-    },
-    "self-worth": {
-      "ref": "Carl Sagan",
-      "text": "For small creatures such as we, the vastness is bearable only through love.",
-      "url": null
-    }
+    "perseverance": [
+      {
+        "ref": "Marcus Aurelius, Meditations 4.49",
+        "text": "Be like the promontory against which the waves continually break, but it stands firm and tames the fury of the water around it.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.4.four.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 9.27",
+        "text": "When the year becomes cold, then we know how the pine and the cypress are the last to lose their leaves.",
+        "url": "https://gutenberg.org/files/4094/4094-h/4094-h.htm",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 5.9",
+        "text": "Be not disgusted, nor discouraged, nor dissatisfied, if thou dost not succeed in doing everything according to right principles; but when thou hast failed, return back again…",
+        "url": "https://classics.mit.edu/Antoninus/meditations.5.five.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Confucius, Analects 2.24",
+        "text": "To see what is right and not to do it is want of courage.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 9.28",
+        "text": "The wise are free from perplexities; the virtuous from anxiety; and the bold from fear.",
+        "url": "https://gutenberg.org/files/4094/4094-h/4094-h.htm",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 5.18",
+        "text": "Nothing happens to any man which he is not formed by nature to bear.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.5.five.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Henry David Thoreau, Walden, Conclusion",
+        "text": "I learned this, at least, by my experiment: that if one advances confidently in the direction of his dreams, and endeavors to live the life which he has imagined, he will meet with a success unexpected in common hours.",
+        "url": "https://www.themarginalian.org/2012/07/12/thoreau-on-success/",
+        "verified": true
+      },
+      {
+        "ref": "Henry David Thoreau, Walden, Conclusion",
+        "text": "Only that day dawns to which we are awake. There is more day to dawn. The sun is but a morning star.",
+        "url": "https://storgy.com/works/walden/chapters/18/",
+        "verified": true
+      },
+      {
+        "ref": "Seneca, Letters to Lucilius 13",
+        "text": "Accordingly, weigh carefully your hopes as well as your fears, and whenever all the elements are in doubt, decide in your own favour; believe what you prefer.",
+        "url": "https://monadnock.net/seneca/13.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Marcus Aurelius, Meditations 4.7",
+        "text": "Take away thy opinion, and then there is taken away the complaint, \"I have been harmed.\" Take away the complaint, \"I have been harmed,\" and the harm is taken away.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.4.four.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Epictetus, Enchiridion 5",
+        "text": "Men are disturbed not by the things which happen, but by the opinions about the things…",
+        "url": "https://cts.perseids.org/read/greekLit/tlg0557/tlg002/perseus-eng3/1-20",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 2.17",
+        "text": "When you know a thing, to hold that you know it; and when you do not know a thing, to allow that you do not know it;—this is knowledge.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Seneca, Letters to Lucilius 13",
+        "text": "There are more things, Lucilius, likely to frighten us than there are to crush us; we suffer more often in imagination than in reality.",
+        "url": "https://monadnock.net/seneca/13.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Ralph Waldo Emerson, Self-Reliance",
+        "text": "Nothing can bring you peace but yourself. Nothing can bring you peace but the triumph of principles.",
+        "url": "https://depts.washington.edu/lsearlec/TEXTS/EMERSON/SELFREL.HTM",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 7.36",
+        "text": "The superior man is satisfied and composed; the mean man is always full of distress.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Epictetus, Discourses 1.15",
+        "text": "Nothing great, said Epictetus, is produced suddenly, since not even the grape or the fig is. If you say to me now that you want a fig, I will answer to you that it requires time: let it flower first, then put forth fruit, and then ripen.",
+        "url": "https://metaphors.lib.virginia.edu/metaphors/8708",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Epictetus, Enchiridion 15",
+        "text": "Remember that in life you ought to behave as at a banquet. … Suppose that it is not yet come to you. Do not send your desire forward to it, but wait till it is opposite to you.",
+        "url": "https://cts.perseids.org/read/greekLit/tlg0557/tlg002/perseus-eng3/1-20",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Ralph Waldo Emerson, Education",
+        "text": "Leave this military hurry and adopt the pace of Nature. Her secret is patience.",
+        "url": "https://mpianalto.blogspot.com/2012/04/emerson-on-patience-and-education.html",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Seneca, Letters to Lucilius 6",
+        "text": "I feel, my dear Lucilius, that I am being not only reformed, but transformed.",
+        "url": "https://monadnock.net/seneca/6.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 4.17",
+        "text": "When we see men of worth, we should think of equalling them; when we see men of a contrary character, we should turn inwards and examine ourselves.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Epictetus, Enchiridion 13",
+        "text": "If you would improve, submit to be considered without sense and foolish with respect to externals.",
+        "url": "https://cts.perseids.org/read/greekLit/tlg0557/tlg002/perseus-eng3/1-20",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Marcus Aurelius, Meditations 10.16",
+        "text": "No longer talk at all about the kind of man that a good man ought to be, but be such.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.10.ten.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Seneca, Letters to Lucilius 1",
+        "text": "…hold every hour in your grasp. Lay hold of to-day's task, and you will not need to depend so much upon to-morrow's. While we are postponing, life speeds by.",
+        "url": "https://monadnock.net/seneca/1.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 9.18",
+        "text": "The prosecution of learning may be compared to what may happen in raising a mound. … Though but one basketful is thrown at a time, the advancing with it is my own going forward.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Marcus Aurelius, Meditations 7.27",
+        "text": "Think not so much of what thou hast not as of what thou hast: but of the things which thou hast select the best, and then reflect how eagerly they would have been sought, if thou hadst them not.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.7.seven.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Seneca, Letters to Lucilius 2",
+        "text": "Indeed, if it be contented, it is not poverty at all. It is not the man who has too little, but the man who craves more, that is poor.",
+        "url": "https://monadnock.net/seneca/2.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 7.15",
+        "text": "With coarse rice to eat, with water to drink, and my bended arm for a pillow;—I have still joy in the midst of these things.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Seneca, Letters to Lucilius 9",
+        "text": "I can show you a philtre, compounded without drugs, herbs, or any witch's incantation: \"If you would be loved, love.\"",
+        "url": "https://monadnock.net/seneca/9.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 12.22",
+        "text": "Fan Ch'ih asked about benevolence. The Master said, \"It is to love all men.\"",
+        "url": "https://monadnock.net/confucius/analects-12.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 6.39",
+        "text": "Adapt thyself to the things with which thy lot has been cast: and the men among whom thou hast received thy portion, love them, but do it truly, sincerely.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.6.six.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Marcus Aurelius, Meditations 7.22",
+        "text": "It is peculiar to man to love even those who do wrong. And this happens, if when they do wrong it occurs to thee that they are kinsmen, and that they do wrong through ignorance…",
+        "url": "https://classics.mit.edu/Antoninus/meditations.7.seven.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 5.22",
+        "text": "Po-i and Shu-ch'i did not keep the former wickednesses of men in mind, and hence the resentments directed towards them were few.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 10.4",
+        "text": "If a man is mistaken, instruct him kindly and show him his error. But if thou art not able, blame thyself, or blame not even thyself.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.10.ten.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Epictetus, Enchiridion 11",
+        "text": "Never say about any thing, I have lost it, but say I have restored it.",
+        "url": "https://cts.perseids.org/read/greekLit/tlg0557/tlg002/perseus-eng3/11",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 8.47",
+        "text": "If thou art pained by any external thing, it is not this thing that disturbs thee, but thy own judgement about it. And it is in thy power to wipe out this judgement now.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.8.eight.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 9.35",
+        "text": "Loss is nothing else than change. But the universal nature delights in change…",
+        "url": "https://classics.mit.edu/Antoninus/meditations.9.nine.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Ralph Waldo Emerson, Self-Reliance",
+        "text": "Trust thyself: every heart vibrates to that iron string.",
+        "url": "https://depts.washington.edu/lsearlec/TEXTS/EMERSON/SELFREL.HTM",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 12.4",
+        "text": "I have often wondered how it is that every man loves himself more than all the rest of men, but yet sets less value on his own opinion of himself than on the opinion of others.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.12.twelve.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Confucius, Analects 9.25",
+        "text": "The commander of the forces of a large state may be carried off, but the will of even a common man cannot be taken from him.",
+        "url": "https://gutenberg.org/cache/epub/4094/pg4094-images.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Henry David Thoreau, Walden, Sounds",
+        "text": "There were times when I could not afford to sacrifice the bloom of the present moment to any work, whether of the head or hands. I love a broad margin to my life.",
+        "url": "https://americanliterature.com/author/henry-david-thoreau/book/walden/chapter-iv-sounds",
+        "verified": true
+      },
+      {
+        "ref": "Seneca, Letters to Lucilius 3",
+        "text": "…he who reposes should act and he who acts should take repose. Discuss the problem with Nature; she will tell you that she has created both day and night.",
+        "url": "https://monadnock.net/seneca/3.html",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      },
+      {
+        "ref": "Marcus Aurelius, Meditations 4.3",
+        "text": "Men seek retreats for themselves, houses in the country, sea-shores, and mountains… For nowhere either with more quiet or more freedom from trouble does a man retire than into his own soul…",
+        "url": "https://classics.mit.edu/Antoninus/meditations.4.four.html",
+        "translation": "George Long",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Marcus Aurelius, Meditations 5.1",
+        "text": "In the morning when thou risest unwillingly, let this thought be present—I am rising to the work of a human being.",
+        "url": "https://classics.mit.edu/Antoninus/meditations.5.five.html",
+        "translation": "George Long",
+        "verified": true
+      },
+      {
+        "ref": "Henry David Thoreau, Walden, Where I Lived, and What I Lived For",
+        "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived.",
+        "url": "https://courses.lumenlearning.com/suny-jefferson-collegecomposition/?p=1012",
+        "verified": true
+      },
+      {
+        "ref": "Seneca, Letters to Lucilius 71",
+        "text": "When a man does not know what harbour he is making for, no wind is the right wind.",
+        "url": "https://quoteinvestigator.com/2011/11/25/favorable-wind/",
+        "translation": "Richard M. Gummere",
+        "verified": true
+      }
+    ]
   },
   "spiritual": {
-    "perseverance": {
-      "ref": "Universal reflection",
-      "text": "The light you seek is already within you — keep walking toward it.",
-      "url": null
-    },
-    "clarity": {
-      "ref": "Universal reflection",
-      "text": "Still the mind, and the path ahead becomes clearer.",
-      "url": null
-    },
-    "growth": {
-      "ref": "Universal reflection",
-      "text": "Every step forward, however small, reshapes who you become.",
-      "url": null
-    },
-    "love": {
-      "ref": "Universal reflection",
-      "text": "Where compassion grows, the heart finds its true strength.",
-      "url": null
-    },
-    "self-worth": {
-      "ref": "Universal reflection",
-      "text": "You are already whole — your journey is to remember that.",
-      "url": null
-    }
+    "perseverance": [
+      {
+        "ref": "Tao Te Ching 78",
+        "text": "There is nothing in the world more soft and weak than water, and yet for attacking things that are firm and strong there is nothing that can take precedence of it;",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 64",
+        "text": "The tree which fills the arms grew from the tiniest sprout; the tower of nine storeys rose from a (small) heap of earth; the journey of a thousand li commenced with a single step.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 167",
+        "text": "The world has kissed my soul with its pain, asking for its return in songs.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      }
+    ],
+    "courage": [
+      {
+        "ref": "Rabindranath Tagore, Gitanjali 35",
+        "text": "Where the mind is without fear and the head is held high; Where knowledge is free;",
+        "url": "https://www.gutenberg.org/cache/epub/7164/pg7164-images.html",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Gitanjali 36",
+        "text": "Give me the strength never to disown the poor or bend my knees before insolent might.",
+        "url": "https://www.gutenberg.org/cache/epub/7164/pg7164-images.html",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 67",
+        "text": "With that gentleness I can be bold; with that economy I can be liberal; shrinking from taking precedence of others, I can become a vessel of the highest honour.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "hope": [
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Joy and Sorrow)",
+        "text": "The deeper that sorrow carves into your being, the more joy you can contain.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 6",
+        "text": "If you shed tears when you miss the sun, you also miss the stars.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 77",
+        "text": "Every child comes with the message that God is not yet discouraged of man.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      }
+    ],
+    "clarity": [
+      {
+        "ref": "Tao Te Ching 15",
+        "text": "Who can (make) the muddy water (clear)? Let it be still, and it will gradually become clear.",
+        "url": "https://classics.mit.edu/Lao/taote.1.1.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 75",
+        "text": "We read the world wrong and say that it deceives us.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Thomas à Kempis, The Imitation of Christ, Book I, ch. 3 (Of the knowledge of truth)",
+        "text": "A lowly knowledge of thyself is a surer way to God than the deep searching of man’s learning.",
+        "url": "https://www.gutenberg.org/cache/epub/1653/pg1653-images.html",
+        "translation": "William Benham",
+        "verified": true
+      }
+    ],
+    "peace": [
+      {
+        "ref": "Tao Te Ching 16",
+        "text": "The (state of) vacancy should be brought to the utmost degree, and that of stillness guarded with unwearying vigour.",
+        "url": "https://classics.mit.edu/Lao/taote.1.1.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Thomas à Kempis, The Imitation of Christ, Book II, ch. 3 (Of the good, peaceable man)",
+        "text": "First keep thyself in peace, and then shalt thou be able to be a peacemaker towards others.",
+        "url": "https://www.gutenberg.org/cache/epub/1653/pg1653-images.html",
+        "translation": "William Benham",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 10",
+        "text": "Sorrow is hushed into peace in my heart like the evening among the silent trees.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      }
+    ],
+    "patience": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 126",
+        "text": "Not hammerstrokes, but dance of the water sings the pebbles into perfection.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 24",
+        "text": "He who stands on his tiptoes does not stand firm; he who stretches his legs does not walk (easily).",
+        "url": "https://classics.mit.edu/Lao/taote.1.1.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Thomas à Kempis, The Imitation of Christ, Book II, ch. 10 (Of gratitude for the Grace of God)",
+        "text": "Prepare thyself for patience more than for comforts, and for bearing the cross more than for joy.",
+        "url": "https://www.gutenberg.org/cache/epub/1653/pg1653-images.html",
+        "translation": "William Benham",
+        "verified": true
+      }
+    ],
+    "growth": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 25",
+        "text": "Man is a born child, his power is the power of growth.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Pain)",
+        "text": "Your pain is the breaking of the shell that encloses your understanding.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Self-Knowledge)",
+        "text": "The soul unfolds itself, like a lotus of countless petals.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      }
+    ],
+    "discipline": [
+      {
+        "ref": "Tao Te Ching 33",
+        "text": "He who overcomes others is strong; he who overcomes himself is mighty.",
+        "url": "https://classics.mit.edu/Lao/taote.1.1.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Reason and Passion)",
+        "text": "Your reason and your passion are the rudder and the sails of your seafaring soul.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Thomas à Kempis, The Imitation of Christ, Book I, ch. 11 (Of seeking peace of mind and of spiritual progress)",
+        "text": "If each year should see one fault rooted out from us, we should go quickly on to perfection.",
+        "url": "https://www.gutenberg.org/cache/epub/1653/pg1653-images.html",
+        "translation": "William Benham",
+        "verified": true
+      }
+    ],
+    "gratitude": [
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Love)",
+        "text": "To wake at dawn with a winged heart and give thanks for another day of loving;",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 64",
+        "text": "Thank the flame for its light, but do not forget the lampholder standing in the shade with constancy of patience.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 46",
+        "text": "Therefore the sufficiency of contentment is an enduring and unchanging sufficiency.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "love": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 83",
+        "text": "He who wants to do good knocks at the gate; he who loves finds the gate open.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Giving)",
+        "text": "You give but little when you give of your possessions. It is when you give of yourself that you truly give.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 81",
+        "text": "The sage does not accumulate (for himself). The more that he expends for others, the more does he possess of his own; the more that he gives to others, the more does he have himself.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "forgiveness": [
+      {
+        "ref": "Tao Te Ching 63",
+        "text": "(It is the way of the Tao) … to recompense injury with kindness.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 49",
+        "text": "To those who are good (to me), I am good; and to those who are not good (to me), I am also good;--and thus (all) get to be good.",
+        "url": "https://classics.mit.edu/Lao/taote.2.ii.html",
+        "translation": "James Legge",
+        "verified": true
+      },
+      {
+        "ref": "Thomas à Kempis, The Imitation of Christ, Book I, ch. 16 (Of bearing with the faults of others)",
+        "text": "Endeavour to be patient in bearing with other men’s faults and infirmities whatsoever they be, for thou thyself also hast many things which have need to be borne with by others.",
+        "url": "https://www.gutenberg.org/cache/epub/1653/pg1653-images.html",
+        "translation": "William Benham",
+        "verified": true
+      }
+    ],
+    "letting-go": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 102",
+        "text": "Do not linger to gather flowers to keep them, but walk on, for flowers will keep themselves blooming all your way.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Children)",
+        "text": "For life goes not backward nor tarries with yesterday.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Tao Te Ching 9",
+        "text": "When the work is done, and one's name is becoming distinguished, to withdraw into obscurity is the way of Heaven.",
+        "url": "https://classics.mit.edu/Lao/taote.1.1.html",
+        "translation": "James Legge",
+        "verified": true
+      }
+    ],
+    "self-worth": [
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Crime and Punishment)",
+        "text": "Like the ocean is your god-self; It remains for ever undefiled.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Gitanjali 1",
+        "text": "Thou hast made me endless, such is thy pleasure. This frail vessel thou emptiest again and again, and fillest it ever with fresh life.",
+        "url": "https://www.gutenberg.org/cache/epub/7164/pg7164-images.html",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 117",
+        "text": "The grass-blade is worth of the great world where it grows.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      }
+    ],
+    "rest": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 24",
+        "text": "Rest belongs to the work as the eyelids to the eyes.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Gitanjali 25",
+        "text": "In the night of weariness let me give myself up to sleep without struggle, resting my trust upon thee.",
+        "url": "https://www.gutenberg.org/cache/epub/7164/pg7164-images.html",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 274",
+        "text": "Light in my heart the evening star of rest and then let the night whisper to me of love.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      }
+    ],
+    "purpose": [
+      {
+        "ref": "Rabindranath Tagore, Stray Birds 82",
+        "text": "Let life be beautiful like summer flowers and death like autumn leaves.",
+        "url": "https://gutenberg.org/files/6524/6524-h/6524-h.htm",
+        "translation": "Rabindranath Tagore (author's own English rendering from Bengali)",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Work)",
+        "text": "Work is love made visible.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      },
+      {
+        "ref": "Kahlil Gibran, The Prophet (On Religion)",
+        "text": "Your daily life is your temple and your religion.",
+        "url": "https://www.gutenberg.org/files/58585/58585-0.txt",
+        "verified": true
+      }
+    ]
   }
 }

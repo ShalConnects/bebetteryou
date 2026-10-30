@@ -13,7 +13,11 @@ function revalidateScripture() {
 export async function GET() {
   try {
     const [data, tags] = await Promise.all([getScriptureBook(), readTags()])
-    return NextResponse.json({ data, themes: themesMap(tags) })
+    /** Every quote page fetches the whole book; let the CDN serve it (edits show within ~5 min). */
+    return NextResponse.json(
+      { data, themes: themesMap(tags) },
+      { headers: { 'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=86400' } }
+    )
   } catch (err) {
     return NextResponse.json({ error: err.message || 'Failed' }, { status: 500 })
   }

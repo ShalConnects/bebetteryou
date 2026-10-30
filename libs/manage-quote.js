@@ -1,5 +1,5 @@
 import { normalizeRelated } from '@/libs/related'
-import { normalizeTheme, themeSet } from '@/libs/tag-lane'
+import { knownThemes, normalizeTheme } from '@/libs/tag-lane'
 import { assertQuoteFits, cardRevision, renderQuoteCard } from './quote-card.mjs'
 import { deleteQuoteImage, saveQuoteImage } from './quote-assets'
 import { normalizeAuthor, normalizeQuoteText } from './quote-text'
@@ -30,7 +30,7 @@ export async function updateQuote(slug, { text, author, tags, theme, related, re
 
   if (theme !== undefined) {
     const resolved = normalizeTheme(theme)
-    if (resolved && themeSet(tagRows).has(resolved)) next.theme = resolved
+    if (resolved && knownThemes(tagRows).has(resolved)) next.theme = resolved
     else delete next.theme
   }
 

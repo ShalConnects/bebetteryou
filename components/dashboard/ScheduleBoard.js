@@ -2,20 +2,43 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { tabItem, tabList } from '@/components/ui/tabs'
+import { postNetworks } from '@/config/social'
 import {
   failedResults,
   formatScheduleWhen,
   manageQuotesHref,
-  okCount,
+  networkStates,
   scheduleFailures,
+  slotBadges,
+  slotStatus,
 } from '@/libs/dashboard-ops'
 import { toast } from '@/components/dashboard/toast'
 
-export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts = {} }) {
+const networkLabels = Object.fromEntries(postNetworks.map((n) => [n.id, n.label]))
+const chip = { ok: 'default', failed: 'danger', waiting: 'muted' }
+const tabs = [
+  ['fix', 'Needs fixing'],
+  ['upcoming', 'Upcoming'],
+  ['history', 'History'],
+]
+const empty = {
+  fix: 'Nothing failed recently.',
+  upcoming: 'Nothing scheduled. Pick an empty day on the calendar to add one.',
+  history: 'No posts yet.',
+}
+
+/** Queue & history: one list, filtered by tab. Chips show each network's outcome for that post. */
+export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts = {}, covers = {} }) {
   const [rows, setRows] = useState(initial)
   const [postsBySlug, setPostsBySlug] = useState(initialPosts)
   const [busyId, setBusyId] = useState('')
   const [error, setError] = useState('')
+  /** The server-rendered calendar beside this board re-reads after every change. */
+  const router = useRouter()
 
   async function onCancel(id) {
     if (!window.confirm('Cancel this scheduled post?')) return
@@ -27,6 +50,7 @@ export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts 
       if (!res.ok) throw new Error(data.error || 'Failed to cancel')
       setRows((prev) => prev.map((row) => (row.id === id ? { ...row, status: 'canceled' } : row)))
       toast('Schedule canceled')
+      router.refresh()
     } catch (err) {
       setError(err.message)
     } finally {
@@ -52,13 +76,16 @@ export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts 
       const nextPosts = {
         ...(postsBySlug[row.slug] || {}),
         ...Object.fromEntries(
-          nextResults.filter((r) => r.ok).map((r) => [r.id, { ok: true, error: '', manual: false }])
+          nextResults.filter((r) => r.ok).map((r) => [r.id, { ok: true, error: '', manual: false }]),
         ),
       }
-      const stillOpen = failedResults({ ...row, results: merged }, {
-        ...postsBySlug,
-        [row.slug]: nextPosts,
-      })
+      const stillOpen = failedResults(
+        { ...row, results: merged },
+        {
+          ...postsBySlug,
+          [row.slug]: nextPosts,
+        },
+      )
       setPostsBySlug((prev) => ({ ...prev, [row.slug]: nextPosts }))
       setRows((prev) =>
         prev.map((r) =>
@@ -68,10 +95,13 @@ export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts 
                 results: merged,
                 error: stillOpen.map((x) => `${x.id}: ${x.error || 'Failed'}`).join('; '),
               }
-            : r
-        )
+            : r,
+        ),
       )
-      toast(stillOpen.length ? `Retry: ${stillOpen.map((x) => x.id).join(', ')} still failing` : 'Retry posted')
+      toast(
+        stillOpen.length ? `Retry: ${stillOpen.map((x) => x.id).join(', ')} still failing` : 'Retry posted',
+      )
+      router.refresh()
     } catch (err) {
       setError(err.message)
     } finally {
@@ -79,150 +109,107 @@ export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts 
     }
   }
 
-  if (!rows.length) {
-    return (
-      <p className="text-sm text-quiet">
-        No schedules yet. Open a quote under Cards and use Schedule, or wait for cron (14:00 UTC).
-      </p>
-    )
+  const now = Date.now()
+  const lists = {
+    fix: scheduleFailures(rows, { postsBySlug }),
+    upcoming: rows
+      .filter((r) => r.status === 'pending')
+      .sort((x, y) => Date.parse(x.runAt) - Date.parse(y.runAt)),
+    history: rows
+      .filter((r) => r.status !== 'pending')
+      .sort((x, y) => Date.parse(y.runAt) - Date.parse(x.runAt)),
   }
-
-  const pending = rows.filter((r) => r.status === 'pending')
-  const failures = scheduleFailures(rows, { postsBySlug })
-  const other = rows.filter((r) => r.status !== 'pending')
+  const [tab, setTab] = useState(lists.fix.length ? 'fix' : 'upcoming')
+  const [shown, setShown] = useState(10)
+  const list = lists[tab]
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4">
+      <div className="overflow-x-auto">
+        <div className={tabList} role="tablist">
+          {tabs.map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={tab === id}
+              onClick={() => setTab(id)}
+              className={tabItem(tab === id)}
+            >
+              {label} ({lists[id].length})
+            </button>
+          ))}
+        </div>
+      </div>
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
 
-      {failures.length ? (
-        <section className="space-y-3">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-red-400/90">
-            Failures ({failures.length})
-          </h2>
-          <ul className="divide-y divide-line/40 border border-line border-red-400/20">
-            {failures.map((row) => {
-              const fails = failedResults(row, postsBySlug)
-              return (
-                <li key={`fail-${row.id}`} className="space-y-2 px-4 py-3 text-sm">
-                  <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                    <Link
-                      href={manageQuotesHref({
-                        quote: row.slug,
-                        retry: fails.map((f) => f.id),
-                        section: 'cards',
-                      })}
-                      className="text-paper underline-offset-2 hover:underline"
-                    >
-                      {row.slug}
-                    </Link>
-                    <span className="text-quiet">{formatScheduleWhen(row.runAt)}</span>
-                    {okCount(row) ? (
-                      <span className="text-quiet">
-                        {row.status} ({okCount(row)})
-                      </span>
-                    ) : (
-                      <span className="text-quiet">{row.status}</span>
-                    )}
-                  </div>
-                  {fails.length ? (
-                    <ul className="space-y-0.5 text-red-400">
-                      {fails.map((f) => (
-                        <li key={`${row.id}-${f.id}`}>
-                          {f.label || f.id}: {f.error || 'Failed'}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : row.error ? (
-                    <p className="text-red-400">{row.error}</p>
+      {list.length ? (
+        <ul className="divide-y divide-border">
+          {list.slice(0, tab === 'history' ? shown : undefined).map((row) => {
+            const nets = networkStates(row, postsBySlug)
+            const failed = nets.filter((n) => n.state === 'failed')
+            const [variant, label] = slotBadges[slotStatus(row, now, postsBySlug)] || ['muted', row.status]
+            const href = manageQuotesHref({
+              quote: row.slug,
+              section: 'cards',
+              retry: failed.map((n) => n.id),
+            })
+            return (
+              <li key={row.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+                <Link href={href} className="flex min-w-0 flex-1 items-center gap-3 hover:text-foreground">
+                  {covers[row.slug] ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={covers[row.slug]}
+                      alt=""
+                      loading="lazy"
+                      className="size-10 shrink-0 rounded object-cover"
+                    />
                   ) : null}
-                  <div className="flex flex-wrap gap-4">
-                    {fails.length ? (
-                      <button
-                        type="button"
-                        disabled={busyId === row.id}
-                        onClick={() => onRetry(row)}
-                        className="text-sm text-paper underline-offset-2 hover:underline disabled:opacity-50"
-                      >
-                        {busyId === row.id ? 'Retrying…' : `Retry failed (${fails.length})`}
-                      </button>
-                    ) : null}
-                    <Link
-                      href={manageQuotesHref({
-                        quote: row.slug,
-                        retry: fails.map((f) => f.id),
-                        section: 'cards',
-                      })}
-                      className="text-sm text-quiet underline-offset-2 hover:underline"
+                  <span className="min-w-0">
+                    <span className="block text-foreground">{row.slug}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {formatScheduleWhen(row.runAt)}
+                    </span>
+                  </span>
+                </Link>
+                <span className="flex flex-wrap gap-1">
+                  {nets.map((n) => (
+                    <Badge key={n.id} variant={chip[n.state]} title={n.error || undefined}>
+                      {networkLabels[n.id] || n.id}
+                    </Badge>
+                  ))}
+                </span>
+                <Badge variant={variant}>{label}</Badge>
+                {/* Fixed-width action slot keeps status badges in one column. */}
+                <span className="flex justify-end sm:w-24">
+                  {tab === 'upcoming' ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={busyId === row.id}
+                      onClick={() => onCancel(row.id)}
                     >
-                      Open in Cards
-                    </Link>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
-        </section>
+                      {busyId === row.id ? 'Canceling…' : 'Cancel'}
+                    </Button>
+                  ) : failed.length ? (
+                    <Button size="sm" disabled={busyId === row.id} onClick={() => onRetry(row)}>
+                      {busyId === row.id ? 'Retrying…' : `Retry ${failed.length}`}
+                    </Button>
+                  ) : null}
+                </span>
+              </li>
+            )
+          })}
+        </ul>
       ) : (
-        <p className="text-sm text-quiet">No recent network failures.</p>
+        <p className="text-sm text-muted-foreground">{empty[tab]}</p>
       )}
 
-      <section className="space-y-3">
-        <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">
-          Upcoming ({pending.length})
-        </h2>
-        {pending.length === 0 ? (
-          <p className="text-sm text-quiet">Nothing pending. Schedule the next quote when ready.</p>
-        ) : (
-          <ul className="divide-y divide-line/40 border border-line">
-            {pending.map((row) => (
-              <li
-                key={row.id}
-                className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="min-w-0 text-sm">
-                  <Link
-                    href={manageQuotesHref({ quote: row.slug, section: 'cards' })}
-                    className="text-paper underline-offset-2 hover:underline"
-                  >
-                    {row.slug}
-                  </Link>
-                  <p className="text-body">{formatScheduleWhen(row.runAt)}</p>
-                  <p className="text-quiet">{(row.networks || []).join(', ')}</p>
-                </div>
-                <button
-                  type="button"
-                  disabled={busyId === row.id}
-                  onClick={() => onCancel(row.id)}
-                  className="text-sm text-quiet underline-offset-2 hover:text-paper hover:underline disabled:opacity-50"
-                >
-                  {busyId === row.id ? '…' : 'Cancel'}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {other.length ? (
-        <section className="space-y-3">
-          <h2 className="text-[11px] uppercase tracking-[0.2em] text-quiet">Recent</h2>
-          <ul className="space-y-2 text-sm text-quiet">
-            {other.slice(0, 20).map((row) => (
-              <li key={row.id}>
-                <span className="text-body">{row.status}</span>
-                {okCount(row) ? ` (${okCount(row)})` : ''}
-                {' · '}
-                {row.slug}
-                {' · '}
-                {formatScheduleWhen(row.runAt)}
-                {failedResults(row, postsBySlug).length ? (
-                  <span className="text-red-400"> — see Failures</span>
-                ) : null}
-              </li>
-            ))}
-          </ul>
-        </section>
+      {tab === 'history' && list.length > shown ? (
+        <Button variant="ghost" size="sm" onClick={() => setShown((n) => n + 10)}>
+          Show more
+        </Button>
       ) : null}
     </div>
   )

@@ -23,6 +23,12 @@ export async function submitOrderToPrintful(orderNumber) {
     return { ok: false, reason: 'missing_variant' }
   }
 
+  try {
+    await advanceOrder(order.orderNumber, 'submitting')
+  } catch (error) {
+    if (error.transition) return { ok: true, reason: 'already_submitting' }
+    throw error
+  }
   const product = getPrintProduct(order.productId)
 
   try {

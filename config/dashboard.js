@@ -1,37 +1,47 @@
 import appConfig from '@/config/app'
 
-/** Admin dashboard nav — `match(pathname)` drives active state. */
+const under = (...roots) => (p) => roots.some((r) => p === r || p.startsWith(`${r}/`))
+
+/** Sidebar / bottom-bar sections — `icon` is a key into the Nav icon map. */
 export const adminNav = [
-  {
-    href: '/dashboard',
-    label: 'Overview',
-    match: (p) => p === '/dashboard',
-  },
-  { href: '/dashboard/analytics', label: 'Analytics', match: (p) => p.startsWith('/dashboard/analytics') },
-  {
-    href: '/dashboard/quotes',
-    label: 'Quotes',
-    match: (p) =>
-      p === '/dashboard/quotes' ||
-      p.startsWith('/dashboard/quotes/') ||
-      p.startsWith('/dashboard/schedules'),
-  },
-  {
-    href: '/dashboard/tags',
-    label: 'Tags',
-    match: (p) => p.startsWith('/dashboard/tags') || p.startsWith('/dashboard/scripture'),
-  },
-  { href: '/dashboard/print-orders', label: 'Print', match: (p) => p.startsWith('/dashboard/print-orders') },
-  { href: '/dashboard/subscribers', label: 'Subscribers', match: (p) => p.startsWith('/dashboard/subscribers') },
+  { href: '/dashboard', label: 'Today', icon: 'today', match: (p) => p === '/dashboard' },
+  { href: '/dashboard/quotes', label: 'Content', icon: 'content', match: under('/dashboard/quotes', '/dashboard/schedules') },
+  { href: '/dashboard/subscribers', label: 'Audience', icon: 'audience', match: under('/dashboard/subscribers') },
+  { href: '/dashboard/print-orders', label: 'Shop', icon: 'shop', match: under('/dashboard/print-orders') },
+  { href: '/dashboard/analytics', label: 'Insights', icon: 'insights', match: under('/dashboard/analytics') },
   {
     href: '/dashboard/integrations',
-    label: 'Integrations',
-    match: (p) => p.startsWith('/dashboard/integrations'),
+    label: 'Settings',
+    icon: 'settings',
+    match: under('/dashboard/integrations', '/dashboard/tags', '/dashboard/scripture', '/dashboard/practice'),
   },
-  ...(appConfig.features.enablePractice
-    ? [{ href: '/dashboard/practice', label: 'Practice', match: (p) => p.startsWith('/dashboard/practice') }]
-    : []),
 ]
+
+/** In-page tabs. Same-page tabs share one `?section=` param, so old deep links keep working. */
+const sections = (path, items) => items.map(([id, label]) => ({ id, label, href: `${path}?section=${id}` }))
+
+export const contentTabs = sections('/dashboard/quotes', [
+  ['schedules', 'Calendar'],
+  ['cards', 'Cards'],
+  ['new', 'New quote'],
+  ['week', 'Week review'],
+])
+
+export const audienceTabs = sections('/dashboard/subscribers', [
+  ['list', 'Subscribers'],
+  ['sends', 'Sends'],
+  ['tools', 'Tools'],
+])
+
+export const settingsTabs = [
+  { id: 'integrations', label: 'Integrations', href: '/dashboard/integrations' },
+  { id: 'tags', label: 'Tags', href: '/dashboard/tags' },
+  { id: 'scripture', label: 'Scripture', href: '/dashboard/tags?section=scripture' },
+  ...(appConfig.features.enablePractice ? [{ id: 'practice', label: 'Practice', href: '/dashboard/practice' }] : []),
+]
+
+/** Requested tab, else the fallback — unknown ids never blank a page. */
+export const pickTab = (tabs, id, fallback = tabs[0].id) => (tabs.some((t) => t.id === id) ? id : fallback)
 
 export function filterQuotes(quotes, { q = '', tag = '' } = {}) {
   const needle = q.trim().toLowerCase()

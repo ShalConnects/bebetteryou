@@ -92,6 +92,8 @@ export const quoteShort = {
     'Quote #{n} — full on site.',
   ],
   maxSeconds: 20,
+  /** Verse Shorts: the tradition's passage after the quote — smaller type, held long enough to read. */
+  passage: { seconds: 6.5, scale: 0.72 },
   /** Week-in-review Short hard cap (YouTube Shorts ~60s). */
   weekMaxSeconds: 55,
   fallbackSeconds: 8,

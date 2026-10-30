@@ -1,8 +1,9 @@
 import { Suspense } from 'react'
 import UnsubscribeForm from '@/components/site/UnsubscribeForm'
 import { PageIntro } from '@/components/site/ui'
+import { noIndex } from '@/libs/seo'
 
-export const metadata = { title: 'Email preferences' }
+export const metadata = { title: 'Email preferences', ...noIndex }
 
 export default function UnsubscribePage() {
   return (

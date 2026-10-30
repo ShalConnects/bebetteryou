@@ -6,6 +6,7 @@ import HeroVideo from '@/components/site/HeroVideo'
 import QuoteImage from '@/components/site/QuoteImage'
 import { heroQuoteCount } from '@/config/quotes'
 import { copy } from '@/config/site'
+import { quoteAlt } from '@/libs/quote-text'
 import { sample } from '@/libs/sample'
 
 /** `moods` adds mood chips that re-deal the stack; `video` ({ src, poster }) adds a background loop. */
@@ -55,9 +56,8 @@ export default function Hero({ quotes = [], moods, video }) {
                 key={`${q.slug}-${i}-${deal}`}
                 href={`/quotes/${q.slug}`}
                 className="hero-scatter-card"
-                aria-label={`Quote #${q.n}`}
               >
-                <QuoteImage src={q.src} alt={`#${q.n}`} priority={i < 2} variant="hero" className="h-auto w-full" />
+                <QuoteImage src={q.src} alt={quoteAlt(q)} priority={i < 2} variant="hero" className="h-auto w-full" />
               </Link>
             ))}
             <button

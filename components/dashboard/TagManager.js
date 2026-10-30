@@ -1,217 +1,163 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Sheet } from '@/components/ui/sheet'
+import { manageQuotesHref } from '@/libs/dashboard-ops'
 
 const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
-
 const empty = { name: '', moodLabel: '', theme: '', hashtags: '' }
-
-function tagApi(path, init) {
-  return fetch(`/api/tags/${encodeURIComponent(path)}`, init)
-}
-
-function usageLine(tag) {
-  const quotes = tag.quotes ?? tag.count ?? 0
-  const posts = tag.posts ?? 0
-  const books = tag.books ?? 0
-  const passages = tag.passages ?? 0
-  return [
-    tag.moodLabel ? `Mood: ${tag.moodLabel}` : 'No mood',
-    tag.theme ? `Theme: ${tag.theme}` : 'No theme',
-    `${quotes} quote${quotes === 1 ? '' : 's'}`,
-    `${posts} post${posts === 1 ? '' : 's'}`,
-    `${books} book${books === 1 ? '' : 's'}`,
-    `${passages} passage${passages === 1 ? '' : 's'}`,
-  ].join(' · ')
-}
+const fields = [
+  ['name', 'Name', 'Motivation'],
+  ['moodLabel', 'Mood label (homepage chip)', 'Need a push'],
+  ['theme', 'Scripture theme', 'perseverance'],
+  ['hashtags', 'Hashtags', '#motivation #bebetteryou'],
+]
+const usage = ['quotes', 'posts', 'books', 'passages']
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 export default function TagManager({ tags: initial }) {
   const [items, setItems] = useState(initial)
-  const [draft, setDraft] = useState(empty)
-  const [editing, setEditing] = useState(null)
-  const [edit, setEdit] = useState(null)
+  /** Side panel: { original: name | null, value } */
+  const [sheet, setSheet] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const themes = [...new Set(items.map((t) => t.theme).filter(Boolean))]
+  const count = (tag, key) => tag[key] ?? (key === 'quotes' ? tag.count : 0) ?? 0
 
-  async function create(e) {
+  async function call(path, init) {
+    setBusy(true)
+    setError('')
+    try {
+      const res = await fetch(path, { headers: { 'Content-Type': 'application/json' }, ...init })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed')
+      setItems(data.tags)
+      return true
+    } catch (err) {
+      setError(err.message)
+      return false
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function submit(e) {
     e.preventDefault()
-    if (!draft.name.trim() || busy) return
-    setBusy(true)
-    setError('')
-    try {
-      const res = await fetch('/api/tags', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(draft),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      setItems(data.tags)
-      setDraft(empty)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
+    const { original, value } = sheet
+    const ok = original
+      ? await call(`/api/tags/${encodeURIComponent(original)}`, { method: 'PATCH', body: JSON.stringify(value) })
+      : await call('/api/tags', { method: 'POST', body: JSON.stringify(value) })
+    if (ok) setSheet(null)
   }
 
-  function startEdit(tag) {
-    setEditing(tag.name)
-    setEdit({
-      name: tag.name,
-      moodLabel: tag.moodLabel || '',
-      theme: tag.theme || '',
-      hashtags: tag.hashtags || '',
-    })
-    setError('')
+  function remove(tag) {
+    const bits = usage.filter((k) => count(tag, k)).map((k) => plural(count(tag, k), k.slice(0, -1)))
+    const msg = bits.length ? `Delete "${tag.name}" and clear it from ${bits.join(' and ')}?` : `Delete "${tag.name}"?`
+    if (confirm(msg)) call(`/api/tags/${encodeURIComponent(tag.name)}`, { method: 'DELETE' })
   }
 
-  async function saveEdit() {
-    if (!editing || !edit || busy) return
-    setBusy(true)
+  const open = (tag) => {
     setError('')
-    try {
-      const res = await tagApi(editing, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(edit),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      setItems(data.tags)
-      setEditing(null)
-      setEdit(null)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  async function remove(tag) {
-    const quotes = tag.quotes ?? tag.count ?? 0
-    const posts = tag.posts ?? 0
-    const books = tag.books ?? 0
-    const passages = tag.passages ?? 0
-    const bits = []
-    if (quotes) bits.push(`${quotes} quote${quotes === 1 ? '' : 's'}`)
-    if (posts) bits.push(`${posts} post${posts === 1 ? '' : 's'}`)
-    if (books) bits.push(`${books} book${books === 1 ? '' : 's'}`)
-    if (passages) bits.push(`${passages} passage${passages === 1 ? '' : 's'}`)
-    const msg = bits.length
-      ? `Delete "${tag.name}" and clear it from ${bits.join(' and ')}?`
-      : `Delete "${tag.name}"?`
-    if (!confirm(msg)) return
-    setBusy(true)
-    setError('')
-    try {
-      const res = await tagApi(tag.name, { method: 'DELETE' })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      setItems(data.tags)
-      if (editing === tag.name) {
-        setEditing(null)
-        setEdit(null)
-      }
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  function fields(value, setValue) {
-    return (
-      <>
-        <input
-          value={value.name}
-          onChange={(e) => setValue({ ...value, name: e.target.value })}
-          placeholder="Motivation"
-          className={inputClass}
-        />
-        <input
-          value={value.moodLabel}
-          onChange={(e) => setValue({ ...value, moodLabel: e.target.value })}
-          placeholder="Need a push"
-          className={inputClass}
-        />
-        <input
-          value={value.theme}
-          onChange={(e) => setValue({ ...value, theme: e.target.value })}
-          placeholder="perseverance"
-          className={inputClass}
-        />
-        <input
-          value={value.hashtags}
-          onChange={(e) => setValue({ ...value, hashtags: e.target.value })}
-          placeholder="#motivation #bebetteryou"
-          className={inputClass}
-        />
-      </>
-    )
+    setSheet({ original: tag?.name || null, value: tag ? Object.fromEntries(fields.map(([k]) => [k, tag[k] || ''])) : empty })
   }
 
   return (
-    <div className="space-y-8">
-      <form onSubmit={create} className="space-y-2">
-        <div className="grid gap-3 lg:grid-cols-4">
-          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Name</span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Mood</span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Theme</span>
-          <span className="text-[11px] uppercase tracking-[0.2em] text-quiet">Hashtags</span>
-        </div>
-        <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
-          {fields(draft, setDraft)}
-          <button type="submit" disabled={busy || !draft.name.trim()} className="btn flex shrink-0 items-center px-7 py-0 disabled:opacity-50">
-            Add tag
-          </button>
-        </div>
-      </form>
+    <div className="space-y-4">
+      <Button size="sm" onClick={() => open(null)}>
+        Add tag
+      </Button>
+      {error && !sheet ? <p className="text-sm text-red-400">{error}</p> : null}
 
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[44rem] text-left text-sm">
+          <thead>
+            <tr>
+              <th className="py-2 pr-4">Tag</th>
+              <th className="py-2 pr-4">Mood label</th>
+              <th className="py-2 pr-4">Theme</th>
+              {usage.map((k) => (
+                <th key={k} className="py-2 pr-4 text-right capitalize">
+                  {k}
+                </th>
+              ))}
+              <th className="py-2" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {items.map((tag) => (
+              <tr key={tag.name}>
+                <td className="py-3 pr-4">
+                  <span className="block text-foreground">{tag.name}</span>
+                  {tag.hashtags ? <span className="block text-xs text-muted-foreground">{tag.hashtags}</span> : null}
+                </td>
+                <td className="py-3 pr-4">{tag.moodLabel || '—'}</td>
+                <td className="py-3 pr-4">
+                  {tag.theme || '—'}
+                  {tag.gaps ? (
+                    <Badge variant="warn" className="ml-2" title="Tradition × theme combinations with no passage yet">
+                      {tag.gaps} gaps
+                    </Badge>
+                  ) : null}
+                </td>
+                {usage.map((k) => (
+                  <td key={k} className="py-3 pr-4 text-right">
+                    {k === 'quotes' && count(tag, k) ? (
+                      <Link href={manageQuotesHref({ section: 'cards', tag: tag.name })} className="underline-offset-2 hover:underline">
+                        {count(tag, k)}
+                      </Link>
+                    ) : (
+                      count(tag, k)
+                    )}
+                  </td>
+                ))}
+                <td className="py-3 text-right">
+                  <span className="inline-flex gap-2">
+                    <Button size="sm" variant="outline" disabled={busy} onClick={() => open(tag)}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="destructive" disabled={busy} onClick={() => remove(tag)}>
+                      Delete
+                    </Button>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <ul className="divide-y divide-line border border-line">
-        {items.map((tag) => (
-          <li key={tag.name} className="px-4 py-4">
-            {editing === tag.name ? (
-              <div className="grid gap-3 lg:grid-cols-[1fr_1fr_1fr_1fr_auto_auto] lg:items-end">
-                {fields(edit, setEdit)}
-                <button type="button" disabled={busy} onClick={saveEdit} className="btn disabled:opacity-50">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => {
-                    setEditing(null)
-                    setEdit(null)
-                  }}
-                  className="btn disabled:opacity-50"
-                >
-                  Cancel
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-paper">{tag.name}</p>
-                  <p className="text-sm text-quiet">{usageLine(tag)}</p>
-                  {tag.hashtags ? <p className="mt-1 text-xs text-quiet/80">{tag.hashtags}</p> : null}
-                </div>
-                <div className="flex gap-2">
-                  <button type="button" disabled={busy} onClick={() => startEdit(tag)} className="btn disabled:opacity-50">
-                    Edit
-                  </button>
-                  <button type="button" disabled={busy} onClick={() => remove(tag)} className="btn disabled:opacity-50">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      {sheet ? (
+        <Sheet title={sheet.original ? `Edit ${sheet.original}` : 'Add tag'} onClose={() => setSheet(null)}>
+          <form onSubmit={submit} className="space-y-4">
+            {fields.map(([key, label, placeholder]) => (
+              <label key={key} className="block">
+                <span className="mb-2 block text-xs text-quiet">{label}</span>
+                <input
+                  value={sheet.value[key]}
+                  onChange={(e) => setSheet((s) => ({ ...s, value: { ...s.value, [key]: e.target.value } }))}
+                  placeholder={placeholder}
+                  list={key === 'theme' ? 'tag-themes' : undefined}
+                  className={inputClass}
+                />
+              </label>
+            ))}
+            {/* Suggest existing themes — a typo here would silently leave the tag with no scripture. */}
+            <datalist id="tag-themes">
+              {themes.map((t) => (
+                <option key={t} value={t} />
+              ))}
+            </datalist>
+            {error ? <p className="text-sm text-red-400">{error}</p> : null}
+            <Button type="submit" disabled={busy || !sheet.value.name.trim()}>
+              {busy ? 'Saving…' : 'Save tag'}
+            </Button>
+          </form>
+        </Sheet>
+      ) : null}
     </div>
   )
 }

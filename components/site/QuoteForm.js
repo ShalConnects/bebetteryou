@@ -8,6 +8,7 @@ import { quoteShowsScripture, scriptureFor } from '@/libs/scripture-core'
 import { clampQuoteInput, findDuplicateQuote, quoteFingerprint, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
 import { suggestQuoteLane } from '@/libs/quote-suggest'
 import SocialPost from './SocialPost'
+import ThemeSelect from './ThemeSelect'
 import EmailQuoteList from '@/components/dashboard/EmailQuoteList'
 import TagPicker from './TagPicker'
 import { useQuotePreview } from './useQuotePreview'
@@ -130,6 +131,7 @@ export default function QuoteForm({
   trainingQuotes = [],
   themeOptions = [],
   catalog = [],
+  postDate,
 }) {
   const [text, setText] = useState('')
   const [author, setAuthor] = useState('')
@@ -327,19 +329,7 @@ export default function QuoteForm({
         <ReviewQueue items={reviewQueue} onAccept={acceptReview} onDismiss={dismissReview} />
 
         {themeOptions.length ? (
-          <label className="block">
-            <span className="mb-2 block text-[11px] uppercase tracking-[0.2em] text-quiet">
-              Scripture theme
-            </span>
-            <select value={theme} onChange={onThemeChange} className="dash-select">
-              <option value="">From tags</option>
-              {themeOptions.map((o) => (
-                <option key={o.theme} value={o.theme}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          <ThemeSelect value={theme} onChange={onThemeChange} options={themeOptions} />
         ) : null}
 
         <ScripturePreview tags={tags} theme={theme || undefined} seed={seed} />
@@ -371,7 +361,7 @@ export default function QuoteForm({
           {busy ? 'Generating…' : 'Generate & save'}
         </button>
 
-        {result?.slug ? <SocialPost slug={result.slug} /> : null}
+        {result?.slug ? <SocialPost slug={result.slug} postDate={postDate} /> : null}
         {result?.slug ? <EmailQuoteList slug={result.slug} /> : null}
       </div>
 

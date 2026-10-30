@@ -27,15 +27,13 @@ export async function generateMetadata({ searchParams }) {
   const sort = resolveSort(sp?.sort)
   const { page, total, pageSize } = await pagePrintableQuotes(tag, param(sp?.page), sort, resolveSeed(sort, sp?.seed))
   const range = pageRange(page, pageSize, total)
-  const url = getUrl(shopHref({ tag, page, sort }))
-  return {
-    ...buildMetadata({
-      title: tag ? `${formatTag(tag)} — Shop` : 'Shop',
-      description: range ? `${shopIntro} ${range.start}–${range.end} of ${range.total}.` : shopIntro,
-      url,
-    }),
-    alternates: { canonical: url },
-  }
+  const url = getUrl(shopHref({ tag, page }))
+  return buildMetadata({
+    title: tag ? `${formatTag(tag)} — Shop` : 'Shop',
+    description: range ? `${shopIntro} ${range.start}–${range.end} of ${range.total}.` : shopIntro,
+    url,
+    index: total > 0,
+  })
 }
 
 export default async function Shop({ searchParams }) {

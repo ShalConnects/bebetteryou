@@ -51,23 +51,43 @@ export async function recordEvent(event) {
   }
 }
 
-/** Newest first, capped — the dashboard summarises whatever it gets back. */
-export async function listEvents({ since, limit = summaryEventCap } = {}) {
+/** Only what `summarize` reads — rows stay small even near the cap. */
+const summaryFields = 'name path slug target channel source visitor device country createdAt'
+
+const timeRange = (since, until) => ({
+  ...(since || until ? { createdAt: { ...(since && { $gte: since }), ...(until && { $lt: until }) } } : {}),
+})
+
+const inWindow = (since, until) => (event) => {
+  const t = new Date(event.createdAt).getTime()
+  return (!since || t >= new Date(since).getTime()) && (!until || t < new Date(until).getTime())
+}
+
+/** Newest first in [since, until), capped — the dashboard summarises whatever it gets back. */
+export async function listEvents({ since, until, limit = summaryEventCap } = {}) {
   try {
     if (mongoBacked()) {
       await connectDB()
-      return AnalyticsEvent.find(since ? { createdAt: { $gte: since } } : {})
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .lean()
+      return AnalyticsEvent.find(timeRange(since, until)).select(summaryFields).sort({ createdAt: -1 }).limit(limit).lean()
     }
     if (!analyticsReady()) return []
-    const cutoff = since ? new Date(since).getTime() : 0
-    return readLocal()
-      .filter((event) => new Date(event.createdAt).getTime() >= cutoff)
-      .slice(0, limit)
+    return readLocal().filter(inWindow(since, until)).slice(0, limit)
   } catch (error) {
     logError('Analytics read failed', error)
     return []
   }
+}
+
+/** Unique visitor ids in [since, until), counted in the database (no id list, so no 16MB result cap). */
+export async function countVisitors(since, until) {
+  if (mongoBacked()) {
+    await connectDB()
+    const [row] = await AnalyticsEvent.aggregate([
+      { $match: timeRange(since, until) },
+      { $group: { _id: '$visitor' } },
+      { $count: 'n' },
+    ])
+    return row?.n || 0
+  }
+  return analyticsReady() ? new Set(readLocal().filter(inWindow(since, until)).map((e) => e.visitor)).size : null
 }

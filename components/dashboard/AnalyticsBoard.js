@@ -2,23 +2,22 @@ import { BarList, ChannelTable, RangeTabs, TrendChart } from '@/components/dashb
 import { DashPanel, Stat } from '@/components/dashboard/ui'
 import { resolveRange } from '@/config/analytics'
 import { appConfig } from '@/config/app'
-import { change, rangeStart, summarize } from '@/libs/analytics'
+import { changeLabel, rangeStart, summarize } from '@/libs/analytics'
 import { analyticsReady, listEvents } from '@/libs/analytics-store'
 
 /** Analytics body for the overview collapsible (and former /dashboard/analytics page). */
 export default async function AnalyticsBoard({ range }) {
   const { id, days, label } = resolveRange(range)
   const ready = appConfig.features.enableAnalytics && analyticsReady()
-  /** Two periods in one read: this range, and the one just before it for the deltas. */
-  const events = ready ? await listEvents({ since: rangeStart(days * 2) }) : []
+  /** Two reads, so the event cap can never starve the previous period of its rows. */
+  const start = rangeStart(days)
+  const [events, before] = ready
+    ? await Promise.all([listEvents({ since: start }), listEvents({ since: rangeStart(days * 2), until: start })])
+    : [[], []]
   const data = summarize(events, { days })
-  const prev = summarize(events, { days, now: rangeStart(days).getTime() - 1 }).totals
-  const vs = (key) => {
-    const pct = change(data.totals[key], prev[key])
-    return pct == null ? null : `${pct > 0 ? '+' : ''}${pct}% vs previous ${days} days`
-  }
+  const prev = summarize(before, { days, now: start.getTime() - 1 }).totals
   const stat = (label, key) => (
-    <Stat label={label} value={data.totals[key].toLocaleString('en-US')} hint={vs(key)} />
+    <Stat label={label} value={data.totals[key].toLocaleString('en-US')} hint={changeLabel(data.totals[key], prev[key], days)} />
   )
 
   return (

@@ -9,7 +9,6 @@ const SocialScheduleSchema = new mongoose.Schema(
       type: String,
       enum: ['pending', 'running', 'done', 'failed', 'canceled'],
       default: 'pending',
-      index: true,
     },
     results: { type: mongoose.Schema.Types.Mixed, default: undefined },
     error: { type: String, default: '' },

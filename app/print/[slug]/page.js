@@ -3,7 +3,7 @@ import { appConfig } from '@/config/app'
 import PrintDesigner from '@/components/site/PrintDesigner'
 import { Page, PageIntro } from '@/components/site/ui'
 import { resolvePrintableQuote } from '@/libs/print-file'
-import { customPrintSlug, parsePrintParams } from '@/libs/print-link'
+import { parsePrintParams } from '@/libs/print-link'
 import { printBlanks } from '@/libs/printful-catalog'
 import { quoteOneLine } from '@/libs/quote-text'
 import { buildMetadata } from '@/libs/seo'
@@ -13,12 +13,13 @@ export async function generateMetadata({ params, searchParams }) {
   const chosen = parsePrintParams(await searchParams)
   const quote = await resolvePrintableQuote({ slug, text: chosen.text, author: chosen.author })
   if (!quote) return buildMetadata({ title: 'Print' })
-  const meta = buildMetadata({
+  // The quote page is the indexable copy; this is a product-builder view of it.
+  return buildMetadata({
     title: quote.n ? `Print #${quote.n}` : 'Print your line',
     description: quoteOneLine(quote.text) || 'Put your line on a tee or mug.',
     image: quote.src,
+    index: false,
   })
-  return slug === customPrintSlug ? { ...meta, robots: { index: false, follow: false } } : meta
 }
 
 export default async function PrintPage({ params, searchParams }) {

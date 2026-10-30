@@ -13,15 +13,13 @@ export async function generateMetadata({ searchParams }) {
   const sort = resolveSort(sp?.sort)
   const { page, total, pageSize } = await pageQuotes(tag, param(sp?.page), sort, resolveSeed(sort, sp?.seed))
   const range = pageRange(page, pageSize, total)
-  const url = getUrl(quotesHref({ tag, page, sort }))
-  return {
-    ...buildMetadata({
-      title: quotesListTitle({ tag, page, sort }),
-      description: range ? `${quotesIntro} Cards ${range.start}–${range.end} of ${range.total}.` : quotesIntro,
-      url,
-    }),
-    alternates: { canonical: url },
-  }
+  return buildMetadata({
+    title: quotesListTitle({ tag, page, sort }),
+    description: range ? `${quotesIntro} Cards ${range.start}–${range.end} of ${range.total}.` : quotesIntro,
+    // Sort orders are the same cards, so they share the unsorted page's canonical.
+    url: getUrl(quotesHref({ tag, page })),
+    index: total > 0,
+  })
 }
 
 export default async function QuotesPage({ searchParams }) {

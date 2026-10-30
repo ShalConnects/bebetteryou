@@ -2,10 +2,11 @@ import { connectDB } from '@/libs/mongo'
 import User from '@/models/User'
 import { adminEmail } from '@/config/admin-auth'
 import { verifyPassword } from '@/libs/password'
+import { safeEqual } from '@/libs/secret'
 
 export async function matchOwnerPassword(password) {
-  const plain = process.env.ADMIN_PASSWORD
-  if (plain && password === plain) return true
+  // Prefer ADMIN_PASSWORD_HASH; the plain env var is kept only as a fallback.
+  if (safeEqual(password, process.env.ADMIN_PASSWORD)) return true
 
   const hash = process.env.ADMIN_PASSWORD_HASH
   if (!hash || !/^\$2[aby]?\$\d{2}\$/.test(hash)) return false

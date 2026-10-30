@@ -17,6 +17,8 @@ const UserSchema = new mongoose.Schema({
   image: {
     type: String,
   },
+  /** Set on the first OAuth / magic-link sign-in (inbox proven). */
+  emailVerified: Date,
   stripeCustomerId: {
     type: String,
   },

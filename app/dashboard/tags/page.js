@@ -1,41 +1,42 @@
 import { requireAdminPage } from '@/libs/dashboard-auth'
 import { listTagsWithUsage } from '@/libs/manage-tag'
-import { listScriptureEntries, scriptureGaps, scriptureThemeOptions } from '@/libs/manage-scripture'
+import { listScriptureEntries, scriptureThemeOptions } from '@/libs/manage-scripture'
 import { asList, readQuotes } from '@/libs/quotes-store'
 import TagManager from '@/components/dashboard/TagManager'
 import ScriptureManager from '@/components/dashboard/ScriptureManager'
-import { DashSection } from '@/components/dashboard/ui'
-import { PageIntro } from '@/components/site/ui'
+import { DashPage, DashPanel } from '@/components/dashboard/ui'
+import { settingsTabs } from '@/config/dashboard'
 
-export const metadata = { title: 'Tags & scripture' }
+export const metadata = { title: 'Settings' }
 
-export default async function AdminTagsPage() {
+const tabs = {
+  tags: async () => (
+    <DashPanel description="Mood labels and content lanes for Surprise, quotes, blog, and social.">
+      <TagManager tags={await listTagsWithUsage()} />
+    </DashPanel>
+  ),
+  async scripture() {
+    const [entries, quotes, themeOptions] = await Promise.all([
+      listScriptureEntries(),
+      readQuotes().then((q) => asList(q).map(({ n, slug, tags, theme }) => ({ n, slug, tags, theme }))),
+      scriptureThemeOptions(),
+    ])
+    return (
+      <DashPanel description="Passages shown under a card, by the reader's tradition and the card's tag theme.">
+        <ScriptureManager entries={entries} quotes={quotes} themeOptions={themeOptions} />
+      </DashPanel>
+    )
+  },
+}
+
+export default async function AdminTagsPage({ searchParams }) {
   await requireAdminPage()
-  const [tags, entries, gaps, quotes, themeOptions] = await Promise.all([
-    listTagsWithUsage(),
-    listScriptureEntries(),
-    scriptureGaps(),
-    readQuotes().then((q) => asList(q).map(({ n, slug, tags, theme }) => ({ n, slug, tags, theme }))),
-    scriptureThemeOptions(),
-  ])
+  const { section } = (await searchParams) || {}
+  const active = section === 'scripture' ? 'scripture' : 'tags'
 
   return (
-    <div className="space-y-12">
-      <PageIntro title="Tags & scripture">
-        Content lanes for quotes, blog, and social — plus tradition passages keyed to those tag themes.
-      </PageIntro>
-
-      <DashSection title="Tags" description="Mood labels and content lanes for Surprise, quotes, blog, and social.">
-        <TagManager tags={tags} />
-      </DashSection>
-
-      <DashSection
-        title="Scripture"
-        description="Tradition passages and reflections keyed to tag themes."
-        defaultOpen={false}
-      >
-        <ScriptureManager entries={entries} gaps={gaps} quotes={quotes} themeOptions={themeOptions} />
-      </DashSection>
-    </div>
+    <DashPage title="Settings" description="Content lanes for quotes, blog and social, plus tradition passages." tabs={settingsTabs} active={active}>
+      {await tabs[active]()}
+    </DashPage>
   )
 }

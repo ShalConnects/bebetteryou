@@ -2,6 +2,8 @@
  * @jest-environment node
  */
 jest.mock('@/libs/scripture-store')
+// The tag catalog would otherwise try Mongo (jest.setup sets a URI) and time out.
+jest.mock('@/libs/tags-store', () => ({ readTags: async () => require('@/config/quotes').tagSeed }))
 
 import { upsertScripture, removeScripture } from '@/libs/manage-scripture'
 import { themeEntries } from '@/libs/scripture-core'

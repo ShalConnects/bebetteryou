@@ -49,6 +49,9 @@ yarn-error.log*
 # local social schedules when Mongo is not usable
 /data/social-schedules.json
 
+# local Integrations secrets (tokens) when Mongo is not usable
+/data/integrations/
+
 # Amazon PA-API price cache (local / writable deploys)
 /data/book-prices.json
 

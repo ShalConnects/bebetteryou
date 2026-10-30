@@ -10,9 +10,10 @@ export function themesForTags(tags, map) {
   return out
 }
 
-/** Stored quote.theme wins (validated at write); else map from tags. */
+/** Stored quote.theme first (validated at write), then the tags' lane themes as fallbacks. */
 export function themesForQuote(tags, theme, map) {
-  return theme ? [theme] : themesForTags(tags, map)
+  const lanes = themesForTags(tags, map)
+  return theme ? [theme, ...lanes.filter((t) => t !== theme)] : lanes
 }
 
 export function quoteShowsScripture(tags, theme, map) {
@@ -34,25 +35,34 @@ export function seedFromKey(key) {
 export function resolveTranslation(entry, translationId) {
   if (!entry) return null
   const alt = translationId && entry.alt?.[translationId]
+  const { original = null, lang = null } = entry
   if (alt?.text) {
-    return { ref: alt.ref || entry.ref, text: alt.text, url: alt.url ?? entry.url ?? null }
+    const translation = translationId.toUpperCase()
+    return { ref: alt.ref || entry.ref, text: alt.text, url: alt.url ?? entry.url ?? null, translation, original, lang }
   }
-  return { ref: entry.ref, text: entry.text, url: entry.url ?? null }
+  return { ref: entry.ref, text: entry.text, url: entry.url ?? null, translation: entry.translation || null, original, lang }
 }
 
-/** Pick passage for tradition + tags/theme; rotates by seedKey (quote slug/n). */
-export function scriptureFor(book, tradition, tags, seedKey, translationId, theme, map) {
-  if (!book || !tradition || tradition === 'none' || !traditionIds.has(tradition)) return null
-  const themes = book[tradition]
-  if (!themes) return null
-  const useTranslation = translationsFor(tradition).some((t) => t.id === translationId) ? translationId : null
+/** Every passage for the first of the quote's themes that has any in this tradition. */
+export function scriptureChoices(book, tradition, tags, theme, map) {
+  if (!book?.[tradition] || tradition === 'none' || !traditionIds.has(tradition)) return []
   for (const t of themesForQuote(tags, theme, map || tagThemes)) {
-    const entries = themeEntries(themes[t])
-    if (entries.length) {
-      return resolveTranslation(entries[seedFromKey(seedKey) % entries.length], useTranslation)
-    }
+    const entries = themeEntries(book[tradition][t])
+    if (entries.length) return entries
   }
-  return null
+  return []
+}
+
+/**
+ * Pick a passage for tradition + tags/theme. The quote's seed keeps the pick stable;
+ * `offset` steps through the alternatives ("Another passage"). `choices` = how many there are.
+ */
+export function scriptureFor(book, tradition, tags, seedKey, translationId, theme, map, offset = 0) {
+  const entries = scriptureChoices(book, tradition, tags, theme, map)
+  if (!entries.length) return null
+  const useTranslation = translationsFor(tradition).some((t) => t.id === translationId) ? translationId : null
+  const entry = entries[(seedFromKey(seedKey) + offset) % entries.length]
+  return { ...resolveTranslation(entry, useTranslation), choices: entries.length }
 }
 
 export function scriptureShareText(base, entry) {

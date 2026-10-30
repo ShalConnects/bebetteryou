@@ -40,6 +40,14 @@ const staticMedia = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   staticPageGenerationTimeout: 180,
+  /** Old admin URLs, kept for bookmarks. */
+  async redirects() {
+    return [
+      ['/dashboard/schedules', '/dashboard/quotes?section=schedules'],
+      ['/dashboard/quotes/new', '/dashboard/quotes?section=new'],
+      ['/dashboard/scripture', '/dashboard/tags?section=scripture'],
+    ].map(([source, destination]) => ({ source, destination, permanent: false }))
+  },
   serverExternalPackages: ['@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc', 'ffmpeg-static'],
   outputFileTracingIncludes: {
     '/api/quotes/**': renderAssets,

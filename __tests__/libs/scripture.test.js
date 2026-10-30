@@ -28,8 +28,9 @@ describe('scripture-core', () => {
     expect(themesForTags(['Mindset'])).toEqual(['clarity'])
   })
 
-  it('prefers explicit quote theme over tags', () => {
-    expect(themesForQuote(['Motivation'], 'clarity')).toEqual(['clarity'])
+  it('prefers explicit quote theme, falling back to the tag lanes', () => {
+    expect(themesForQuote(['Motivation'], 'clarity')).toEqual(['clarity', 'perseverance'])
+    expect(scriptureFor(book, 'christianity', ['Motivation'], 'x', null, 'no-passages-yet')?.ref).toBeTruthy()
     expect(themesForQuote([], 'perseverance')).toEqual(['perseverance'])
     expect(scriptureFor(book, 'christianity', ['Motivation'], 'x', null, 'clarity')?.ref).toBe('James 1:5')
   })

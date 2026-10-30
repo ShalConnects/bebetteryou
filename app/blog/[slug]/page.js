@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import BlogArticle from '@/components/site/BlogArticle'
+import JsonLd from '@/components/site/JsonLd'
 import { Page } from '@/components/site/ui'
 import { appConfig, getUrl } from '@/config/app'
 import { getPost, listPosts, postQuotes, postTag, relatedPosts } from '@/libs/blog'
@@ -17,15 +18,12 @@ export async function generateMetadata({ params }) {
   const post = getPost(slug)
   if (!post) return buildMetadata({ title: 'Post' })
   const url = getUrl(postHref(post.slug))
-  return {
-    ...buildMetadata({
-      title: post.title,
-      description: post.description,
-      url,
-      image: post.image,
-    }),
-    alternates: { canonical: url },
-  }
+  return buildMetadata({
+    title: post.title,
+    description: post.description,
+    url,
+    image: post.image,
+  })
 }
 
 export default async function PostPage({ params }) {
@@ -48,10 +46,7 @@ export default async function PostPage({ params }) {
         books={books}
         tag={tag}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(postJsonLd(post, url)) }}
-      />
+      <JsonLd data={postJsonLd(post, url)} />
     </Page>
   )
 }

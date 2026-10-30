@@ -22,7 +22,7 @@ export async function POST(request) {
     event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET)
   } catch (err) {
     return NextResponse.json(
-      { error: 'Webhook signature verification failed', details: err.message },
+      { error: 'Webhook signature verification failed' },
       { status: 400 }
     )
   }
@@ -31,6 +31,8 @@ export async function POST(request) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
+        // Only plan checkouts grant access (one-off payments must not).
+        if (session.mode !== 'subscription') break
         const filter = session.metadata?.userId
           ? { _id: session.metadata.userId }
           : { stripeCustomerId: session.customer }

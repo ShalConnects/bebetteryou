@@ -1,5 +1,6 @@
 import IntegrationsPanel from '@/components/dashboard/IntegrationsPanel'
-import { PageIntro } from '@/components/site/ui'
+import { DashPage } from '@/components/dashboard/ui'
+import { settingsTabs } from '@/config/dashboard'
 import { requireAdminPage } from '@/libs/dashboard-auth'
 import { listIntegrationStatus } from '@/libs/integrations/status'
 
@@ -32,11 +33,13 @@ export default async function IntegrationsPage({ searchParams }) {
   else if (params.youtube) flash = `YouTube: ${params.youtube}`
 
   return (
-    <>
-      <PageIntro title="Integrations">
-        Connect social accounts and check email providers. Tokens saved here override env when present.
-      </PageIntro>
+    <DashPage
+      title="Settings"
+      description="Connect social accounts and check email providers. Tokens saved here override env when present."
+      tabs={settingsTabs}
+      active="integrations"
+    >
       <IntegrationsPanel initialSocial={social} initialEmail={email} flash={flash} />
-    </>
+    </DashPage>
   )
 }
