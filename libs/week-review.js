@@ -32,9 +32,12 @@ function seedFromKey(key) {
   return h >>> 0
 }
 
+/** Ignore one-network test posts (LinkedIn-only, etc.) in the Friday recap. */
+export const WEEK_REVIEW_MIN_NETWORKS = 2
+
 /**
- * Week-in-review set: quotes successfully posted to social in Sat–Thu.
- * If none in-window, use all successfully posted quotes (e.g. the first 6 you shipped).
+ * Week-in-review set: quotes posted to ≥2 networks in Sat–Thu.
+ * If none in-window, use all multi-network posted quotes.
  * Empty social log → no cards (do not invent from catalog).
  */
 export async function pickWeekReviewQuotes(quotes, range = fridayWeekRange()) {
@@ -42,12 +45,16 @@ export async function pickWeekReviewQuotes(quotes, range = fridayWeekRange()) {
   const bySlug = new Map(list.filter((q) => q?.slug && q?.src).map((q) => [q.slug, q]))
   const seed = seedFromKey(range.weekKey)
 
-  const inWindow = await listPostedQuoteSlugs({ since: range.start, until: range.end })
+  const inWindow = await listPostedQuoteSlugs({
+    since: range.start,
+    until: range.end,
+    minNetworks: WEEK_REVIEW_MIN_NETWORKS,
+  })
   let mode = 'posted'
   let rows = inWindow
 
   if (!rows.length) {
-    rows = await listPostedQuoteSlugs()
+    rows = await listPostedQuoteSlugs({ minNetworks: WEEK_REVIEW_MIN_NETWORKS })
     mode = 'posted-all'
   }
 

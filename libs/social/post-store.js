@@ -6,6 +6,8 @@ import { utcDayRange } from '@/libs/social/schedule-store'
 import { mergePostRecord } from './post-log'
 
 const dataFile = path.join(process.cwd(), 'data/social-posts.json')
+/** Posts logged under a made-up key, not a quote slug: week reviews and verse Shorts. */
+export const derivedSlug = /^(week|verse)-/
 
 function readLocal() {
   try {
@@ -109,13 +111,15 @@ export async function readPostsBySlugs(slugs) {
 }
 
 /**
- * Unique quote slugs with at least one successful social post.
- * Optional `since`/`until` filter on post time. Excludes `week-*` review jobs.
- * Returns `{ slug, at }[]` newest-first.
+ * Unique quote slugs with successful social posts.
+ * Optional `since`/`until` on post time. Excludes week-review and verse keys.
+ * `minNetworks` drops one-off test posts (e.g. LinkedIn-only) from week-in-review.
+ * Returns `{ slug, at, networks }[]` newest-first.
  */
-export async function listPostedQuoteSlugs({ since, until } = {}) {
+export async function listPostedQuoteSlugs({ since, until, minNetworks = 1 } = {}) {
   const start = since ? new Date(since).getTime() : null
   const end = until ? new Date(until).getTime() : null
+  const min = Math.max(1, Number(minNetworks) || 1)
 
   function inRange(at) {
     const t = new Date(at).getTime()
@@ -131,16 +135,16 @@ export async function listPostedQuoteSlugs({ since, until } = {}) {
       const { connectDB } = await import('@/libs/mongo')
       const SocialPost = (await import('@/models/SocialPost')).default
       await connectDB()
-      const q = { ok: true, slug: { $not: /^week-/ } }
+      const q = { ok: true, slug: { $not: derivedSlug } }
       if (start != null || end != null) {
         q.at = {}
         if (start != null) q.at.$gte = new Date(start)
         if (end != null) q.at.$lte = new Date(end)
       }
-      rows = await SocialPost.find(q).select('slug at').lean()
+      rows = await SocialPost.find(q).select('slug at network').lean()
     } else if (!process.env.VERCEL) {
       rows = readLocal().filter(
-        (row) => row.ok && row.slug && !String(row.slug).startsWith('week-') && inRange(row.at)
+        (row) => row.ok && row.slug && !derivedSlug.test(row.slug) && inRange(row.at)
       )
     }
 
@@ -148,11 +152,18 @@ export async function listPostedQuoteSlugs({ since, until } = {}) {
     for (const row of rows) {
       const slug = String(row.slug || '').trim()
       if (!slug) continue
+      const network = String(row.network || '').trim()
       const at = row.at ? new Date(row.at).toISOString() : null
-      const prev = best.get(slug)
-      if (!prev || (at && (!prev.at || at > prev.at))) best.set(slug, { slug, at })
+      const prev = best.get(slug) || { slug, at: null, networks: new Set() }
+      if (network) prev.networks.add(network)
+      if (at && (!prev.at || at > prev.at)) prev.at = at
+      best.set(slug, prev)
     }
-    return [...best.values()].sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))
+
+    return [...best.values()]
+      .filter((row) => row.networks.size >= min)
+      .map((row) => ({ slug: row.slug, at: row.at, networks: row.networks.size }))
+      .sort((a, b) => String(b.at || '').localeCompare(String(a.at || '')))
   } catch (error) {
     logError('Social post slug list failed', error)
     return []

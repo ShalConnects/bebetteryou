@@ -115,9 +115,9 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
         Window: Saturday {from} → Thursday {to}. Loaded <span className="text-paper">{quotes.length}</span> card
         {quotes.length === 1 ? '' : 's'}
         {mode === 'posted'
-          ? ' (posted to social in Sat–Thu).'
+          ? ' (posted to 2+ networks in Sat–Thu; one-off test posts skipped).'
           : mode === 'posted-all'
-            ? ' (all cards ever posted to social — none in this Sat–Thu window).'
+            ? ' (all multi-network posts — none in this Sat–Thu window).'
             : mode === 'recent'
               ? ' (newest fallback).'
               : ' (dated Sat–Thu).'}{' '}
