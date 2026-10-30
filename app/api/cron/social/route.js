@@ -5,6 +5,7 @@ import { runNewsletterCronPipeline } from '@/libs/newsletter-cron'
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
+import { cronAuthorized } from '@/libs/secret'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
@@ -13,20 +14,23 @@ import { logError } from '@/libs/logger'
  */
 export const maxDuration = 300
 
-function authorized(req) {
-  const secret = (process.env.CRON_SECRET || '').trim()
-  if (!secret) return false
-  const header = req.headers.get('authorization') || ''
-  return header === `Bearer ${secret}`
-}
 
 async function handleGet(req) {
   try {
-    if (!authorized(req)) {
+    if (!cronAuthorized(req)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const schedules = await runDueSocialSchedules()
+
+    // Email right after social so YouTube encode/upload cannot eat the time budget.
+    let newsletter = null
+    try {
+      newsletter = await runNewsletterCronPipeline()
+    } catch (error) {
+      logError('Newsletter (after social cron) failed', error)
+      newsletter = { ok: false, error: error.message || 'Failed' }
+    }
 
     let youtubeShort = null
     try {
@@ -34,15 +38,6 @@ async function handleGet(req) {
     } catch (error) {
       logError('Daily YouTube Short (after social cron) failed', error)
       youtubeShort = { ok: false, error: error.message || 'Failed' }
-    }
-
-    // After social/YT so email can match today's successful social card.
-    let newsletter = null
-    try {
-      newsletter = await runNewsletterCronPipeline()
-    } catch (error) {
-      logError('Newsletter (after social cron) failed', error)
-      newsletter = { ok: false, error: error.message || 'Failed' }
     }
 
     return NextResponse.json({ ok: true, ...schedules, youtubeShort, newsletter })

@@ -198,10 +198,18 @@ export async function cancelSchedule(id) {
   return canceled
 }
 
+const STALE_RUN_MS = 15 * 60 * 1000
+
 /** Claim due pending jobs (status → running). Local file is best-effort. */
 export async function claimDueSchedules(now = new Date(), limit = 5) {
   if (mongoUri()) {
     const SocialSchedule = await model()
+    // A run killed mid-way (timeout, deploy) leaves rows "running" forever. Fail them, not retry:
+    // some networks may already have posted, so a person should look before retrying.
+    await SocialSchedule.updateMany(
+      { status: 'running', updatedAt: { $lt: new Date(now.getTime() - STALE_RUN_MS) } },
+      { $set: { status: 'failed', error: 'Run was interrupted — check the networks, then retry.' } }
+    )
     const due = await SocialSchedule.find({ status: 'pending', runAt: { $lte: now } })
       .sort({ runAt: 1 })
       .limit(limit)
@@ -401,6 +409,40 @@ export async function findDoneSchedulesForUtcDay(now = new Date()) {
       .filter(Boolean)
   } catch (error) {
     logError('Find done social schedules for day failed', error)
+    return []
+  }
+}
+
+/**
+ * Done or failed schedules for the UTC day (quote was published / attempted).
+ * Email still goes out when every network fails after publish.
+ */
+export async function findEmailCandidateSchedulesForUtcDay(now = new Date()) {
+  const { start, end } = utcDayRange(now)
+  try {
+    if (mongoUri()) {
+      const SocialSchedule = await model()
+      const rows = await SocialSchedule.find({
+        status: { $in: ['done', 'failed'] },
+        runAt: { $gte: start, $lt: end },
+      })
+        .sort({ runAt: 1 })
+        .lean()
+      return rows.map((row) => publicRow(row)).filter(Boolean)
+    }
+    if (process.env.VERCEL) return []
+
+    return readLocal()
+      .filter((row) => {
+        if (row.status !== 'done' && row.status !== 'failed') return false
+        const t = new Date(row.runAt).getTime()
+        return t >= start.getTime() && t < end.getTime()
+      })
+      .sort((a, b) => new Date(a.runAt) - new Date(b.runAt))
+      .map((row) => publicRow(row))
+      .filter(Boolean)
+  } catch (error) {
+    logError('Find email candidate social schedules for day failed', error)
     return []
   }
 }
