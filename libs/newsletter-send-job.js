@@ -342,7 +342,7 @@ export function kickNewsletterSendQueue() {
   const origin = appOrigin()
   const secret = (process.env.CRON_SECRET || '').trim()
   if (!origin || !secret) return
-  fetch(`${origin}/api/cron/newsletter-send`, {
+  fetch(`${origin}/api/cron/newsletter?queue=1`, {
     headers: { authorization: `Bearer ${secret}` },
   }).catch((error) => logError('Failed to continue newsletter send', error))
 }
