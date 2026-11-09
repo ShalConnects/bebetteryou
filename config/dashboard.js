@@ -17,6 +17,20 @@ export const adminNav = [
   },
 ]
 
+/** ShalConnects profile — outreach only (separate Resend). */
+export const shalConnectsNav = [
+  {
+    href: '/dashboard/outreach',
+    label: 'Outreach',
+    icon: 'audience',
+    match: under('/dashboard/outreach'),
+  },
+]
+
+export function navForPath(pathname) {
+  return String(pathname || '').startsWith('/dashboard/outreach') ? shalConnectsNav : adminNav
+}
+
 /** In-page tabs. Same-page tabs share one `?section=` param, so old deep links keep working. */
 const sections = (path, items) => items.map(([id, label]) => ({ id, label, href: `${path}?section=${id}` }))
 

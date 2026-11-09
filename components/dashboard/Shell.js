@@ -4,6 +4,7 @@ import { brand } from '@/config/site'
 import BrandLogo from '@/components/site/BrandLogo'
 import DashboardNav from './Nav'
 import LogoutButton from './LogoutButton'
+import ProfileSwitcher from './ProfileSwitcher'
 import { ToastHost } from './toast'
 
 const quietLink = 'flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground'
@@ -16,6 +17,9 @@ export default function DashboardShell({ isAdmin, children }) {
           <Link href="/" aria-label={brand.name} className="px-3 pt-2">
             <BrandLogo />
           </Link>
+          <div className="px-1">
+            <ProfileSwitcher />
+          </div>
           <DashboardNav />
           <div className="mt-auto space-y-3 border-t border-border px-3 pt-4">
             <Link href="/" className={quietLink}>
@@ -27,11 +31,12 @@ export default function DashboardShell({ isAdmin, children }) {
       ) : null}
       <div className="flex min-w-0 flex-1 flex-col">
         <header
-          className={`flex h-14 shrink-0 items-center justify-between border-b border-border px-4 pt-[env(safe-area-inset-top)] ${isAdmin ? 'md:hidden' : ''}`}
+          className={`flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border px-4 pt-[env(safe-area-inset-top)] ${isAdmin ? 'md:hidden' : ''}`}
         >
           <Link href="/" aria-label={brand.name}>
             <BrandLogo />
           </Link>
+          {isAdmin ? <ProfileSwitcher /> : null}
           <LogoutButton className={quietLink} />
         </header>
         <main className="min-h-0 flex-1 overflow-y-auto">

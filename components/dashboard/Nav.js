@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChartColumn, Layers, LayoutDashboard, Settings, ShoppingBag, Users } from 'lucide-react'
-import { adminNav } from '@/config/dashboard'
+import { navForPath } from '@/config/dashboard'
 import LinkPending from './LinkPending'
 import { cn } from '@/libs/cn'
 
@@ -20,17 +20,19 @@ const icons = {
 export default function DashboardNav({ variant = 'side' }) {
   const path = usePathname()
   const bar = variant === 'bar'
+  const items = navForPath(path)
 
   return (
     <nav
       aria-label="Admin"
       className={
         bar
-          ? 'fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden'
+          ? 'fixed inset-x-0 bottom-0 z-20 grid border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden'
           : 'flex flex-col gap-1'
       }
+      style={bar ? { gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` } : undefined}
     >
-      {adminNav.map(({ href, label, icon, match }) => {
+      {items.map(({ href, label, icon, match }) => {
         const Icon = icons[icon]
         const on = match(path)
         return (
