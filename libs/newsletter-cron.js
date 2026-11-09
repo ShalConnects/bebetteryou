@@ -114,7 +114,7 @@ async function runCleanup(label) {
 
 /**
  * Full daily email pipeline: suppression sync → quote mail → sync again.
- * Shared by /api/cron/social (after social) and manual /api/cron/newsletter.
+ * Shared by /api/cron/social (after social) and manual /api/cron/social?emailOnly=1.
  */
 export async function runNewsletterCronPipeline(now = new Date()) {
   const cleanupBefore = await runCleanup('suppression cleanup (before send)')

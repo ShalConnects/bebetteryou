@@ -108,10 +108,10 @@ export default function IntegrationsPanel({ initialSocial, initialEmail, flash }
     setError('')
     setMessage('')
     try {
-      const res = await fetch('/api/integrations', {
+      const res = await fetch('/api/social/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ network, fields: drafts[network] || {} }),
+        body: JSON.stringify({ integrations: true, network, fields: drafts[network] || {} }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Save failed')
@@ -132,10 +132,10 @@ export default function IntegrationsPanel({ initialSocial, initialEmail, flash }
     setError('')
     setMessage('')
     try {
-      const res = await fetch('/api/integrations', {
+      const res = await fetch('/api/social/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ network, clear: true }),
+        body: JSON.stringify({ integrations: true, network, clear: true }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.error || 'Clear failed')

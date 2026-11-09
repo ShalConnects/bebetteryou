@@ -45,7 +45,7 @@ export default function ScheduleBoard({ initial = [], postsBySlug: initialPosts 
     setBusyId(id)
     setError('')
     try {
-      const res = await fetch(`/api/social/schedule?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+      const res = await fetch(`/api/social/post?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to cancel')
       setRows((prev) => prev.map((row) => (row.id === id ? { ...row, status: 'canceled' } : row)))

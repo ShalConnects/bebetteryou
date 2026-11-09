@@ -39,10 +39,11 @@ export default function TestNewsletterMail({ emails, quotes = [], posts = [], bo
     setError('')
     setResult('')
     try {
-      const res = await fetch('/api/newsletter/test-welcome', {
+      const res = await fetch('/api/newsletter/notify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          test: true,
           email,
           type,
           ...(needsSlug ? { slug: effectiveSlug } : {}),

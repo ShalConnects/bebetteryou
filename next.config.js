@@ -46,16 +46,20 @@ const nextConfig = {
       ['/dashboard/schedules', '/dashboard/quotes?section=schedules'],
       ['/dashboard/quotes/new', '/dashboard/quotes?section=new'],
       ['/dashboard/scripture', '/dashboard/tags?section=scripture'],
+      // Folded API paths (Hobby function limit) — bookmarks / old clients.
+      ['/api/cron/newsletter', '/api/cron/social?emailOnly=1'],
+      ['/api/social/preview', '/api/social/post?preview=1'],
+      ['/api/quotes/week-review', '/api/social/post?week=1&dry=1'],
+      ['/api/integrations', '/api/social/post?integrations=1'],
+      ['/api/newsletter/test-welcome', '/api/newsletter/notify'],
     ].map(([source, destination]) => ({ source, destination, permanent: false }))
   },
   serverExternalPackages: ['@napi-rs/canvas', '@napi-rs/canvas-win32-x64-msvc', 'ffmpeg-static'],
   outputFileTracingIncludes: {
     '/api/quotes/**': renderAssets,
     '/api/print/**': ['./assets/fonts/**/*'],
-    // YouTube Short encode — not oauth connect/callback.
+    // ffmpeg Short encode — only the two Hobby bundles that need it.
     '/api/social/post': shortEncode,
-    '/api/social/preview': shortEncode,
-    '/api/quotes/week-review': shortEncode,
     '/api/cron/social': shortEncode,
   },
   outputFileTracingExcludes: {

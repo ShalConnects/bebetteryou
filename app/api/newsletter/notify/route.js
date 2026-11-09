@@ -10,12 +10,17 @@ import {
   notifyBookSubscribers,
   notifyQuoteDigest,
   notifyQuoteSubscribers,
+  sendTestNewsletter,
 } from '@/libs/newsletter'
 import { logError } from '@/libs/logger'
 import { readQuotes } from '@/libs/quotes-store'
-import { newsletterNotifySchema, validateSchema } from '@/libs/validation-schemas'
+import {
+  newsletterNotifySchema,
+  newsletterTestEmailSchema,
+  validateSchema,
+} from '@/libs/validation-schemas'
 
-/** Sequential Resend fan-out for quote/blog/book/digest drops. */
+/** Fan-out notify + single-address test mail (was /api/newsletter/test-welcome). */
 export const maxDuration = 300
 
 async function syncBouncesBestEffort() {
@@ -33,6 +38,23 @@ async function handlePost(request) {
     if (auth instanceof NextResponse) return auth
 
     const body = await request.json().catch(() => null)
+
+    /** One-off template to a single inbox. */
+    if (body?.test === true || body?.test === 1) {
+      const validation = validateSchema(newsletterTestEmailSchema, body)
+      if (!validation.success) {
+        return NextResponse.json(
+          { error: validation.error.message, details: validation.error.details },
+          { status: 400 }
+        )
+      }
+      const result = await sendTestNewsletter(validation.data)
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error || 'Send failed' }, { status: 400 })
+      }
+      return NextResponse.json({ success: true, type: result.type })
+    }
+
     const validation = validateSchema(newsletterNotifySchema, body)
     if (!validation.success) {
       return NextResponse.json(
@@ -60,7 +82,6 @@ async function handlePost(request) {
       result = await notifyQuoteSubscribers(quote)
     }
 
-    // Catch hard bounces that already landed; soft ones sync on next cron.
     const bounceSync = await syncBouncesBestEffort()
     return NextResponse.json({ success: true, bounceSync, ...result })
   } catch (error) {

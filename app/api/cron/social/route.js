@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { runDueSocialSchedules } from '@/libs/social/run-due-schedules'
 import { runDailyYoutubeShort } from '@/libs/social/run-daily-youtube-short'
 import { runNewsletterCronPipeline } from '@/libs/newsletter-cron'
+import { kickNewsletterSendQueue, processNewsletterSendQueue } from '@/libs/newsletter-send-job'
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
@@ -9,11 +10,10 @@ import { cronAuthorized } from '@/libs/secret'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
- * 1) due social schedules → 2) backlog YouTube Short → 3) quote email.
- * Protect with CRON_SECRET.
+ * 1) due social → 2) quote email → 3) backlog YouTube Short.
+ * Also: `?emailOnly=1` (manual email), `?queue=1` (continue long newsletter send).
  */
 export const maxDuration = 300
-
 
 async function handleGet(req) {
   try {
@@ -21,9 +21,20 @@ async function handleGet(req) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const url = new URL(req.url)
+    if (url.searchParams.get('queue') === '1') {
+      const result = await processNewsletterSendQueue({ maxMs: 50000 })
+      if (result.remaining && !result.error) kickNewsletterSendQueue()
+      return NextResponse.json({ ok: true, ...result })
+    }
+
+    if (url.searchParams.get('emailOnly') === '1') {
+      const result = await runNewsletterCronPipeline()
+      return NextResponse.json({ ok: true, ...result })
+    }
+
     const schedules = await runDueSocialSchedules()
 
-    // Email right after social so YouTube encode/upload cannot eat the time budget.
     let newsletter = null
     try {
       newsletter = await runNewsletterCronPipeline()

@@ -46,7 +46,7 @@ export default function SocialPost({ slug, initialRetry = [], postDate: wanted }
   const [error, setError] = useState('')
 
   function loadSchedules(nextSlug) {
-    return fetch(`/api/social/schedule?slug=${encodeURIComponent(nextSlug)}`)
+    return fetch(`/api/social/post?schedules=1&slug=${encodeURIComponent(nextSlug)}`)
       .then((r) => r.json())
       .then((d) => setSchedules(d.schedules || []))
       .catch(() => setSchedules([]))
@@ -87,7 +87,7 @@ export default function SocialPost({ slug, initialRetry = [], postDate: wanted }
     setBusy(true)
     setError('')
     try {
-      const res = await fetch(`/api/social/preview?slug=${encodeURIComponent(slug)}`)
+      const res = await fetch(`/api/social/post?preview=1&slug=${encodeURIComponent(slug)}`)
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
         throw new Error(data.error || 'Failed to preview Short')
@@ -182,10 +182,11 @@ export default function SocialPost({ slug, initialRetry = [], postDate: wanted }
     setBusy(true)
     setError('')
     try {
-      const res = await fetch('/api/social/schedule', {
+      const res = await fetch('/api/social/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          schedule: true,
           slug,
           networks: apiNets,
           date: postDate,
@@ -208,7 +209,7 @@ export default function SocialPost({ slug, initialRetry = [], postDate: wanted }
     setBusy(true)
     setError('')
     try {
-      const res = await fetch(`/api/social/schedule?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+      const res = await fetch(`/api/social/post?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to cancel')
       await loadSchedules(slug)

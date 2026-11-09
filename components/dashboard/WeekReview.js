@@ -44,14 +44,14 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
     setPreview(null)
     try {
       trace('1/2 Fetching collage preview…', { count: quotes.length, mode })
-      const res = await fetch('/api/quotes/week-review?preview=1')
+      const res = await fetch('/api/social/post?week=1&dry=1')
       const data = await res.json().catch(() => ({}))
       if (!res.ok) throw new Error(data.reason || data.error || `Preview failed (${res.status})`)
       setPreview(data)
       trace(`1/2 Collage ok (${data.quotes?.length || 0} cards, ${data.collage || 'no file'})`)
 
       trace('2/2 Encoding Short (can take ~30s)…')
-      const shortRes = await fetch('/api/quotes/week-review?preview=1&part=short')
+      const shortRes = await fetch('/api/social/post?week=1&dry=1&part=short')
       if (!shortRes.ok) {
         const err = await shortRes.json().catch(() => ({}))
         throw new Error(err.error || `Short preview failed (${shortRes.status})`)
@@ -96,7 +96,11 @@ export default function WeekReview({ quotes: quotesProp = [], range, mode = 'dat
     setResult(null)
     try {
       trace('Publishing week in review…')
-      const res = await fetch('/api/quotes/week-review', { method: 'POST' })
+      const res = await fetch('/api/social/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ week: true }),
+      })
       const data = await res.json()
       if (!res.ok) throw new Error(data.reason || data.error || 'Failed')
       setResult(data)
