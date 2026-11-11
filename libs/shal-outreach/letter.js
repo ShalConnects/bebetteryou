@@ -227,23 +227,41 @@ P.S. Prefer not to hear from us? Reply "unsubscribe".`
   return { subject, text, html }
 }
 
+function isCsvHeaderRow(cells) {
+  if (!cells.length) return false
+  const normalized = cells.map((c) => c.toLowerCase()).filter(Boolean)
+  if (!normalized.length) return false
+  // Skip "email,name" / "name,email" / single "email" header lines.
+  return normalized.every((c) => /^(name|email|e-mail|mail)$/i.test(c))
+}
+
 export function parseList(text) {
   const people = []
   const removed = []
   const seen = new Set()
+  const removedSeen = new Set()
 
   for (const raw of String(text || '').split(/\r?\n/)) {
     const line = raw.trim()
     if (!line) continue
     const cells = line.split(',').map((s) => s.trim().replace(/^"|"$/g, ''))
+    if (isCsvHeaderRow(cells)) continue
     const emailCell = cells.find((c) => /@/.test(c))
     if (!emailCell) {
-      removed.push({ email: line, reason: 'no-email' })
+      const key = `no-email:${line.toLowerCase()}`
+      if (!removedSeen.has(key)) {
+        removedSeen.add(key)
+        removed.push({ email: line, reason: 'no-email' })
+      }
       continue
     }
     const email = emailCell.toLowerCase()
     if (!isValidEmail(email)) {
-      removed.push({ email, reason: 'invalid' })
+      const key = `invalid:${email}`
+      if (!removedSeen.has(key)) {
+        removedSeen.add(key)
+        removed.push({ email, reason: 'invalid' })
+      }
       continue
     }
     if (seen.has(email)) {

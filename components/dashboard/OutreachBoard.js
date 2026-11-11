@@ -719,9 +719,10 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
             description="From ShalConnects Resend webhook (/api/webhook/shal-resend). These addresses are auto-unsubscribed."
           >
             <EmailTable
+              stacked
               empty="No bounce or complaint events yet. Configure SHALCONNECTS_RESEND_WEBHOOK_SECRET."
               rows={(status?.recentEvents || []).map((r) => ({
-                email: r.email,
+                email: r.email || '(missing address)',
                 meta: `${r.type}${r.message ? ` · ${r.message}` : ''}${r.createdAt ? ` · ${String(r.createdAt).slice(0, 10)}` : ''}`,
               }))}
             />
@@ -833,14 +834,21 @@ function StatusPill({ status, reason }) {
   )
 }
 
-function EmailTable({ rows, empty }) {
+function EmailTable({ rows, empty, stacked = false }) {
   if (!rows?.length) return <p className="text-sm text-muted-foreground">{empty}</p>
   return (
     <ul className="divide-y divide-border text-sm">
       {rows.map((row, index) => (
-        <li key={`${row.email}-${row.meta}-${index}`} className="flex justify-between gap-3 py-2">
-          <span className="truncate">{row.email}</span>
-          <span className="shrink-0 text-muted-foreground">{row.meta}</span>
+        <li
+          key={`${row.email}-${row.meta}-${index}`}
+          className={stacked ? 'space-y-1 py-2.5' : 'flex justify-between gap-3 py-2'}
+        >
+          <span className={stacked ? 'break-all font-medium text-foreground' : 'truncate'}>
+            {row.email}
+          </span>
+          <span className={stacked ? 'block text-xs leading-relaxed text-muted-foreground' : 'shrink-0 text-muted-foreground'}>
+            {row.meta}
+          </span>
         </li>
       ))}
     </ul>

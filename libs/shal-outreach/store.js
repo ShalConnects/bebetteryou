@@ -221,8 +221,17 @@ export async function recordDeliveryEvent({
 export async function importPeople(csvText, { mode = 'merge' } = {}) {
   await connectDB()
   const { people, removed } = parseList(csvText)
-  // Don't flood Removed with every CSV duplicate; keep invalid / no-email only.
-  await appendRemoved(removed.filter((r) => r.reason === 'invalid' || r.reason === 'no-email'))
+  // Don't flood Removed with CSV duplicates or header noise; keep unique invalid / no-email only.
+  const importRemoved = []
+  const seenRemoved = new Set()
+  for (const row of removed) {
+    if (row.reason !== 'invalid' && row.reason !== 'no-email') continue
+    const key = `${row.reason}:${String(row.email || '').toLowerCase()}`
+    if (seenRemoved.has(key)) continue
+    seenRemoved.add(key)
+    importRemoved.push(row)
+  }
+  await appendRemoved(importRemoved)
 
   if (mode === 'replace') {
     await ShalOutreachContact.deleteMany({})
@@ -596,11 +605,25 @@ export async function getStatus() {
       ShalOutreachSent.find({}).sort({ createdAt: -1 }).limit(50).lean(),
       ShalOutreachStop.find({}).sort({ createdAt: -1 }).limit(100).lean(),
       ShalOutreachEvent.find({}).sort({ createdAt: -1 }).limit(100).lean(),
-      ShalOutreachRemoved.find({}).sort({ createdAt: -1 }).limit(100).lean(),
+      ShalOutreachRemoved.find({}).sort({ createdAt: -1 }).limit(200).lean(),
     ])
 
   const remaining = Math.max(0, valid - sentTotal)
   const cap = dailyCap()
+
+  // Dedupe noisy import rows; hide CSV header leftovers like "email,name".
+  const recentRemovedDeduped = []
+  const removedKeys = new Set()
+  for (const r of recentRemoved) {
+    const label = String(r.email || '').trim().toLowerCase()
+    if (!label) continue
+    if (/^(name|email|e-mail|mail)([,\s]+(name|email|e-mail|mail))*$/i.test(label)) continue
+    const key = `${label}|${r.reason || ''}`
+    if (removedKeys.has(key)) continue
+    removedKeys.add(key)
+    recentRemovedDeduped.push(r)
+    if (recentRemovedDeduped.length >= 100) break
+  }
 
   return {
     listMissing: valid === 0,
@@ -628,7 +651,7 @@ export async function getStatus() {
       message: r.message || '',
       createdAt: r.createdAt,
     })),
-    recentRemoved: recentRemoved.map((r) => ({
+    recentRemoved: recentRemovedDeduped.map((r) => ({
       email: r.email,
       reason: r.reason,
       day: r.day,
