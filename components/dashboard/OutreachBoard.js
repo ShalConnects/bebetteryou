@@ -262,6 +262,12 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
               Bounce/complaint webhook:{' '}
               {status.hasWebhookSecret ? 'secret set' : 'missing SHALCONNECTS_RESEND_WEBHOOK_SECRET'}
             </p>
+            <p className="text-sm text-muted-foreground">
+              Daily cron (after social @ 14:00 UTC):{' '}
+              {status.outreachCronEnabled
+                ? 'on — up to daily cap auto-sent'
+                : 'off — set SHALCONNECTS_OUTREACH_CRON=1 on Vercel'}
+            </p>
             {status.webhookUrl ? (
               <p className="mt-2 break-all rounded-md bg-muted px-2 py-1.5 text-xs text-muted-foreground">
                 Resend webhook URL: <span className="text-foreground">{status.webhookUrl}</span>

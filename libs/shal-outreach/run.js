@@ -19,6 +19,7 @@ import {
   releaseSendLock,
   resubscribeContact,
   sendGapMs,
+  siteOrigin,
   updateContact,
   updateSendProgress,
   getSendProgress,
@@ -233,6 +234,29 @@ export async function resetOutreachSent(email) {
 export async function restoreOutreachContact(email) {
   const result = await resubscribeContact(email)
   return { ...result, status: await getStatus() }
+}
+
+/** Env kill-switch for the daily social-cron outreach step. */
+export function outreachCronEnabled() {
+  const raw = String(process.env.SHALCONNECTS_OUTREACH_CRON || '')
+    .trim()
+    .toLowerCase()
+  return raw === '1' || raw === 'true' || raw === 'yes' || raw === 'on'
+}
+
+/**
+ * Fire-and-forget continuation so outreach gets its own serverless time budget
+ * after the main social/newsletter cron finishes (Hobby: one cron job).
+ */
+export function kickShalOutreachCron() {
+  if (!outreachCronEnabled()) return
+  if (process.env.JEST_WORKER_ID) return
+  const origin = siteOrigin()
+  const secret = (process.env.CRON_SECRET || '').trim()
+  if (!origin || !secret) return
+  fetch(`${origin}/api/cron/social?shalOutreach=1`, {
+    headers: { authorization: `Bearer ${secret}` },
+  }).catch(() => null)
 }
 
 export { getStatus, getSendProgress, outreachLetter }

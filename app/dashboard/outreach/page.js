@@ -31,6 +31,11 @@ export default async function OutreachPage() {
       webhookUrl: '',
       from: process.env.SHALCONNECTS_FROM || 'ShalConnects <hello@shalconnects.com>',
       storage: 'mongodb',
+      outreachCronEnabled: ['1', 'true', 'yes', 'on'].includes(
+        String(process.env.SHALCONNECTS_OUTREACH_CRON || '')
+          .trim()
+          .toLowerCase()
+      ),
       recentSent: [],
       recentUnsubscribed: [],
       recentEvents: [],

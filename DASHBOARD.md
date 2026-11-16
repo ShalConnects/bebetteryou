@@ -4,7 +4,7 @@ Admin only (`ADMIN_EMAIL`). Sign in at `/auth/signin` → `/dashboard`. Other ac
 
 **View site** opens the public homepage. **Log out** ends the session. Phone: **Admin section** dropdown. Desktop menu: Overview, Analytics, Quotes, Tags, Print, Subscribers, Practice (if on). Collapsed sections stay that way in this browser.
 
-One daily cron at **14:00 UTC** (~8pm Bangladesh, ~10am US Eastern in summer): due social posts, then a backlog YouTube Short if none today, then quote email (email only if a social send succeeded that UTC day).
+One daily cron at **14:00 UTC** (~8pm Bangladesh, ~10am US Eastern in summer): due social posts, then a backlog YouTube Short if none today, then quote email (email only if a social send succeeded that UTC day). If `SHALCONNECTS_OUTREACH_CRON=1`, it then queues ShalConnects outreach (up to the daily cap, separate Resend) via a follow-up request so it gets its own time budget.
 
 ## Overview
 
@@ -29,7 +29,7 @@ Four blocks: **New quote**, **Week in review**, **Schedules**, **Cards**.
 
 **Cards.** Search text, author, or #. Filter by tag or **All**. **no text** = words only in the image; not printable. Edit quote, author, tags, scripture theme (blank = from tags), **Pin books** / **Pin posts** (comma-separated slugs, e.g. `atomic-habits, cant-hurt-me`). **Save** keeps the image. **Save & regenerate** redraws it — use that after wording changes. **Delete**, **View on site**, **Close**.
 
-**Schedules.** **Failures** → **Retry failed** (failed networks only) or **Open in Cards**. **Upcoming** → **Cancel**. **Recent** is the last finished runs.
+**Schedules.** **Failures** → **Retry failed** (failed networks only) or **Open in Cards**. **Upcoming** → **Cancel**. **Recent** is the last finished runs. Token / reconnect steps per network: `docs/SOCIAL-TOKENS.md` (also **Settings → Integrations**).
 
 **Week in review** (Friday). Window is Saturday–Thursday. The page says which set loaded: that window, posts from that window, all posted cards, or newest fallback. **Preview (no publish)** builds collage + Short (~30s) and sends nothing. **Publish week in review** once, after preview:
 

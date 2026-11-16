@@ -642,6 +642,11 @@ export async function getStatus() {
     webhookUrl: `${siteOrigin()}/api/webhook/shal-resend`,
     from: process.env.SHALCONNECTS_FROM || 'ShalConnects <hello@shalconnects.com>',
     storage: 'mongodb',
+    outreachCronEnabled: ['1', 'true', 'yes', 'on'].includes(
+      String(process.env.SHALCONNECTS_OUTREACH_CRON || '')
+        .trim()
+        .toLowerCase()
+    ),
     sendProgress: await getSendProgress(),
     recentSent: recentSent.map((r) => ({ email: r.email, day: r.day })),
     recentUnsubscribed: recentUnsubscribed.map((r) => ({ email: r.email, reason: r.reason })),
