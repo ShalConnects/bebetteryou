@@ -19,11 +19,14 @@ import {
   releaseSendLock,
   resubscribeContact,
   sendGapMs,
+  sendHealth,
   updateContact,
   updateSendProgress,
   getSendProgress,
 } from './store.js'
+import { resolveMx } from 'node:dns/promises'
 import { kickCron } from '@/libs/secret'
+import { logInfo } from '@/libs/logger'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -59,6 +62,38 @@ export async function sendSelfTest() {
   return { to: FROM_ADDRESS, id: data?.id || null, subject: letter.subject }
 }
 
+const domainOf = (email) => email.split('@')[1]
+
+/**
+ * Drops addresses whose domain has no mail server (a big share of hard bounces) and stops them
+ * for good. A DNS timeout only skips the address today.
+ */
+export async function mailable(people) {
+  const verdict = {}
+  await Promise.all(
+    [...new Set(people.map((p) => domainOf(p.email)))].map((d) =>
+      resolveMx(d).then(
+        (mx) => (verdict[d] = mx.length ? 'ok' : 'dead'),
+        (err) => (verdict[d] = ['ENOTFOUND', 'ENODATA'].includes(err.code) ? 'dead' : 'unknown')
+      )
+    )
+  )
+  // Every domain failing means DNS is broken here, not that the whole list is dead.
+  if (people.length && !Object.values(verdict).includes('ok')) throw new Error('Mail-server lookup failed — nothing sent')
+  for (const p of people) if (verdict[domainOf(p.email)] === 'dead') await addUnsubscribe(p.email, 'no-mail-server')
+  return people.filter((p) => verdict[domainOf(p.email)] === 'ok')
+}
+
+/** Daily cron: same batch as the button, but holds off while the list is bouncing too much. */
+export async function sendCronBatch() {
+  const health = await sendHealth()
+  if (health.paused) {
+    logInfo('ShalConnects outreach paused: bounce rate too high', health)
+    return { sent: 0, attempted: 0, failures: [], paused: true, health }
+  }
+  return sendTodayBatch()
+}
+
 export async function sendTodayBatch() {
   const owner = await acquireSendLock()
   const started = Date.now()
@@ -83,11 +118,10 @@ export async function sendTodayBatch() {
     const sent = await loadSentEmails()
     const stopped = await loadStoppedEmails()
     const used = sent.filter((s) => s.day === day()).length
-    const batch = selectBatch(
-      people,
-      [...sent.map((s) => s.email), ...stopped],
-      Math.max(0, dailyCap() - used)
-    )
+    const room = Math.max(0, dailyCap() - used)
+    // Over-select so dropping dead domains still fills the day.
+    const candidates = selectBatch(people, [...sent.map((s) => s.email), ...stopped], Math.ceil(room * 1.5))
+    const batch = (await mailable(candidates)).slice(0, room)
     attempted = batch.length
     const gap = sendGapMs()
     // Rough ETA before first send (~0.9s/email + gap).

@@ -589,6 +589,19 @@ export async function resubscribeContact(email) {
   return { restored: true, email: e, reason: stop.reason || '' }
 }
 
+const HEALTH_WINDOW = 200
+/** Providers start throttling or suspending senders past a few % bounces + complaints. */
+export const MAX_BAD_RATE = 0.05
+
+/** Bounced or complained share of the last 200 sends. The daily cron pauses above MAX_BAD_RATE. */
+export async function sendHealth() {
+  await connectDB()
+  const recent = await ShalOutreachSent.find({}, { email: 1, _id: 0 }).sort({ createdAt: -1 }).limit(HEALTH_WINDOW).lean()
+  const bad = recent.length ? (await ShalOutreachEvent.distinct('email', { email: { $in: recent.map((r) => r.email) } })).length : 0
+  const rate = recent.length ? bad / recent.length : 0
+  return { window: recent.length, bad, rate, paused: recent.length >= 50 && rate > MAX_BAD_RATE }
+}
+
 export async function getStatus() {
   await connectDB()
   const today = day()
@@ -598,7 +611,8 @@ export async function getStatus() {
     await Promise.all([
       ShalOutreachContact.countDocuments(),
       ShalOutreachSent.countDocuments(),
-      ShalOutreachStop.countDocuments(),
+      // People who opted out — bounces, complaints and dead domains are counted on their own.
+      ShalOutreachStop.countDocuments({ reason: { $nin: ['bounced', 'complained', 'no-mail-server'] } }),
       ShalOutreachEvent.countDocuments({ type: 'bounced' }),
       ShalOutreachEvent.countDocuments({ type: 'complained' }),
       ShalOutreachSent.countDocuments({ day: today }),
@@ -648,6 +662,7 @@ export async function getStatus() {
         .toLowerCase()
     ),
     sendProgress: await getSendProgress(),
+    health: await sendHealth(),
     recentSent: recentSent.map((r) => ({ email: r.email, day: r.day })),
     recentUnsubscribed: recentUnsubscribed.map((r) => ({ email: r.email, reason: r.reason })),
     recentEvents: recentEvents.map((r) => ({

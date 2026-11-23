@@ -10,9 +10,12 @@ const CONTACT_FILTERS = [
   ['stopped', 'Unsubscribed'],
 ]
 
+const percent = (rate) => `${(rate * 100).toFixed(1)}%`
+
 export default function OutreachBoard({ initialStatus, initialPreview }) {
   const [tab, setTab] = useState('overview')
   const [status, setStatus] = useState(initialStatus)
+  const ofSent = (n) => (status?.sentTotal ? `${percent((n || 0) / status.sentTotal)} of sent` : null)
   const [preview, setPreview] = useState(initialPreview)
   const [busy, setBusy] = useState('')
   const [message, setMessage] = useState('')
@@ -246,10 +249,17 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
             <Stat label="Valid on list" value={status.valid} hint={status.listMissing ? 'No list yet' : null} />
             <Stat label="Remaining" value={status.remaining} hint={`${status.sentTotal?.toLocaleString() ?? 0} sent so far`} />
             <Stat label="Sent today" value={`${status.usedToday}/${status.cap}`} hint={`${status.roomToday} left`} />
-            <Stat label="Unsubscribed" value={status.unsubscribed} />
-            <Stat label="Bounces" value={status.bounced ?? 0} />
-            <Stat label="Complaints" value={status.complained ?? 0} />
+            <Stat label="Unsubscribed" value={status.unsubscribed} hint={ofSent(status.unsubscribed)} />
+            <Stat label="Bounces" value={status.bounced ?? 0} hint={ofSent(status.bounced)} />
+            <Stat label="Complaints" value={status.complained ?? 0} hint={ofSent(status.complained)} />
           </div>
+          {status.health?.paused ? (
+            <p className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-red-300">
+              Daily sending is paused: {status.health.bad} of the last {status.health.window} emails bounced or were
+              marked as spam ({percent(status.health.rate)}). Verify the list with an email checker and import the clean
+              one; the daily send resumes once that share is under 5%. The Send button still works.
+            </p>
+          ) : null}
           <DashPanel title="Sender" description="ShalConnects Resend only — never BeBetterYou quote mail. Storage: MongoDB.">
             <p className="text-sm">
               From: <span className="text-foreground">{status.from}</span>

@@ -38,6 +38,7 @@ const EventSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 })
 EventSchema.index({ createdAt: -1 })
+EventSchema.index({ email: 1 })
 EventSchema.index(
   { emailId: 1, type: 1 },
   { unique: true, partialFilterExpression: { emailId: { $type: 'string' } } }

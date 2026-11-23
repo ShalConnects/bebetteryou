@@ -7,7 +7,7 @@ import { kickNewsletterSendQueue, processNewsletterSendQueue } from '@/libs/news
 import {
   kickShalOutreachCron,
   outreachCronEnabled,
-  sendTodayBatch,
+  sendCronBatch,
 } from '@/libs/shal-outreach/run'
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
@@ -66,7 +66,7 @@ async function handleGet(req) {
         })
       }
       try {
-        const result = await sendTodayBatch()
+        const result = await sendCronBatch()
         return NextResponse.json({
           ok: true,
           shalOutreach: {
@@ -74,6 +74,7 @@ async function handleGet(req) {
             attempted: result.attempted,
             failures: result.failures,
             durationMs: result.durationMs,
+            paused: Boolean(result.paused),
           },
         })
       } catch (error) {
