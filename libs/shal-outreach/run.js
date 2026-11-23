@@ -13,6 +13,7 @@ import {
   importPeople,
   listContacts,
   loadAudience,
+  loadBouncedDomains,
   loadSentEmails,
   loadStoppedEmails,
   markSent,
@@ -44,7 +45,7 @@ export async function previewBatch() {
     .lean()
   const candidates = rows.filter((r) => !blocked.has(r.email))
   const used = sent.filter((s) => s.day === day()).length
-  const batch = selectBatch(candidates, [], Math.max(0, dailyCap() - used))
+  const batch = selectBatch(candidates, [], Math.max(0, status.cap - used))
   const letter = outreachLetter({ name: batch[0]?.name })
   return {
     ...status,
@@ -85,17 +86,15 @@ export async function mailable(people) {
   return people.filter((p) => verdict[domainOf(p.email)] === 'ok')
 }
 
-/** Daily cron: same batch as the button, but holds off while the list is bouncing too much. */
-export async function sendCronBatch() {
+export const sendCronBatch = () => sendTodayBatch()
+
+/** Holds off while the list is bouncing too much, unless the button's "send anyway" forces it. */
+export async function sendTodayBatch({ force = false } = {}) {
   const health = await sendHealth()
-  if (health.paused) {
+  if (health.paused && !force) {
     logInfo('ShalConnects outreach paused: bounce rate too high', health)
     return { sent: 0, attempted: 0, failures: [], paused: true, health }
   }
-  return sendTodayBatch()
-}
-
-export async function sendTodayBatch() {
   const owner = await acquireSendLock()
   const started = Date.now()
   let ok = 0
@@ -116,12 +115,12 @@ export async function sendTodayBatch() {
     const { people, listMissing } = await loadAudience()
     if (listMissing) throw new Error('List missing. Import CSV first.')
 
-    const sent = await loadSentEmails()
-    const stopped = await loadStoppedEmails()
+    const [sent, stopped, bouncedDomains] = await Promise.all([loadSentEmails(), loadStoppedEmails(), loadBouncedDomains()])
     const used = sent.filter((s) => s.day === day()).length
-    const room = Math.max(0, dailyCap() - used)
+    const room = Math.max(0, dailyCap(health.since) - used)
+    const fresh = people.filter((p) => !bouncedDomains.has(domainOf(p.email)))
     // Over-select so dropping dead domains still fills the day.
-    const candidates = selectBatch(people, [...sent.map((s) => s.email), ...stopped], Math.ceil(room * 1.5))
+    const candidates = selectBatch(fresh, [...sent.map((s) => s.email), ...stopped], Math.ceil(room * 1.5))
     const batch = (await mailable(candidates)).slice(0, room)
     attempted = batch.length
     const gap = sendGapMs()

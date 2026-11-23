@@ -140,7 +140,9 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
       if (action === 'send') {
         const secs = data.durationMs ? Math.round(data.durationMs / 1000) : null
         setMessage(
-          `Finished: sent ${data.sent} of ${data.attempted}` +
+          data.paused
+            ? 'Paused: bounce rate too high — nothing sent.'
+            : `Finished: sent ${data.sent} of ${data.attempted}` +
             (data.failures?.length ? ` · stopped after ${data.failures.length} failure(s)` : '') +
             (secs != null ? ` · ${formatDuration(secs)}` : '')
         )
@@ -264,8 +266,14 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
           {status.health?.paused ? (
             <p className="rounded-lg border border-destructive/40 bg-destructive/10 p-4 text-sm text-red-300">
               Daily sending is paused: {status.health.bad} of the last {status.health.window} emails bounced or were
-              marked as spam ({percent(status.health.rate)}). Verify the list with an email checker and import the clean
-              one; the daily send resumes once that share is under 5%. The Send button still works.
+              marked as spam ({percent(status.health.rate)}). Check the bounce reasons below, drop the source they come
+              from, then run Pre-clean list: the daily send restarts at 30 a day for a week. Send today asks before
+              sending anyway.
+              {status.bounceReasons?.length ? (
+                <span className="mt-2 block text-xs">
+                  Top bounce reasons: {status.bounceReasons.map((r) => `${r.reason} (${r.count})`).join(' · ')}
+                </span>
+              ) : null}
             </p>
           ) : null}
           <DashPanel title="Sender" description="ShalConnects Resend only — never BeBetterYou quote mail. Storage: MongoDB.">
@@ -656,14 +664,14 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
                 onClick={() => {
                   const n = status?.roomToday || 0
                   const eta = formatDuration(estimateSendSeconds(n))
-                  if (
-                    !window.confirm(
-                      `Send up to ${n} ShalConnects emails now?\nEstimated time: about ${eta}.`
-                    )
-                  ) {
+                  const paused = Boolean(status?.health?.paused)
+                  const warn = paused
+                    ? `Sending is paused: ${percent(status.health.rate)} of recent emails bounced. More bounces can get the Resend account suspended.\n\n`
+                    : ''
+                  if (!window.confirm(`${warn}Send up to ${n} ShalConnects emails now?\nEstimated time: about ${eta}.`)) {
                     return
                   }
-                  run('send')
+                  run('send', { force: paused })
                 }}
                 className="btn"
               >

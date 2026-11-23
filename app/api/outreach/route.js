@@ -48,7 +48,7 @@ async function handlePost(request) {
     const body = await request.json().catch(() => null)
     const action = String(body?.action || '')
     if (action === 'self') return NextResponse.json(await sendSelfTest())
-    if (action === 'send') return NextResponse.json(await sendTodayBatch())
+    if (action === 'send') return NextResponse.json(await sendTodayBatch({ force: Boolean(body?.force) }))
     if (action === 'clean') return NextResponse.json(await preClean())
     if (action === 'import') {
       return NextResponse.json(

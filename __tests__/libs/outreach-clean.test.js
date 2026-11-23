@@ -10,9 +10,21 @@ describe('outreach cleanReason', () => {
     expect(cleanReason('not-an-email')).toBe('invalid')
   })
 
+  it('skips ISP subdomains and schools, universities, government and the NHS', () => {
+    expect(cleanReason('a@tx.rr.com')).toBe('personal-mailbox')
+    expect(cleanReason('a@poczta.onet.pl')).toBe('personal-mailbox')
+    expect(cleanReason('a@gmail.com.au')).toBe('personal-mailbox')
+    expect(cleanReason('a@suddenlink.net')).toBe('personal-mailbox')
+    for (const d of ['osu.edu', 'kingston.ac.uk', 'connect.qut.edu.au', 'nhs.net', 'ddg64.navy.mil', 'x.gov.uk']) {
+      expect(cleanReason(`a@${d}`)).toBe('institution')
+    }
+  })
+
   it('keeps business domains', () => {
     expect(cleanReason('owner@paddyrankin.co.uk')).toBe('')
     expect(cleanReason('info@alliedprograms.com.au')).toBe('')
+    expect(cleanReason('hi@hudsonplatingworks.com')).toBe('')
+    expect(cleanReason('hi@shop.live')).toBe('')
   })
 
   it('fixes typo top-level domains to .com', () => {

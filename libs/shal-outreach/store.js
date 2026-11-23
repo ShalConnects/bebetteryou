@@ -66,8 +66,13 @@ const day = () => new Date().toISOString().slice(0, 10)
 const SEND_GAP_MS = Number(process.env.SHALCONNECTS_OUTREACH_SEND_GAP_MS ?? 200)
 const LOCK_MS = 10 * 60 * 1000
 
-export function dailyCap() {
-  return Number(process.env.SHALCONNECTS_OUTREACH_DAILY_CAP ?? DAILY_CAP)
+const RAMP_CAP = 30
+const RAMP_MS = 7 * 864e5
+
+/** Full cap, but only RAMP_CAP a day for a week after a pre-clean, so a still-bad list can't burn 100 sends. */
+export function dailyCap(since) {
+  const cap = Number(process.env.SHALCONNECTS_OUTREACH_DAILY_CAP ?? DAILY_CAP)
+  return since && Date.now() - new Date(since) < RAMP_MS ? Math.min(cap, RAMP_CAP) : cap
 }
 
 export function sendGapMs() {
@@ -164,6 +169,13 @@ export async function markSent(email) {
     { $setOnInsert: { email: e, day: day() } },
     { upsert: true }
   )
+}
+
+/** Domains with a hard bounce: other addresses there tend to bounce too. Webmail is left alone. */
+export async function loadBouncedDomains() {
+  await connectDB()
+  const emails = await ShalOutreachEvent.distinct('email', { type: 'bounced', bounceType: { $ne: 'Transient' } })
+  return new Set(emails.filter((e) => cleanReason(e) !== 'personal-mailbox').map((e) => e.split('@')[1]))
 }
 
 export async function addUnsubscribe(email, reason = 'unsubscribe') {
@@ -607,7 +619,7 @@ export async function sendHealth() {
     .lean()
   const bad = recent.length ? (await ShalOutreachEvent.distinct('email', { email: { $in: recent.map((r) => r.email) } })).length : 0
   const rate = recent.length ? bad / recent.length : 0
-  return { window: recent.length, bad, rate, paused: recent.length >= 50 && rate > MAX_BAD_RATE }
+  return { since, window: recent.length, bad, rate, paused: recent.length >= 50 && rate > MAX_BAD_RATE }
 }
 
 /**
@@ -652,7 +664,7 @@ export async function getStatus() {
   const today = day()
   // Fast counts only — avoid $lookup over ~178k contacts (that made localhost feel stuck).
   // remaining ≈ contacts not yet mailed; stopped-but-never-sent is a small edge case.
-  const [valid, sentTotal, unsubscribed, bounced, complained, usedToday, recentSent, recentUnsubscribed, recentEvents, recentRemoved, cleaned] =
+  const [valid, sentTotal, unsubscribed, bounced, complained, usedToday, recentSent, recentUnsubscribed, recentEvents, recentRemoved, cleaned, bounceReasons, health] =
     await Promise.all([
       ShalOutreachContact.countDocuments(),
       ShalOutreachSent.countDocuments(),
@@ -666,10 +678,17 @@ export async function getStatus() {
       ShalOutreachEvent.find({}).sort({ createdAt: -1 }).limit(100).lean(),
       ShalOutreachRemoved.find({}).sort({ createdAt: -1 }).limit(200).lean(),
       ShalOutreachStop.countDocuments({ reason: { $in: CLEAN_REASONS } }),
+      ShalOutreachEvent.aggregate([
+        { $match: { type: 'bounced' } },
+        { $group: { _id: { $ifNull: ['$bounceSubType', '$message'] }, count: { $sum: 1 } } },
+        { $sort: { count: -1 } },
+        { $limit: 6 },
+      ]),
+      sendHealth(),
     ])
 
   const remaining = Math.max(0, valid - sentTotal - cleaned)
-  const cap = dailyCap()
+  const cap = dailyCap(health.since)
 
   // Dedupe noisy import rows; hide CSV header leftovers like "email,name".
   const recentRemovedDeduped = []
@@ -708,7 +727,8 @@ export async function getStatus() {
         .toLowerCase()
     ),
     sendProgress: await getSendProgress(),
-    health: await sendHealth(),
+    health,
+    bounceReasons: bounceReasons.map((r) => ({ reason: r._id || 'unknown', count: r.count })),
     recentSent: recentSent.map((r) => ({ email: r.email, day: r.day })),
     recentUnsubscribed: recentUnsubscribed.map((r) => ({ email: r.email, reason: r.reason })),
     recentEvents: recentEvents.map((r) => ({
