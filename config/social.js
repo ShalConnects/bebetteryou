@@ -1,3 +1,6 @@
+/** Card days, as UTC weekdays of the 8 pm slot (0 = Sun): Mon, Wed, Thu, Sat. Friday is the week review. */
+export const postWeekdays = [1, 3, 4, 6]
+
 /** Networks we can publish quote cards to. Enabled when all env keys exist. */
 export const postNetworks = [
   {

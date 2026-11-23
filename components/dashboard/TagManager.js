@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Sheet } from '@/components/ui/sheet'
-import { manageQuotesHref } from '@/libs/dashboard-ops'
+import { manageQuotesHref, plural } from '@/libs/dashboard-ops'
 
 const inputClass =
   'w-full border border-line bg-ink px-4 py-3 text-paper outline-none focus:border-paper/40'
@@ -17,7 +17,6 @@ const fields = [
   ['hashtags', 'Hashtags', '#motivation #bebetteryou'],
 ]
 const usage = ['quotes', 'posts', 'books', 'passages']
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 
 export default function TagManager({ tags: initial }) {
   const [items, setItems] = useState(initial)

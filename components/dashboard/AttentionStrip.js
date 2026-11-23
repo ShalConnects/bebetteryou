@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { CircleCheck } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { formatStatus } from '@/libs/print-format'
-import { formatScheduleWhen, manageQuotesHref, slotStatus } from '@/libs/dashboard-ops'
+import { formatScheduleWhen, manageQuotesHref, plural, slotStatus } from '@/libs/dashboard-ops'
+import { slotOnDate } from '@/libs/social/post-slot'
 
-const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
 const calendar = manageQuotesHref({ section: 'schedules' })
 
 /** Today's to-dos, worst first. Upcoming posts live on the calendar, so only missed ones show here. */
@@ -13,6 +13,8 @@ export default function AttentionStrip({
   orders = [],
   upcoming = [],
   pendingSocial = [],
+  brokenSocial = [],
+  emptyDays = [],
   shortsBacklog = null,
 }) {
   const overdue = upcoming.filter((row) => slotStatus(row) === 'overdue')
@@ -23,6 +25,13 @@ export default function AttentionStrip({
       'Overdue',
       `${overdue.map((r) => r.slug).join(', ')} missed ${formatScheduleWhen(overdue[0].runAt)} — goes out with the next 8 pm run`,
       calendar,
+    ],
+    ...brokenSocial.map((n) => ['danger', 'Connect', `${n.label}: ${n.lastError}`, '/dashboard/integrations']),
+    emptyDays.length && [
+      'warn',
+      'No card',
+      `Nothing scheduled for ${emptyDays.map((d) => formatScheduleWhen(slotOnDate(d))).join(', ')}`,
+      manageQuotesHref({ section: 'new', date: emptyDays[0] }),
     ],
     shortsBacklog != null && shortsBacklog < 3 && [
       shortsBacklog ? 'warn' : 'danger',

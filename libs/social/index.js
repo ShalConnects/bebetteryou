@@ -33,7 +33,7 @@ const providers = {
 /** Env + Integrations store; YouTube probes refresh; Pinterest may be OAuth-connected. */
 export async function readyNetworks() {
   const { social } = await listIntegrationStatus()
-  return social.map(({ id, label, ready, pending, connectable, reconnect, connectHref }) => ({
+  return social.map(({ id, label, ready, pending, connectable, reconnect, connectHref, lastError }) => ({
     id,
     label,
     ready: Boolean(ready),
@@ -41,6 +41,7 @@ export async function readyNetworks() {
     connectable: Boolean(connectable),
     reconnect: Boolean(reconnect),
     connectHref: connectHref || null,
+    lastError: lastError || '',
   }))
 }
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { runDueSocialSchedules } from '@/libs/social/run-due-schedules'
 import { runDailyYoutubeShort } from '@/libs/social/run-daily-youtube-short'
+import { renewThreadsToken } from '@/libs/social/providers/threads'
 import { runNewsletterCronPipeline } from '@/libs/newsletter-cron'
 import { kickNewsletterSendQueue, processNewsletterSendQueue } from '@/libs/newsletter-send-job'
 import {
@@ -15,11 +16,21 @@ import { cronAuthorized } from '@/libs/secret'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
- * 1) due social → 2) quote email → 3) backlog YouTube Short
+ * 0) weekly Threads token renewal → 1) due social → 2) quote email → 3) backlog YouTube Short
  * 4) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
  * Also: `?emailOnly=1`, `?queue=1`, `?shalOutreach=1` / `?outreachOnly=1`.
  */
 export const maxDuration = 300
+
+/** One cron step: its failure is logged and reported, never stops the steps after it. */
+async function step(label, run) {
+  try {
+    return await run()
+  } catch (error) {
+    logError(`${label} (social cron) failed`, error)
+    return { ok: false, error: error.message || 'Failed' }
+  }
+}
 
 async function handleGet(req) {
   try {
@@ -70,23 +81,10 @@ async function handleGet(req) {
       }
     }
 
+    const threadsToken = await step('Threads token renewal', renewThreadsToken)
     const schedules = await runDueSocialSchedules()
-
-    let newsletter = null
-    try {
-      newsletter = await runNewsletterCronPipeline()
-    } catch (error) {
-      logError('Newsletter (after social cron) failed', error)
-      newsletter = { ok: false, error: error.message || 'Failed' }
-    }
-
-    let youtubeShort = null
-    try {
-      youtubeShort = await runDailyYoutubeShort()
-    } catch (error) {
-      logError('Daily YouTube Short (after social cron) failed', error)
-      youtubeShort = { ok: false, error: error.message || 'Failed' }
-    }
+    const newsletter = await step('Newsletter', runNewsletterCronPipeline)
+    const youtubeShort = await step('Daily YouTube Short', runDailyYoutubeShort)
 
     // Separate invocation so 100 outreach sends get a fresh time budget.
     const outreachCron = outreachCronEnabled()
@@ -97,6 +95,7 @@ async function handleGet(req) {
       ...schedules,
       youtubeShort,
       newsletter,
+      threadsToken,
       shalOutreachQueued: outreachCron,
     })
   } catch (error) {

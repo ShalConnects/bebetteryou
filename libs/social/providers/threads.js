@@ -1,10 +1,36 @@
 import { resolveThreadsKeys } from '@/libs/integrations/credentials'
+import { getIntegration, saveIntegration } from '@/libs/integrations/store'
 
 /** Threads: create container → wait ready → publish. Needs a public imageUrl. */
 const GRAPH = 'https://graph.threads.net/v1.0'
 
 /** Gap between root and each reply — Meta’s reply pipeline needs settle time. */
 const THREAD_GAP_MS = 12_000
+
+const RENEW_EVERY_MS = 7 * 24 * 60 * 60 * 1000
+
+/**
+ * Long-lived tokens die after 60 days and can only be renewed while still valid, so the daily
+ * cron renews weekly. A failure is saved as lastError, which the dashboard shows.
+ */
+export async function renewThreadsToken(now = new Date()) {
+  const { token } = await resolveThreadsKeys()
+  if (!token) return 'not_configured'
+  const last = Date.parse((await getIntegration('threads'))?.extras?.renewedAt)
+  const stamp = { renewedAt: now.toISOString() }
+  if (!last) return saveIntegration('threads', { extras: stamp }).then(() => 'clock_started')
+  if (now - last < RENEW_EVERY_MS) return 'fresh'
+
+  const res = await fetch(`https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token=${token}`)
+  const data = await res.json().catch(() => ({}))
+  if (!data.access_token) {
+    const lastError = `Token renewal failed — paste a new token: ${data.error?.message || res.status}`
+    await saveIntegration('threads', { lastError })
+    throw new Error(lastError)
+  }
+  await saveIntegration('threads', { accessToken: data.access_token, lastError: '', extras: stamp })
+  return 'renewed'
+}
 
 /** Sync env-only (tests). Prefer resolveThreadsKeys() at runtime. */
 export function threadsKeys() {

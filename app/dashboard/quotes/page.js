@@ -1,3 +1,4 @@
+import FillSchedule from '@/components/dashboard/FillSchedule'
 import ScheduleBoard from '@/components/dashboard/ScheduleBoard'
 import ScheduleCalendar from '@/components/dashboard/ScheduleCalendar'
 import QuoteManager from '@/components/dashboard/QuoteManager'
@@ -22,7 +23,11 @@ const tabs = {
     const postsBySlug = await readPostsBySlugs(schedules.map((s) => s.slug))
     return (
       <>
-        <DashPanel title="Next 14 days" description="One post a day at 8 pm Bangladesh time (14:00 UTC cron).">
+        <DashPanel
+          title="Next 14 days"
+          description="Cards go out Mon, Wed, Thu and Sat at 8 pm Bangladesh time (14:00 UTC cron)."
+          action={<FillSchedule />}
+        >
           <ScheduleCalendar schedules={schedules} quotes={quotes} postsBySlug={postsBySlug} />
         </DashPanel>
         <DashPanel title="Queue & history" description="Green posted, red failed, grey waiting — per network.">

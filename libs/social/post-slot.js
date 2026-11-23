@@ -1,3 +1,5 @@
+import { postWeekdays } from '@/config/social'
+
 /** Daily social slot. Cron runs once, at 14:00 UTC. */
 
 export const POST_HOUR_UTC = 14
@@ -48,4 +50,16 @@ export function runAtFromPostDate(value, now = new Date()) {
   const when = slotOnDate(date)
   if (when.getTime() <= now.getTime()) throw new Error('That day’s post time has already passed')
   return when
+}
+
+/** Card days in the next `days` whose slot is still ahead and has no pending card, as `YYYY-MM-DD`. */
+export function emptyPostDays(schedules = [], days = 14, now = new Date()) {
+  const taken = new Set(schedules.filter((s) => s.status === 'pending').map((s) => utcDateInput(new Date(s.runAt))))
+  const out = []
+  for (let i = 0; i < days; i++) {
+    const day = new Date(now.getTime() + i * 86_400_000)
+    const date = utcDateInput(day)
+    if (postWeekdays.includes(day.getUTCDay()) && slotOnDate(date) > now && !taken.has(date)) out.push(date)
+  }
+  return out
 }

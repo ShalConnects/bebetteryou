@@ -147,3 +147,6 @@ export function manageQuotesHref({ quote, retry, section, date, tag } = {}) {
   const s = q.toString()
   return s ? `/dashboard/quotes?${s}` : '/dashboard/quotes'
 }
+
+/** `1 card`, `3 cards`. */
+export const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`

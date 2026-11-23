@@ -1,4 +1,4 @@
-import { nextPostDate, runAtFromPostDate } from '@/libs/social/post-slot'
+import { emptyPostDays, nextPostDate, runAtFromPostDate } from '@/libs/social/post-slot'
 
 describe('post slot', () => {
   const before = new Date('2026-10-23T13:00:00.000Z')
@@ -22,5 +22,13 @@ describe('post slot', () => {
   it('rejects a missing or impossible date', () => {
     expect(() => runAtFromPostDate('', before)).toThrow(/Pick a date/)
     expect(() => runAtFromPostDate('2026-02-31', before)).toThrow(/Pick a date/)
+  })
+
+  it('lists empty card days (Mon, Wed, Thu, Sat) whose slot is still ahead', () => {
+    const mon = new Date('2026-11-23T10:00:00.000Z')
+    expect(emptyPostDays([], 7, mon)).toEqual(['2026-11-23', '2026-11-25', '2026-11-26', '2026-11-28'])
+    const taken = [{ status: 'pending', runAt: '2026-11-25T14:00:00.000Z' }, { status: 'done', runAt: '2026-11-26T14:00:00.000Z' }]
+    expect(emptyPostDays(taken, 7, mon)).toEqual(['2026-11-23', '2026-11-26', '2026-11-28'])
+    expect(emptyPostDays([], 1, new Date('2026-11-23T15:00:00.000Z'))).toEqual([])
   })
 })

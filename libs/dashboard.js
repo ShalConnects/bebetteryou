@@ -9,6 +9,7 @@ import { cachedReadyNetworks } from '@/libs/social/status-cache'
 import { readPostsBySlugs } from '@/libs/social/post-store'
 import { countYoutubeShortsBacklog } from '@/libs/social/run-daily-youtube-short'
 import { listAllSchedules } from '@/libs/social/schedule-store'
+import { emptyPostDays } from '@/libs/social/post-slot'
 import {
   networkLastActivity,
   scheduleFailures,
@@ -64,6 +65,8 @@ export async function adminOverview(quotes) {
       orders,
       upcoming: upcomingPending(schedules, 3),
       pendingSocial: social.filter((n) => n.pending),
+      brokenSocial: social.filter((n) => n.lastError),
+      emptyDays: emptyPostDays(schedules, 3),
       shortsBacklog: countYoutubeShortsBacklog(quotes, postsBySlug),
     },
   }

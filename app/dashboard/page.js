@@ -11,6 +11,7 @@ import { adminOverview } from '@/libs/dashboard'
 import { changeLabel } from '@/libs/analytics'
 import { coveredDays, manageQuotesHref } from '@/libs/dashboard-ops'
 import { readQuotes } from '@/libs/quotes-store'
+import { emptyPostDays } from '@/libs/social/post-slot'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AttentionStrip from '@/components/dashboard/AttentionStrip'
@@ -72,7 +73,11 @@ export default async function Dashboard({ searchParams }) {
             value={count(stats.visitors?.now)}
             hint={stats.visitors ? changeLabel(stats.visitors.now, stats.visitors.prev, 7) || 'no visits the week before' : null}
           />
-          <Stat label="Days covered" value={`${coveredDays(schedules, 7)}/7`} hint="next 7 days with a post" />
+          <Stat
+            label="Days covered"
+            value={`${coveredDays(schedules, 7)}/${emptyPostDays([], 7).length}`}
+            hint="card days in the next 7 with a post"
+          />
         </div>
 
         <div className="grid gap-4 lg:grid-cols-3">
@@ -82,7 +87,7 @@ export default async function Dashboard({ searchParams }) {
             </DashPanel>
             <DashPanel
               title="Next 7 days"
-              description="One post a day at 8 pm Bangladesh time."
+              description="Cards go out Mon, Wed, Thu and Sat at 8 pm Bangladesh time."
               action={
                 <Button asChild variant="outline" size="sm">
                   <Link href={manageQuotesHref({ section: 'schedules' })}>Calendar</Link>

@@ -13,6 +13,7 @@ import {
   recordDoneSocialSend,
 } from '@/libs/social/schedule-store'
 import { runAtFromPostDate } from '@/libs/social/post-slot'
+import { fillPostDays } from '@/libs/social/fill-schedule'
 import { refreshNetworkStatus } from '@/libs/social/status-cache'
 import { publishQuote, readQuotes } from '@/libs/quotes-store'
 import { logError, logInfo } from '@/libs/logger'
@@ -116,6 +117,15 @@ export async function POST(req) {
       return NextResponse.json({ ok: true, ...(await listIntegrationStatus()) })
     } catch (err) {
       return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })
+    }
+  }
+
+  /** Calendar "Fill next 2 weeks": drafts onto empty card days. */
+  if (body?.fill === true) {
+    try {
+      return NextResponse.json(await fillPostDays())
+    } catch (err) {
+      return NextResponse.json({ error: err.message || 'Fill failed' }, { status: 400 })
     }
   }
 

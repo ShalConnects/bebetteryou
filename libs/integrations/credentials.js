@@ -124,6 +124,8 @@ export function fieldsToPatch(network, fields = {}) {
     if (f.pageId) extras.pageId = f.pageId
   } else if (network === 'threads') {
     if (f.accessToken) accessToken = f.accessToken
+    // A pasted token starts the weekly renewal clock (Threads refuses renewals under 24 h old).
+    if (f.accessToken) extras.renewedAt = new Date().toISOString()
     if (f.userId) extras.userId = f.userId
   } else if (network === 'linkedin') {
     if (f.accessToken) accessToken = f.accessToken
