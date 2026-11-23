@@ -15,11 +15,14 @@ export function cronAuthorized(req) {
   return safeEqual(req.headers.get('authorization'), secret && `Bearer ${secret}`)
 }
 
-/** Start another cron run (its own 300 s budget) without waiting for it. */
-export function kickCron(query) {
+/**
+ * Start another cron run (its own 300 s budget). Waits 2 s, not for the run: a request fired
+ * as a function returns never leaves, because Vercel freezes the function first.
+ */
+export async function kickCron(query) {
   const secret = (process.env.CRON_SECRET || '').trim()
   if (!secret || process.env.JEST_WORKER_ID) return
-  fetch(`${getSiteUrl()}/api/cron/social?${query}`, { headers: { authorization: `Bearer ${secret}` } }).catch(
-    (error) => logError(`Cron kick (${query}) failed`, error)
-  )
+  const call = fetch(`${getSiteUrl()}/api/cron/social?${query}`, { headers: { authorization: `Bearer ${secret}` } })
+  call.catch((error) => logError(`Cron kick (${query}) failed`, error))
+  await Promise.race([call, new Promise((resolve) => setTimeout(resolve, 2000))]).catch(() => {})
 }

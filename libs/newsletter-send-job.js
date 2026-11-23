@@ -334,7 +334,7 @@ export const kickNewsletterSendQueue = () => kickCron('queue=1')
 
 export async function startNewsletterSend() {
   const result = await processNewsletterSendQueue({ maxMs: 20000 })
-  if (result.remaining && !result.error) kickNewsletterSendQueue()
+  if (result.remaining && !result.error) await kickNewsletterSendQueue()
   return result
 }
 

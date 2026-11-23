@@ -248,8 +248,8 @@ export function outreachCronEnabled() {
  * Fire-and-forget continuation so outreach gets its own serverless time budget
  * after the main social/newsletter cron finishes (Hobby: one cron job).
  */
-export function kickShalOutreachCron() {
-  if (outreachCronEnabled()) kickCron('shalOutreach=1')
+export async function kickShalOutreachCron() {
+  if (outreachCronEnabled()) await kickCron('shalOutreach=1')
 }
 
 export { getStatus, getSendProgress, outreachLetter }

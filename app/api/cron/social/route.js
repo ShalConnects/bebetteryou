@@ -44,7 +44,7 @@ async function handleGet(req) {
     const url = new URL(req.url)
     if (url.searchParams.get('queue') === '1') {
       const result = await processNewsletterSendQueue({ maxMs: 50000 })
-      if (result.remaining && !result.error) kickNewsletterSendQueue()
+      if (result.remaining && !result.error) await kickNewsletterSendQueue()
       return NextResponse.json({ ok: true, ...result })
     }
 
@@ -90,7 +90,7 @@ async function handleGet(req) {
 
     // Kicked first, so the request is out long before this run returns.
     const weekReviewQueued = new Date().getUTCDay() === weekReviewWeekday
-    if (weekReviewQueued) kickCron('weekReview=1')
+    if (weekReviewQueued) await kickCron('weekReview=1')
 
     const threadsToken = await step('Threads token renewal', renewThreadsToken)
     const schedules = await runDueSocialSchedules()
@@ -99,7 +99,7 @@ async function handleGet(req) {
 
     // Separate invocation so 100 outreach sends get a fresh time budget.
     const outreachCron = outreachCronEnabled()
-    if (outreachCron) kickShalOutreachCron()
+    if (outreachCron) await kickShalOutreachCron()
 
     return NextResponse.json({
       ok: true,

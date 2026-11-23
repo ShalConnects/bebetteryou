@@ -1,8 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { DashPanel } from '@/components/dashboard/ui'
-import { Card } from '@/components/ui/card'
+import { DashPanel, Stat } from '@/components/dashboard/ui'
 
 const CONTACT_FILTERS = [
   ['all', 'All'],
@@ -245,7 +244,7 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
         <>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             <Stat label="Valid on list" value={status.valid} hint={status.listMissing ? 'No list yet' : null} />
-            <Stat label="Remaining" value={status.remaining} />
+            <Stat label="Remaining" value={status.remaining} hint={`${status.sentTotal?.toLocaleString() ?? 0} sent so far`} />
             <Stat label="Sent today" value={`${status.usedToday}/${status.cap}`} hint={`${status.roomToday} left`} />
             <Stat label="Unsubscribed" value={status.unsubscribed} />
             <Stat label="Bounces" value={status.bounced ?? 0} />
@@ -815,15 +814,6 @@ function SendProgressBar({ progress }) {
   )
 }
 
-function Stat({ label, value, hint }) {
-  return (
-    <Card className="p-4">
-      <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-foreground">{value}</p>
-      {hint ? <p className="mt-0.5 text-xs text-muted-foreground">{hint}</p> : null}
-    </Card>
-  )
-}
 
 function StatusPill({ status, reason }) {
   const styles =
