@@ -1,6 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { connectDB } from '@/libs/mongo'
 import { DAILY_CAP, isValidEmail, parseList } from './letter.js'
+import { CLEAN_REASONS, cleanReason } from './clean.js'
 import {
   ShalOutreachContact,
   ShalOutreachEvent,
@@ -593,13 +594,42 @@ const HEALTH_WINDOW = 200
 /** Providers start throttling or suspending senders past a few % bounces + complaints. */
 export const MAX_BAD_RATE = 0.05
 
-/** Bounced or complained share of the last 200 sends. The daily cron pauses above MAX_BAD_RATE. */
+/**
+ * Bounced or complained share of the last 200 sends since the last pre-clean. The daily cron
+ * pauses above MAX_BAD_RATE.
+ */
 export async function sendHealth() {
   await connectDB()
-  const recent = await ShalOutreachSent.find({}, { email: 1, _id: 0 }).sort({ createdAt: -1 }).limit(HEALTH_WINDOW).lean()
+  const since = (await ShalOutreachLock.findById('send', { cleanedAt: 1 }).lean())?.cleanedAt
+  const recent = await ShalOutreachSent.find(since ? { createdAt: { $gt: since } } : {}, { email: 1, _id: 0 })
+    .sort({ createdAt: -1 })
+    .limit(HEALTH_WINDOW)
+    .lean()
   const bad = recent.length ? (await ShalOutreachEvent.distinct('email', { email: { $in: recent.map((r) => r.email) } })).length : 0
   const rate = recent.length ? bad / recent.length : 0
   return { window: recent.length, bad, rate, paused: recent.length >= 50 && rate > MAX_BAD_RATE }
+}
+
+/**
+ * Stops every not-yet-mailed contact that cleanReason() flags (reversible: they're Stop rows
+ * with a reason, contacts stay) and restarts bounce health from now.
+ */
+export async function preClean() {
+  await connectDB()
+  const [contacts, sent, stopped] = await Promise.all([
+    ShalOutreachContact.find({}, { email: 1, _id: 0 }).lean(),
+    ShalOutreachSent.distinct('email'),
+    ShalOutreachStop.distinct('email'),
+  ])
+  const skip = new Set([...sent, ...stopped])
+  const rows = contacts.filter((c) => !skip.has(c.email)).map((c) => ({ email: c.email, reason: cleanReason(c.email) }))
+  const flagged = rows.filter((r) => r.reason)
+  for (let i = 0; i < flagged.length; i += 5000) {
+    await ShalOutreachStop.insertMany(flagged.slice(i, i + 5000), { ordered: false }).catch(() => null)
+  }
+  await ShalOutreachLock.updateOne({ _id: 'send' }, { $set: { cleanedAt: new Date() } }, { upsert: true, setDefaultsOnInsert: true })
+  const byReason = Object.fromEntries(CLEAN_REASONS.map((r) => [r, flagged.filter((f) => f.reason === r).length]))
+  return { checked: rows.length, removed: flagged.length, kept: rows.length - flagged.length, byReason }
 }
 
 export async function getStatus() {
@@ -607,12 +637,12 @@ export async function getStatus() {
   const today = day()
   // Fast counts only — avoid $lookup over ~178k contacts (that made localhost feel stuck).
   // remaining ≈ contacts not yet mailed; stopped-but-never-sent is a small edge case.
-  const [valid, sentTotal, unsubscribed, bounced, complained, usedToday, recentSent, recentUnsubscribed, recentEvents, recentRemoved] =
+  const [valid, sentTotal, unsubscribed, bounced, complained, usedToday, recentSent, recentUnsubscribed, recentEvents, recentRemoved, cleaned] =
     await Promise.all([
       ShalOutreachContact.countDocuments(),
       ShalOutreachSent.countDocuments(),
       // People who opted out — bounces, complaints and dead domains are counted on their own.
-      ShalOutreachStop.countDocuments({ reason: { $nin: ['bounced', 'complained', 'no-mail-server'] } }),
+      ShalOutreachStop.countDocuments({ reason: { $nin: ['bounced', 'complained', ...CLEAN_REASONS] } }),
       ShalOutreachEvent.countDocuments({ type: 'bounced' }),
       ShalOutreachEvent.countDocuments({ type: 'complained' }),
       ShalOutreachSent.countDocuments({ day: today }),
@@ -620,9 +650,10 @@ export async function getStatus() {
       ShalOutreachStop.find({}).sort({ createdAt: -1 }).limit(100).lean(),
       ShalOutreachEvent.find({}).sort({ createdAt: -1 }).limit(100).lean(),
       ShalOutreachRemoved.find({}).sort({ createdAt: -1 }).limit(200).lean(),
+      ShalOutreachStop.countDocuments({ reason: { $in: CLEAN_REASONS } }),
     ])
 
-  const remaining = Math.max(0, valid - sentTotal)
+  const remaining = Math.max(0, valid - sentTotal - cleaned)
   const cap = dailyCap()
 
   // Dedupe noisy import rows; hide CSV header leftovers like "email,name".
@@ -642,7 +673,7 @@ export async function getStatus() {
   return {
     listMissing: valid === 0,
     valid,
-    cleaned: 0,
+    cleaned,
     sentTotal,
     unsubscribed,
     bounced,

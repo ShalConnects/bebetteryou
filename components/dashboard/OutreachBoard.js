@@ -155,6 +155,12 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
         setFileName('')
         setConfirmedOptIn(false)
       }
+      if (action === 'clean') {
+        const parts = Object.entries(data.byReason)
+          .filter(([, n]) => n)
+          .map(([reason, n]) => `${n.toLocaleString()} ${reason.replace(/-/g, ' ')}`)
+        setMessage(`Pre-clean: kept ${data.kept.toLocaleString()} of ${data.checked.toLocaleString()} · skipped ${parts.join(', ') || 'none'}`)
+      }
       if (action === 'unsubscribe') {
         setMessage(data.added ? `Unsubscribed ${data.email}` : `Already stopped: ${data.email}`)
         setUnsubEmail('')
@@ -625,6 +631,15 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
               className="btn mt-3"
             >
               {busy === 'import' ? 'Importing…' : importMode === 'replace' ? 'Replace list' : 'Merge import'}
+            </button>
+          </DashPanel>
+
+          <DashPanel
+            title="Pre-clean list"
+            description="Skips personal mailboxes (Gmail, Hotmail, old ISP accounts), typo and throwaway domains. Free, reversible per contact, and restarts the bounce check."
+          >
+            <button type="button" disabled={Boolean(busy)} onClick={() => run('clean')} className="btn">
+              {busy === 'clean' ? 'Cleaning…' : 'Pre-clean list'}
             </button>
           </DashPanel>
 

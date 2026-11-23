@@ -16,6 +16,7 @@ import {
   loadSentEmails,
   loadStoppedEmails,
   markSent,
+  preClean,
   releaseSendLock,
   resubscribeContact,
   sendGapMs,
@@ -286,4 +287,4 @@ export async function kickShalOutreachCron() {
   if (outreachCronEnabled()) await kickCron('shalOutreach=1')
 }
 
-export { getStatus, getSendProgress, outreachLetter }
+export { getStatus, getSendProgress, outreachLetter, preClean }

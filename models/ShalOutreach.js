@@ -56,6 +56,8 @@ const LockSchema = new mongoose.Schema({
   _id: { type: String, default: 'send' },
   lockedUntil: { type: Date, required: true },
   owner: { type: String, default: '' },
+  /** Last pre-clean: bounce health only counts sends after it. */
+  cleanedAt: { type: Date, default: null },
   /** Live + last-finished batch progress for the dashboard. */
   progress: {
     phase: { type: String, default: 'idle' }, // idle|preparing|sending|done|error

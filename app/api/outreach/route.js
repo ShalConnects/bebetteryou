@@ -9,6 +9,7 @@ import {
   importCsv,
   listOutreachContacts,
   patchOutreachContact,
+  preClean,
   previewBatch,
   removeOutreachContact,
   resetOutreachSent,
@@ -48,6 +49,7 @@ async function handlePost(request) {
     const action = String(body?.action || '')
     if (action === 'self') return NextResponse.json(await sendSelfTest())
     if (action === 'send') return NextResponse.json(await sendTodayBatch())
+    if (action === 'clean') return NextResponse.json(await preClean())
     if (action === 'import') {
       return NextResponse.json(
         await importCsv(body?.csv, {
