@@ -1,7 +1,7 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
 import { connectDB } from '@/libs/mongo'
 import { DAILY_CAP, isValidEmail, parseList } from './letter.js'
-import { CLEAN_REASONS, cleanReason } from './clean.js'
+import { CLEAN_REASONS, cleanReason, fixTypoDomain } from './clean.js'
 import {
   ShalOutreachContact,
   ShalOutreachEvent,
@@ -611,11 +611,14 @@ export async function sendHealth() {
 }
 
 /**
- * Stops every not-yet-mailed contact that cleanReason() flags (reversible: they're Stop rows
- * with a reason, contacts stay) and restarts bounce health from now.
+ * Not-yet-mailed contacts: fixes typo domains (.con → .com), deletes throwaway addresses, and
+ * stops the rest that cleanReason() flags (reversible: Stop rows with a reason, contacts stay).
+ * Restarts bounce health from now.
  */
 export async function preClean() {
   await connectDB()
+  // Earlier cleans only parked typos and throwaways; they're fixed or deleted now.
+  await ShalOutreachStop.deleteMany({ reason: { $in: ['typo-domain', 'disposable'] } })
   const [contacts, sent, stopped] = await Promise.all([
     ShalOutreachContact.find({}, { email: 1, _id: 0 }).lean(),
     ShalOutreachSent.distinct('email'),
@@ -623,13 +626,25 @@ export async function preClean() {
   ])
   const skip = new Set([...sent, ...stopped])
   const rows = contacts.filter((c) => !skip.has(c.email)).map((c) => ({ email: c.email, reason: cleanReason(c.email) }))
-  const flagged = rows.filter((r) => r.reason)
+  const typos = rows.filter((r) => r.reason === 'typo-domain')
+  for (const row of typos) {
+    const fixed = fixTypoDomain(row.email)
+    // The corrected address may already be on the list: then the typo copy just goes.
+    await ShalOutreachContact.updateOne({ email: row.email }, { $set: { email: fixed } }).catch(() =>
+      ShalOutreachContact.deleteOne({ email: row.email })
+    )
+    Object.assign(row, { email: fixed, reason: cleanReason(fixed) })
+  }
+  const throwaway = rows.filter((r) => r.reason === 'disposable').map((r) => r.email)
+  await ShalOutreachContact.deleteMany({ email: { $in: throwaway } })
+  const flagged = rows.filter((r) => r.reason && r.reason !== 'disposable')
   for (let i = 0; i < flagged.length; i += 5000) {
     await ShalOutreachStop.insertMany(flagged.slice(i, i + 5000), { ordered: false }).catch(() => null)
   }
   await ShalOutreachLock.updateOne({ _id: 'send' }, { $set: { cleanedAt: new Date() } }, { upsert: true, setDefaultsOnInsert: true })
   const byReason = Object.fromEntries(CLEAN_REASONS.map((r) => [r, flagged.filter((f) => f.reason === r).length]))
-  return { checked: rows.length, removed: flagged.length, kept: rows.length - flagged.length, byReason }
+  const kept = rows.length - flagged.length - throwaway.length
+  return { checked: rows.length, fixed: typos.length, deleted: throwaway.length, removed: flagged.length, kept, byReason }
 }
 
 export async function getStatus() {

@@ -1,4 +1,4 @@
-import { cleanReason } from '@/libs/shal-outreach/clean'
+import { cleanReason, fixTypoDomain } from '@/libs/shal-outreach/clean'
 
 describe('outreach cleanReason', () => {
   it('skips personal, typo, throwaway and invalid addresses', () => {
@@ -13,5 +13,10 @@ describe('outreach cleanReason', () => {
   it('keeps business domains', () => {
     expect(cleanReason('owner@paddyrankin.co.uk')).toBe('')
     expect(cleanReason('info@alliedprograms.com.au')).toBe('')
+  })
+
+  it('fixes typo top-level domains to .com', () => {
+    expect(fixTypoDomain('owner@shop.con')).toBe('owner@shop.com')
+    expect(fixTypoDomain('owner@shop.co.uk')).toBe('owner@shop.co.uk')
   })
 })

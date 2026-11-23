@@ -28,5 +28,8 @@ export function cleanReason(email) {
   return ''
 }
 
+/** `owner@shop.con` → `owner@shop.com`. */
+export const fixTypoDomain = (email) => email.replace(BAD_TLD, '.com')
+
 /** Stop reasons set by cleaning (and the send-time mail-server check), not by the person. */
 export const CLEAN_REASONS = ['invalid', 'typo-domain', 'disposable', 'personal-mailbox', 'no-mail-server']

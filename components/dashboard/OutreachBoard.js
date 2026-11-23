@@ -159,7 +159,9 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
         const parts = Object.entries(data.byReason)
           .filter(([, n]) => n)
           .map(([reason, n]) => `${n.toLocaleString()} ${reason.replace(/-/g, ' ')}`)
-        setMessage(`Pre-clean: kept ${data.kept.toLocaleString()} of ${data.checked.toLocaleString()} · skipped ${parts.join(', ') || 'none'}`)
+        setMessage(
+          `Pre-clean: kept ${data.kept.toLocaleString()} of ${data.checked.toLocaleString()} · fixed ${data.fixed} typo domains · deleted ${data.deleted} throwaway · skipped ${parts.join(', ') || 'none'}`
+        )
       }
       if (action === 'unsubscribe') {
         setMessage(data.added ? `Unsubscribed ${data.email}` : `Already stopped: ${data.email}`)
@@ -636,7 +638,7 @@ export default function OutreachBoard({ initialStatus, initialPreview }) {
 
           <DashPanel
             title="Pre-clean list"
-            description="Skips personal mailboxes (Gmail, Hotmail, old ISP accounts), typo and throwaway domains. Free, reversible per contact, and restarts the bounce check."
+            description="Fixes typo domains (.con → .com), deletes throwaway addresses and skips personal mailboxes (Gmail, Hotmail, old ISP accounts). Free, and restarts the bounce check."
           >
             <button type="button" disabled={Boolean(busy)} onClick={() => run('clean')} className="btn">
               {busy === 'clean' ? 'Cleaning…' : 'Pre-clean list'}
