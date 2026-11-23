@@ -88,7 +88,7 @@ describe('Ray pipeline', () => {
     const { rayComing, rayDueToday } = await import('@/libs/ray/plan')
     const { submitGeneration } = await import('@/libs/higgsfield')
     const sent = await saveRayScript({ slug: 'bby-41', hook: 'h', script: 'Say this.', approve: true }, now)
-    expect(sent).toMatchObject({ status: 'generating', requestId: 'req-1', costUsd: 1.18 })
+    expect(sent).toMatchObject({ status: 'generating', requestId: 'req-1', costUsd: 1.18, results: [] })
     expect(submitGeneration.mock.calls[0][1]).toMatchObject({ duration: 10, resolution: '480p', aspect_ratio: '9:16' })
 
     const later = await saveRayScript({ slug: 'bby-45', hook: '', script: 'Later.', approve: true }, now)

@@ -21,7 +21,8 @@ async function model() {
   return RayVideo
 }
 
-const pick = (row) => Object.fromEntries(fields.map((k) => [k, row[k] ?? (k === 'status' ? 'draft' : '')]))
+const blank = { status: 'draft', costUsd: 0, results: [] }
+const pick = (row) => Object.fromEntries(fields.map((k) => [k, row[k] ?? blank[k] ?? '']))
 
 /** Starter scripts written ahead, used until a row is saved. */
 export const seedScripts = () => seeds
