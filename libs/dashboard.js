@@ -70,7 +70,6 @@ export async function adminOverview(quotes) {
       failures,
       orders,
       upcoming: upcomingPending(schedules, 3),
-      pendingSocial: social.filter((n) => n.pending),
       brokenSocial: social.filter((n) => n.lastError),
       weekReviewMisses: weekMisses.map(([id]) => social.find((n) => n.id === id)?.label || id),
       emptyDays: emptyPostDays(schedules, 3),

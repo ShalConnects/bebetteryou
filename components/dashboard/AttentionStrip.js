@@ -12,7 +12,6 @@ export default function AttentionStrip({
   failures = [],
   orders = [],
   upcoming = [],
-  pendingSocial = [],
   brokenSocial = [],
   weekReviewMisses = [],
   emptyDays = [],
@@ -52,12 +51,6 @@ export default function AttentionStrip({
       `${o.orderNumber} — ${formatStatus(o.status)} · ${o.customerName || o.customerEmail}`,
       o.href,
     ]),
-    pendingSocial.length && [
-      'muted',
-      'Pending',
-      `${pendingSocial.map((n) => n.label).join(', ')} not connected yet`,
-      '/dashboard/integrations',
-    ],
   ].filter(Boolean)
 
   if (!items.length) {
