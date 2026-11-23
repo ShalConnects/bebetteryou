@@ -2,6 +2,7 @@ import FillSchedule from '@/components/dashboard/FillSchedule'
 import ScheduleBoard from '@/components/dashboard/ScheduleBoard'
 import ScheduleCalendar from '@/components/dashboard/ScheduleCalendar'
 import QuoteManager from '@/components/dashboard/QuoteManager'
+import RayBoard from '@/components/dashboard/RayBoard'
 import WeekReview from '@/components/dashboard/WeekReview'
 import QuoteForm from '@/components/site/QuoteForm'
 import { DashPage, DashPanel } from '@/components/dashboard/ui'
@@ -13,6 +14,7 @@ import { listAllSchedules } from '@/libs/social/schedule-store'
 import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { readTags, tagNames } from '@/libs/tags-store'
 import { fridayWeekRange, pickWeekReviewQuotes, publicRange } from '@/libs/week-review'
+import { rayBoard } from '@/libs/ray/plan'
 
 export const metadata = { title: 'Content' }
 
@@ -77,6 +79,13 @@ const tabs = {
     return (
       <DashPanel description="Publishes itself every Friday at 8 pm Bangladesh time: Sat–Thu cards as a carousel, collage, YouTube Short, Threads thread and digest email. Use the button to preview or go early.">
         <WeekReview quotes={weekQuotes} range={publicRange(range)} mode={mode} />
+      </DashPanel>
+    )
+  },
+  async ray() {
+    return (
+      <DashPanel description="Ray talks through the Mon, Wed and Sat cards. Approve a script and it goes to Higgsfield up to two days ahead; the finished video posts to YouTube Shorts and Instagram Reels at 8 pm in place of that card's Short.">
+        <RayBoard {...await rayBoard()} />
       </DashPanel>
     )
   },

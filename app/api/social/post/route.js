@@ -18,6 +18,7 @@ import { refreshNetworkStatus } from '@/libs/social/status-cache'
 import { publishQuote, readQuotes } from '@/libs/quotes-store'
 import { logError, logInfo } from '@/libs/logger'
 import { previewWeekReview, publishWeekReview } from '@/libs/week-review-publish'
+import { saveRayScript } from '@/libs/ray/run'
 
 /** Post / preview / schedule / week-review / integrations — one Hobby function. */
 export const maxDuration = 300
@@ -126,6 +127,15 @@ export async function POST(req) {
       return NextResponse.json(await fillPostDays())
     } catch (err) {
       return NextResponse.json({ error: err.message || 'Fill failed' }, { status: 400 })
+    }
+  }
+
+  /** Ray video script: save, or approve (sends to Higgsfield when its slot is close). */
+  if (body?.ray === true) {
+    try {
+      return NextResponse.json({ ray: await saveRayScript(body) })
+    } catch (err) {
+      return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })
     }
   }
 

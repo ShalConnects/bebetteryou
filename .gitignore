@@ -64,3 +64,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local Ray video rows when Mongo is not usable
+/data/ray-videos.json

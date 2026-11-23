@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1160.0",
+    "@higgsfield/client": "^0.2.6",
     "@napi-rs/canvas": "^1.0.8",
     "@radix-ui/react-slot": "^1.5.0",
     "@stripe/stripe-js": "^4.10.0",

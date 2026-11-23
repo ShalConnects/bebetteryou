@@ -41,6 +41,21 @@ async function publishContainer(base, token, creationId) {
   return published
 }
 
+/** Instagram Reel from a public MP4 URL (also shown in the feed). Video takes longer to process. */
+export async function postInstagramReel({ videoUrl, caption }) {
+  assertPublicImageUrl(videoUrl)
+  const { token, base } = await igCredentials()
+  const create = await fetch(`${base}/media`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ media_type: 'REELS', video_url: videoUrl, caption, share_to_feed: true, access_token: token }),
+  })
+  const created = await create.json()
+  if (!create.ok || !created.id) throw new Error(created.error?.message || 'Instagram reel create failed')
+  await waitForContainer(created.id, token, { attempts: 60, ms: 3000 })
+  return publishContainer(base, token, created.id)
+}
+
 export async function postInstagram({ imageUrl, caption }) {
   assertPublicImageUrl(imageUrl)
   const { token, base } = await igCredentials()

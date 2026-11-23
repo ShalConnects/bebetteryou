@@ -184,8 +184,11 @@ async function addToPlaylist(token, videoId) {
   }
 }
 
-/** Upload a quote as a YouTube Short (official videos.insert). Pass `video`+`poster` to skip encode. */
-export async function postYouTube({ caption, imageBuffer, quote, video, poster, title, weekReview = false }) {
+/**
+ * Upload a quote as a YouTube Short (official videos.insert). Pass `video`+`poster` to skip encode;
+ * `synthetic` declares realistic AI-made content (Ray videos).
+ */
+export async function postYouTube({ caption, imageBuffer, quote, video, poster, title, weekReview = false, synthetic = false }) {
   const keys = await youtubeKeys()
   if (!hasYoutubeKeys(keys)) throw new Error('YouTube not configured')
 
@@ -204,6 +207,7 @@ export async function postYouTube({ caption, imageBuffer, quote, video, poster, 
     status: {
       privacyStatus: youtubePrivacy(),
       selfDeclaredMadeForKids: false,
+      ...(synthetic ? { containsSyntheticMedia: true } : {}),
     },
   }
 

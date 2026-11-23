@@ -15,11 +15,13 @@ import { logError } from '@/libs/logger'
 import { cronAuthorized, kickCron } from '@/libs/secret'
 import { weekReviewWeekday } from '@/config/social'
 import { publishWeekReview } from '@/libs/week-review-publish'
+import { runRay } from '@/libs/ray/run'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
  * 0) weekly Threads token renewal → 1) due social → 2) quote email → 3) backlog YouTube Short
  * 4) Fridays: week in review, as its own run (Threads thread + Short need the time)
+ * 4b) Ray videos, as their own run: collect from Higgsfield, post the day's, send the next
  * 5) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
  * Also: `?emailOnly=1`, `?queue=1`, `?shalOutreach=1` / `?outreachOnly=1`.
  */
@@ -50,6 +52,10 @@ async function handleGet(req) {
 
     if (url.searchParams.get('weekReview') === '1') {
       return NextResponse.json({ ok: true, weekReview: await step('Week review', publishWeekReview) })
+    }
+
+    if (url.searchParams.get('ray') === '1') {
+      return NextResponse.json({ ok: true, ray: await step('Ray videos', runRay) })
     }
 
     if (url.searchParams.get('emailOnly') === '1') {
@@ -92,6 +98,7 @@ async function handleGet(req) {
     // Kicked first, so the request is out long before this run returns.
     const weekReviewQueued = new Date().getUTCDay() === weekReviewWeekday
     if (weekReviewQueued) await kickCron('weekReview=1')
+    await kickCron('ray=1')
 
     const threadsToken = await step('Threads token renewal', renewThreadsToken)
     const schedules = await runDueSocialSchedules()
@@ -109,6 +116,7 @@ async function handleGet(req) {
       newsletter,
       threadsToken,
       weekReviewQueued,
+      rayQueued: true,
       shalOutreachQueued: outreachCron,
     })
   } catch (error) {

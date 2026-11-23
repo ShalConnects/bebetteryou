@@ -5,6 +5,7 @@ import { postQuote, readyNetworks } from '@/libs/social'
 import { hasOkNetworkPostInUtcDay, readPostsBySlugs } from '@/libs/social/post-store'
 import { readQuotes } from '@/libs/quotes-store'
 import { postVerseShort, versePairsLeft } from '@/libs/social/verse-short'
+import { rayDueToday } from '@/libs/ray/plan'
 
 /** Off when `YOUTUBE_DAILY_SHORTS` is 0 / false / off. Unset = on. */
 export function dailyYoutubeShortsEnabled() {
@@ -55,6 +56,12 @@ export async function runDailyYoutubeShort({ now = new Date() } = {}) {
   if (now.getUTCDay() === weekReviewWeekday) {
     logInfo('Daily YouTube Short skipped', { reason: 'week_review_day' })
     return { skipped: true, reason: 'week_review_day' }
+  }
+
+  // Ray's video is today's Short.
+  if (await rayDueToday(now)) {
+    logInfo('Daily YouTube Short skipped', { reason: 'ray_day' })
+    return { skipped: true, reason: 'ray_day' }
   }
 
   const statusList = await readyNetworks()

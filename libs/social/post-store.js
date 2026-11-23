@@ -6,8 +6,8 @@ import { utcDayRange } from '@/libs/social/schedule-store'
 import { mergePostRecord } from './post-log'
 
 const dataFile = path.join(process.cwd(), 'data/social-posts.json')
-/** Posts logged under a made-up key, not a quote slug: week reviews and verse Shorts. */
-export const derivedSlug = /^(week|verse)-/
+/** Posts logged under a made-up key, not a quote slug: week reviews, verse Shorts, Ray videos. */
+export const derivedSlug = /^(week|verse|ray)-/
 
 function readLocal() {
   try {

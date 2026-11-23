@@ -39,6 +39,7 @@ export const contentTabs = sections('/dashboard/quotes', [
   ['cards', 'Cards'],
   ['new', 'New quote'],
   ['week', 'Week review'],
+  ['ray', 'Ray videos'],
 ])
 
 export const audienceTabs = sections('/dashboard/subscribers', [
