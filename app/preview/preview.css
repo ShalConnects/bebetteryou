@@ -36,3 +36,36 @@
   background: rgb(var(--accent));
   transform-origin: left;
 }
+
+/* Printable proposals: framed print on a wall, card as a lock screen. */
+.pv-wall {
+  display: block;
+  padding: 12% 14%;
+  background: linear-gradient(160deg, rgb(var(--ink-soft)), rgb(var(--ink)));
+  border-radius: 0.5rem;
+}
+.pv-frame {
+  display: block;
+  padding: 8%;
+  background: rgb(var(--paper));
+  box-shadow: 0 0 0 6px rgb(30 24 18), 0 18px 30px rgb(0 0 0 / 0.45);
+}
+.pv-phone {
+  position: relative;
+  display: flex;
+  aspect-ratio: 9 / 19.5;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 6%;
+  border: 6px solid rgb(20 20 20);
+  border-radius: 1.75rem;
+  background: rgb(var(--ink-soft));
+}
+.pv-phone-time {
+  position: absolute;
+  inset: 8% 0 auto;
+  text-align: center;
+  font-size: 1.5rem;
+  color: rgb(var(--paper));
+}

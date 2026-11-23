@@ -9,7 +9,10 @@ import TableCard from '@/components/site/TableCard'
 import { RelatedBooks, RelatedPosts } from '@/components/site/RelatedContent'
 import TraditionPassage from '@/components/site/TraditionPassage'
 import { appConfig } from '@/config/app'
-import { previewCopy as c, pv } from '@/config/preview'
+import { previewCopy as c, printables as offer, pv } from '@/config/preview'
+import NewsletterForm from '@/components/site/NewsletterForm'
+import { themeLabel } from '@/config/themes'
+import { themesForQuote } from '@/libs/scripture'
 import { getQuote, listQuotes, neighbors } from '@/libs/content'
 import { printHref } from '@/libs/print-link'
 import { isPrintableQuote, quoteAlt } from '@/libs/quote-text'
@@ -25,6 +28,7 @@ export default async function PreviewQuote({ params }) {
   const like = all
     .filter((q) => q.slug !== slug && q.tags?.some((t) => quote.tags?.includes(t)))
     .sort((a, b) => b.n - a.n)
+  const [theme] = themesForQuote(quote.tags, quote.theme)
   const wear =
     appConfig.features.enablePrintShop && isPrintableQuote(quote) ? printHref(quote.slug, { productId: 'tee' }) : null
 
@@ -62,9 +66,22 @@ export default async function PreviewQuote({ params }) {
                 </span>
               </Link>
             ) : null}
+            {/* Proposal: ways to own the card, then the signup. */}
+            <Chips
+              label={offer.ownTitle}
+              items={[
+                { key: 'wall', label: `${offer.wall.title} ${offer.wall.price}`, href: pv(`/printables?card=${quote.slug}`) },
+                { key: 'phone', label: `${offer.phone.title} ${offer.phone.price}`, href: pv(`/printables?card=${quote.slug}`) },
+                ...(theme ? [{ key: 'theme', label: `More on ${themeLabel(theme).toLowerCase()}`, href: pv(`/themes/${theme}`) }] : []),
+              ]}
+            />
             <TraditionPassage tags={quote.tags} slug={quote.slug} n={quote.n} theme={quote.theme} />
             {appConfig.features.enableBlog ? <RelatedPosts posts={related.posts} /> : null}
             {appConfig.features.enableBooks ? <RelatedBooks books={related.books} /> : null}
+            <section className="tile">
+              <h2 className="heading-sm">{offer.signupTitle}</h2>
+              <NewsletterForm compact />
+            </section>
             <nav className="flex justify-between border-t border-line pt-5">
               {prev ? (
                 <Link href={at(prev)} className="nav-link">
