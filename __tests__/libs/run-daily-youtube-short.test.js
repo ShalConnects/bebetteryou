@@ -148,4 +148,10 @@ describe('run-daily-youtube-short', () => {
     expect(result.skipped).toBe(false)
     expect(result.slug).toBe('bby-1')
   })
+
+  it('skips Fridays, when the week in review posts the Short', async () => {
+    const { runDailyYoutubeShort } = await import('@/libs/social/run-daily-youtube-short')
+    const result = await runDailyYoutubeShort({ now: new Date('2026-11-27T14:00:00.000Z') })
+    expect(result.reason).toBe('week_review_day')
+  })
 })

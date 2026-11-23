@@ -14,6 +14,7 @@ export default function AttentionStrip({
   upcoming = [],
   pendingSocial = [],
   brokenSocial = [],
+  weekReviewMisses = [],
   emptyDays = [],
   shortsBacklog = null,
 }) {
@@ -25,6 +26,12 @@ export default function AttentionStrip({
       'Overdue',
       `${overdue.map((r) => r.slug).join(', ')} missed ${formatScheduleWhen(overdue[0].runAt)} — goes out with the next 8 pm run`,
       calendar,
+    ],
+    weekReviewMisses.length && [
+      'danger',
+      'Week',
+      `Week review didn't post to ${weekReviewMisses.join(', ')}`,
+      manageQuotesHref({ section: 'week' }),
     ],
     ...brokenSocial.map((n) => ['danger', 'Connect', `${n.label}: ${n.lastError}`, '/dashboard/integrations']),
     emptyDays.length && [

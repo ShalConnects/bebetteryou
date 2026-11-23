@@ -1,4 +1,5 @@
 import { isQuotePublic } from '@/libs/quote-visibility'
+import { weekReviewWeekday } from '@/config/social'
 import { logInfo } from '@/libs/logger'
 import { postQuote, readyNetworks } from '@/libs/social'
 import { hasOkNetworkPostInUtcDay, readPostsBySlugs } from '@/libs/social/post-store'
@@ -47,6 +48,12 @@ export async function runDailyYoutubeShort({ now = new Date() } = {}) {
   if (!dailyYoutubeShortsEnabled()) {
     logInfo('Daily YouTube Short skipped', { reason: 'disabled' })
     return { skipped: true, reason: 'disabled' }
+  }
+
+  // Friday's Short is the week in review — keep it to one Short a day.
+  if (now.getUTCDay() === weekReviewWeekday) {
+    logInfo('Daily YouTube Short skipped', { reason: 'week_review_day' })
+    return { skipped: true, reason: 'week_review_day' }
   }
 
   const statusList = await readyNetworks()

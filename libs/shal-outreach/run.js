@@ -19,11 +19,11 @@ import {
   releaseSendLock,
   resubscribeContact,
   sendGapMs,
-  siteOrigin,
   updateContact,
   updateSendProgress,
   getSendProgress,
 } from './store.js'
+import { kickCron } from '@/libs/secret'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -249,14 +249,7 @@ export function outreachCronEnabled() {
  * after the main social/newsletter cron finishes (Hobby: one cron job).
  */
 export function kickShalOutreachCron() {
-  if (!outreachCronEnabled()) return
-  if (process.env.JEST_WORKER_ID) return
-  const origin = siteOrigin()
-  const secret = (process.env.CRON_SECRET || '').trim()
-  if (!origin || !secret) return
-  fetch(`${origin}/api/cron/social?shalOutreach=1`, {
-    headers: { authorization: `Bearer ${secret}` },
-  }).catch(() => null)
+  if (outreachCronEnabled()) kickCron('shalOutreach=1')
 }
 
 export { getStatus, getSendProgress, outreachLetter }

@@ -75,7 +75,7 @@ const tabs = {
     const range = fridayWeekRange()
     const { quotes: weekQuotes, mode } = await pickWeekReviewQuotes(quotes, range)
     return (
-      <DashPanel description="Friday: Sat–Thu cards as a carousel, collage, YouTube Short, Threads thread and digest email.">
+      <DashPanel description="Publishes itself every Friday at 8 pm Bangladesh time: Sat–Thu cards as a carousel, collage, YouTube Short, Threads thread and digest email. Use the button to preview or go early.">
         <WeekReview quotes={weekQuotes} range={publicRange(range)} mode={mode} />
       </DashPanel>
     )

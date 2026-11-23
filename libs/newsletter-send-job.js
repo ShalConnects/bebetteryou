@@ -1,6 +1,7 @@
 import { getPost } from '@/libs/blog'
 import { readBooks } from '@/libs/books-store'
 import { logError, logInfo } from '@/libs/logger'
+import { kickCron } from '@/libs/secret'
 import { connectDB } from '@/libs/mongo'
 import { pickNewsletterExtras } from '@/libs/newsletter-picks'
 import { readQuotes } from '@/libs/quotes-store'
@@ -55,14 +56,6 @@ function prefForKind(kind) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-function appOrigin() {
-  const site = (process.env.SITE_URL || process.env.NEXTAUTH_URL || '').trim()
-  if (site) return site.replace(/\/$/, '')
-  const vercel = (process.env.VERCEL_URL || '').trim()
-  if (vercel) return `https://${vercel.replace(/^https?:\/\//, '')}`
-  return ''
 }
 
 /**
@@ -337,15 +330,7 @@ export async function processNewsletterSendQueue({ maxMs = 45000 } = {}) {
 }
 
 /** Start another invocation so a long list finishes after this function returns. */
-export function kickNewsletterSendQueue() {
-  if (process.env.JEST_WORKER_ID) return
-  const origin = appOrigin()
-  const secret = (process.env.CRON_SECRET || '').trim()
-  if (!origin || !secret) return
-  fetch(`${origin}/api/cron/social?queue=1`, {
-    headers: { authorization: `Bearer ${secret}` },
-  }).catch((error) => logError('Failed to continue newsletter send', error))
-}
+export const kickNewsletterSendQueue = () => kickCron('queue=1')
 
 export async function startNewsletterSend() {
   const result = await processNewsletterSendQueue({ maxMs: 20000 })

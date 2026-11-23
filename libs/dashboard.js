@@ -10,6 +10,7 @@ import { readPostsBySlugs } from '@/libs/social/post-store'
 import { countYoutubeShortsBacklog } from '@/libs/social/run-daily-youtube-short'
 import { listAllSchedules } from '@/libs/social/schedule-store'
 import { emptyPostDays } from '@/libs/social/post-slot'
+import { lastWeekReviewSlug } from '@/libs/week-review'
 import {
   networkLastActivity,
   scheduleFailures,
@@ -52,7 +53,9 @@ export async function adminOverview(quotes) {
   ])
   const scheduleSlugs = schedules.map((s) => s.slug)
   const quoteSlugs = quotes.map((q) => q.slug).filter(Boolean)
-  const postsBySlug = await readPostsBySlugs([...new Set([...scheduleSlugs, ...quoteSlugs])])
+  const weekSlug = lastWeekReviewSlug()
+  const postsBySlug = await readPostsBySlugs([...new Set([...scheduleSlugs, ...quoteSlugs, weekSlug])])
+  const weekMisses = Object.entries(postsBySlug[weekSlug] || {}).filter(([, p]) => !p.ok)
   const failures = scheduleFailures(schedules, { postsBySlug })
   return {
     stats: { ...stats, subscribers, visitors },
@@ -66,6 +69,7 @@ export async function adminOverview(quotes) {
       upcoming: upcomingPending(schedules, 3),
       pendingSocial: social.filter((n) => n.pending),
       brokenSocial: social.filter((n) => n.lastError),
+      weekReviewMisses: weekMisses.map(([id]) => social.find((n) => n.id === id)?.label || id),
       emptyDays: emptyPostDays(schedules, 3),
       shortsBacklog: countYoutubeShortsBacklog(quotes, postsBySlug),
     },

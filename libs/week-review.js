@@ -9,6 +9,12 @@ export const WEEK_COLLAGE_NETWORKS = ['facebook', 'bluesky', 'telegram', 'pinter
  * Friday publish window: that Friday’s past Saturday 00:00 UTC → Thursday 23:59:59 UTC.
  * Mid-week preview anchors on the upcoming Friday so Sat–Thu includes the current week.
  */
+/** Post-log key of the latest Friday's review — today's on a Friday. */
+export function lastWeekReviewSlug(now = new Date()) {
+  const friday = new Date(now.getTime() - ((now.getUTCDay() + 2) % 7) * 86_400_000)
+  return `week-${fridayWeekRange(friday).weekKey}`
+}
+
 export function fridayWeekRange(now = new Date()) {
   const day = now.getUTCDay() // 0 Sun … 5 Fri
   const daysUntilFriday = (5 - day + 7) % 7

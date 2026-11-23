@@ -42,3 +42,12 @@ describe('week-review', () => {
     expect(quotes.map((q) => q.slug)).toEqual(['a'])
   })
 })
+
+describe('lastWeekReviewSlug', () => {
+  it("is this Friday's review on Friday, last Friday's otherwise", () => {
+    const { lastWeekReviewSlug } = require('@/libs/week-review')
+    expect(lastWeekReviewSlug(new Date('2026-11-27T14:00:00Z'))).toBe('week-2026-11-21')
+    expect(lastWeekReviewSlug(new Date('2026-11-23T14:00:00Z'))).toBe('week-2026-11-14')
+    expect(lastWeekReviewSlug(new Date('2026-11-26T23:00:00Z'))).toBe('week-2026-11-14')
+  })
+})

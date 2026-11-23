@@ -12,12 +12,15 @@ import {
 import { handleApiError } from '@/libs/api'
 import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
-import { cronAuthorized } from '@/libs/secret'
+import { cronAuthorized, kickCron } from '@/libs/secret'
+import { weekReviewWeekday } from '@/config/social'
+import { publishWeekReviewOnce } from '@/libs/week-review-publish'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
  * 0) weekly Threads token renewal → 1) due social → 2) quote email → 3) backlog YouTube Short
- * 4) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
+ * 4) Fridays: week in review, as its own run (Threads thread + Short need the time)
+ * 5) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
  * Also: `?emailOnly=1`, `?queue=1`, `?shalOutreach=1` / `?outreachOnly=1`.
  */
 export const maxDuration = 300
@@ -43,6 +46,10 @@ async function handleGet(req) {
       const result = await processNewsletterSendQueue({ maxMs: 50000 })
       if (result.remaining && !result.error) kickNewsletterSendQueue()
       return NextResponse.json({ ok: true, ...result })
+    }
+
+    if (url.searchParams.get('weekReview') === '1') {
+      return NextResponse.json({ ok: true, weekReview: await step('Week review', publishWeekReviewOnce) })
     }
 
     if (url.searchParams.get('emailOnly') === '1') {
@@ -81,6 +88,10 @@ async function handleGet(req) {
       }
     }
 
+    // Kicked first, so the request is out long before this run returns.
+    const weekReviewQueued = new Date().getUTCDay() === weekReviewWeekday
+    if (weekReviewQueued) kickCron('weekReview=1')
+
     const threadsToken = await step('Threads token renewal', renewThreadsToken)
     const schedules = await runDueSocialSchedules()
     const newsletter = await step('Newsletter', runNewsletterCronPipeline)
@@ -96,6 +107,7 @@ async function handleGet(req) {
       youtubeShort,
       newsletter,
       threadsToken,
+      weekReviewQueued,
       shalOutreachQueued: outreachCron,
     })
   } catch (error) {

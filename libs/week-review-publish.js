@@ -12,7 +12,7 @@ import { postPinterest } from '@/libs/social/providers/pinterest'
 import { postThreadsThread } from '@/libs/social/providers/threads'
 import { postYouTube } from '@/libs/social/providers/youtube'
 import { encodeWeekShort } from '@/libs/social/quote-short'
-import { recordPost } from '@/libs/social/post-store'
+import { readPostsBySlugs, recordPost } from '@/libs/social/post-store'
 import { renderWeekCollage } from '@/libs/week-collage.mjs'
 import {
   WEEK_COLLAGE_NETWORKS,
@@ -157,6 +157,14 @@ export async function previewWeekReview(now = new Date(), { encodeShort = true }
  * Manual Friday publish: IG carousel, collage → FB/Bluesky/Telegram/Pinterest,
  * Short → YT, Threads reply chain, digest email.
  */
+/** Friday cron: publish this week's review unless it already went out (e.g. by hand). */
+export async function publishWeekReviewOnce(now = new Date()) {
+  const slug = `week-${fridayWeekRange(now).weekKey}`
+  const posted = (await readPostsBySlugs([slug]))[slug] || {}
+  if (Object.values(posted).some((p) => p.ok)) return { skipped: true, reason: 'already_published' }
+  return publishWeekReview(now)
+}
+
 export async function publishWeekReview(now = new Date()) {
   logInfo('Week review publish: start')
   const prep = await prepareWeekReview(now)
