@@ -11,6 +11,7 @@ import { countYoutubeShortsBacklog } from '@/libs/social/run-daily-youtube-short
 import { listAllSchedules } from '@/libs/social/schedule-store'
 import { emptyPostDays } from '@/libs/social/post-slot'
 import { lastWeekReviewSlug } from '@/libs/week-review'
+import { verseKeys } from '@/libs/social/verse-short'
 import {
   networkLastActivity,
   scheduleFailures,
@@ -54,7 +55,9 @@ export async function adminOverview(quotes) {
   const scheduleSlugs = schedules.map((s) => s.slug)
   const quoteSlugs = quotes.map((q) => q.slug).filter(Boolean)
   const weekSlug = lastWeekReviewSlug()
-  const postsBySlug = await readPostsBySlugs([...new Set([...scheduleSlugs, ...quoteSlugs, weekSlug])])
+  const postsBySlug = await readPostsBySlugs([
+    ...new Set([...scheduleSlugs, ...quoteSlugs, weekSlug, ...verseKeys(quotes)]),
+  ])
   const weekMisses = Object.entries(postsBySlug[weekSlug] || {}).filter(([, p]) => !p.ok)
   const failures = scheduleFailures(schedules, { postsBySlug })
   return {

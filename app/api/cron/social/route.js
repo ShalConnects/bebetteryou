@@ -14,7 +14,7 @@ import { withApiLogging } from '@/libs/api-middleware'
 import { logError } from '@/libs/logger'
 import { cronAuthorized, kickCron } from '@/libs/secret'
 import { weekReviewWeekday } from '@/config/social'
-import { publishWeekReviewOnce } from '@/libs/week-review-publish'
+import { publishWeekReview } from '@/libs/week-review-publish'
 
 /**
  * Single daily Vercel Cron (Hobby: 1 job):
@@ -49,7 +49,7 @@ async function handleGet(req) {
     }
 
     if (url.searchParams.get('weekReview') === '1') {
-      return NextResponse.json({ ok: true, weekReview: await step('Week review', publishWeekReviewOnce) })
+      return NextResponse.json({ ok: true, weekReview: await step('Week review', publishWeekReview) })
     }
 
     if (url.searchParams.get('emailOnly') === '1') {

@@ -4,7 +4,7 @@ import { logInfo } from '@/libs/logger'
 import { postQuote, readyNetworks } from '@/libs/social'
 import { hasOkNetworkPostInUtcDay, readPostsBySlugs } from '@/libs/social/post-store'
 import { readQuotes } from '@/libs/quotes-store'
-import { postVerseShort } from '@/libs/social/verse-short'
+import { postVerseShort, versePairsLeft } from '@/libs/social/verse-short'
 
 /** Off when `YOUTUBE_DAILY_SHORTS` is 0 / false / off. Unset = on. */
 export function dailyYoutubeShortsEnabled() {
@@ -31,8 +31,9 @@ export function pickNextQuoteForYoutubeShort(quotes, postsBySlug = {}) {
   return notOnYoutube(quotes, postsBySlug)[0] || null
 }
 
+/** Days of daily Shorts left: unposted cards, then quote × passage pairings. */
 export function countYoutubeShortsBacklog(quotes, postsBySlug = {}) {
-  return notOnYoutube(quotes, postsBySlug).length
+  return notOnYoutube(quotes, postsBySlug).length + versePairsLeft(shortableQuotes(quotes), postsBySlug)
 }
 
 /** Single-quote Short already ok on YouTube this UTC day (manual or cron). */

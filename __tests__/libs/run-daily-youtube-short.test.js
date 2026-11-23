@@ -89,11 +89,12 @@ describe('run-daily-youtube-short', () => {
     } = await import('@/libs/social/run-daily-youtube-short')
     const quotes = JSON.parse(fs.readFileSync('data/quotes.json', 'utf8'))
     expect(pickNextQuoteForYoutubeShort(quotes, {}).slug).toBe('bby-1')
-    expect(countYoutubeShortsBacklog(quotes, {})).toBe(2)
+    // 2 public cards, then each × 8 traditions as verse Shorts.
+    expect(countYoutubeShortsBacklog(quotes, {})).toBe(2 + 2 * 8)
 
     const posts = { 'bby-1': { youtube: { ok: true } } }
     expect(pickNextQuoteForYoutubeShort(quotes, posts).slug).toBe('bby-3')
-    expect(countYoutubeShortsBacklog(quotes, posts)).toBe(1)
+    expect(countYoutubeShortsBacklog(quotes, posts)).toBe(1 + 2 * 8)
   })
 
   it('posts youtube-only for the next backlog quote', async () => {

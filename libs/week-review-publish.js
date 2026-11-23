@@ -157,14 +157,6 @@ export async function previewWeekReview(now = new Date(), { encodeShort = true }
  * Manual Friday publish: IG carousel, collage → FB/Bluesky/Telegram/Pinterest,
  * Short → YT, Threads reply chain, digest email.
  */
-/** Friday cron: publish this week's review unless it already went out (e.g. by hand). */
-export async function publishWeekReviewOnce(now = new Date()) {
-  const slug = `week-${fridayWeekRange(now).weekKey}`
-  const posted = (await readPostsBySlugs([slug]))[slug] || {}
-  if (Object.values(posted).some((p) => p.ok)) return { skipped: true, reason: 'already_published' }
-  return publishWeekReview(now)
-}
-
 export async function publishWeekReview(now = new Date()) {
   logInfo('Week review publish: start')
   const prep = await prepareWeekReview(now)
@@ -210,141 +202,77 @@ export async function publishWeekReview(now = new Date()) {
       }),
   }
 
+  // A re-run (button or Friday cron) only retries networks that haven't posted this week.
+  const done = (await readPostsBySlugs([slug]))[slug] || {}
+  const firstRun = !Object.values(done).some((p) => p.ok)
   const results = []
 
-  if (status.instagram?.ready) {
+  /** One network: skip if not ready or already posted; log and record the outcome. */
+  async function run(id, post) {
+    const meta = status[id]
+    if (!meta?.ready) return results.push({ id, label: meta?.label || id, ok: false, error: 'Not configured' })
+    if (done[id]?.ok) return results.push({ id, label: meta.label, ok: true, url: done[id].url || null, already: true })
+    let row
     try {
-      logInfo('Week review publish: Instagram carousel', { slides: cardImageUrls.length })
-      const posted = await postInstagramCarousel({ imageUrls: cardImageUrls, caption })
-      const row = { id: 'instagram', label: status.instagram.label, ok: true, url: posted?.url || null }
-      await recordPost(slug, row)
-      results.push(row)
-      logInfo('Week review publish: Instagram ok', { url: row.url, slides: cardImageUrls.length })
+      logInfo('Week review publish: posting', { id })
+      row = { id, label: meta.label, ok: true, ...(await post()) }
+      logInfo('Week review publish: ok', { id, url: row.url })
     } catch (err) {
-      logError('Week review publish: Instagram failed', err)
-      const row = { id: 'instagram', label: status.instagram.label, ok: false, error: err.message || 'Failed' }
-      await recordPost(slug, row)
-      results.push(row)
+      logError('Week review publish: failed', err, { id })
+      // Threads can fail mid-thread: keep the link to what did post.
+      row = { id, label: meta.label, ok: false, error: err.message || 'Failed', url: err.partial?.url || null }
     }
-  } else {
-    results.push({
-      id: 'instagram',
-      label: status.instagram?.label || 'Instagram',
-      ok: false,
-      error: 'Not configured',
-    })
+    await recordPost(slug, row)
+    results.push(row)
   }
+
+  await run('instagram', async () => ({
+    url: (await postInstagramCarousel({ imageUrls: cardImageUrls, caption }))?.url || null,
+  }))
 
   await Promise.all(
-    WEEK_COLLAGE_NETWORKS.map(async (id) => {
-      const meta = status[id]
-      if (!meta?.ready) {
-        logInfo('Week review publish: skip network', { id, reason: 'not configured' })
-        results.push({ id, label: meta?.label || id, ok: false, error: 'Not configured' })
-        return
-      }
-      try {
-        logInfo('Week review publish: posting collage', { id })
-        const posted = await collageProviders[id]()
-        const row = { id, label: meta.label, ok: true, url: posted?.url || null }
-        await recordPost(slug, row)
-        results.push(row)
-        logInfo('Week review publish: collage ok', { id, url: row.url })
-      } catch (err) {
-        logError('Week review publish: collage failed', err, { id })
-        const row = { id, label: meta.label, ok: false, error: err.message || 'Failed' }
-        await recordPost(slug, row)
-        results.push(row)
-      }
-    })
+    WEEK_COLLAGE_NETWORKS.map((id) => run(id, async () => ({ url: (await collageProviders[id]())?.url || null })))
   )
 
-  if (status.youtube?.ready) {
-    try {
-      logInfo('Week review publish: encoding YouTube Short')
-      const { video, poster } = await encodeWeekShort(
-        quotes.map((quote, i) => ({ quote, imageBuffer: buffers[i] }))
-      )
-      logInfo('Week review publish: uploading YouTube', { bytes: video.length })
-      const posted = await postYouTube({
-        caption,
-        quote: quotes[0],
-        video,
-        poster,
-        title: `Week in review · ${range.weekKey}`,
-        weekReview: true,
-      })
-      const row = {
-        id: 'youtube',
-        label: status.youtube.label,
-        ok: true,
-        url: posted?.url || null,
-        privacy: posted?.privacy || null,
-        ...(posted?.thumbnail === false
-          ? { thumbnailError: posted.thumbnailError || 'Thumbnail not set' }
-          : {}),
-      }
-      await recordPost(slug, row)
-      results.push(row)
-      logInfo('Week review publish: YouTube ok', { url: row.url })
-    } catch (err) {
-      logError('Week review publish: YouTube failed', err)
-      const row = { id: 'youtube', label: status.youtube.label, ok: false, error: err.message || 'Failed' }
-      await recordPost(slug, row)
-      results.push(row)
+  await run('youtube', async () => {
+    const { video, poster } = await encodeWeekShort(quotes.map((quote, i) => ({ quote, imageBuffer: buffers[i] })))
+    const posted = await postYouTube({
+      caption,
+      quote: quotes[0],
+      video,
+      poster,
+      title: `Week in review · ${range.weekKey}`,
+      weekReview: true,
+    })
+    return {
+      url: posted?.url || null,
+      privacy: posted?.privacy || null,
+      ...(posted?.thumbnail === false ? { thumbnailError: posted.thumbnailError || 'Thumbnail not set' } : {}),
     }
-  } else {
-    results.push({ id: 'youtube', label: status.youtube?.label || 'YouTube', ok: false, error: 'Not configured' })
-  }
+  })
 
-  if (status.threads?.ready) {
+  await run('threads', async () => {
+    const items = await Promise.all(
+      quotes.map(async (quote) => ({
+        imageUrl: absoluteImageUrl(quote.src),
+        caption: await quoteCaption(quote, 'threads'),
+      }))
+    )
+    const thread = await postThreadsThread(items)
+    return { url: thread?.url || null, count: thread?.ids?.length || quotes.length }
+  })
+
+  // Subscribers get the digest once, on the first run.
+  let email = { skipped: true, reason: 'already sent' }
+  if (firstRun) {
     try {
-      logInfo('Week review publish: Threads thread', { count: quotes.length })
-      const items = await Promise.all(
-        quotes.map(async (quote) => ({
-          imageUrl: absoluteImageUrl(quote.src),
-          caption: await quoteCaption(quote, 'threads'),
-        }))
-      )
-      const thread = await postThreadsThread(items)
-      const row = {
-        id: 'threads',
-        label: status.threads.label,
-        ok: true,
-        url: thread?.url || null,
-        count: thread?.ids?.length || quotes.length,
-      }
-      await recordPost(slug, row)
-      results.push(row)
-      logInfo('Week review publish: Threads ok', { url: row.url, count: row.count, ids: thread?.ids })
+      logInfo('Week review publish: sending digest email', { quotes: quotes.length })
+      email = await notifyQuoteDigest(quotes)
+      logInfo('Week review publish: email done', email)
     } catch (err) {
-      logError('Week review publish: Threads failed', err, {
-        partial: err.partial?.ids?.length || 0,
-        expected: quotes.length,
-      })
-      const row = {
-        id: 'threads',
-        label: status.threads.label,
-        ok: false,
-        error: err.message || 'Failed',
-        url: err.partial?.url || null,
-        count: err.partial?.ids?.length || 0,
-      }
-      await recordPost(slug, row)
-      results.push(row)
+      logError('Week review publish: email failed', err)
+      email = { sent: 0, failed: 0, error: err.message || 'Failed' }
     }
-  } else {
-    results.push({ id: 'threads', label: status.threads?.label || 'Threads', ok: false, error: 'Not configured' })
-  }
-
-  let email = null
-  try {
-    logInfo('Week review publish: sending digest email', { quotes: quotes.length })
-    email = await notifyQuoteDigest(quotes)
-    logInfo('Week review publish: email done', email)
-  } catch (err) {
-    logError('Week review publish: email failed', err)
-    email = { sent: 0, failed: 0, error: err.message || 'Failed' }
   }
 
   logInfo('Week review publish: done', {

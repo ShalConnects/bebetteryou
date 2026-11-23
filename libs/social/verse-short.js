@@ -13,6 +13,9 @@ const DAY = 86_400_000
 
 /** Post-log key: one verse Short per quote × tradition, ever. */
 export const verseKey = (slug, tradition) => `verse-${slug}-${tradition}`
+export const verseKeys = (quotes) => quotes.flatMap((q) => lanes.map((t) => verseKey(q.slug, t.id)))
+/** Pairings not yet on YouTube — the daily Short's supply once every card is up. */
+export const versePairsLeft = (quotes, posted = {}) => verseKeys(quotes).filter((k) => !posted[k]?.youtube?.ok).length
 
 /**
  * Today's tradition first (rotates daily), then the others; within each, the oldest quote
@@ -34,8 +37,7 @@ export function pickVerseShort(quotes, posted, book, map, now = Date.now()) {
 
 /** Pick, encode and upload today's verse Short; logs under its verse key. */
 export async function postVerseShort(quotes, now) {
-  const keys = quotes.flatMap((q) => lanes.map((t) => verseKey(q.slug, t.id)))
-  const [book, tags, posted] = await Promise.all([getScriptureBook(), readTags(), readPostsBySlugs(keys)])
+  const [book, tags, posted] = await Promise.all([getScriptureBook(), readTags(), readPostsBySlugs(verseKeys(quotes))])
   const pick = pickVerseShort(quotes, posted, book, themesMap(tags), now)
   if (!pick) return null
 
