@@ -2,6 +2,8 @@
 export const postWeekdays = [1, 3, 4, 6]
 /** UTC weekday the week in review auto-publishes (Friday), at the same 8 pm run. */
 export const weekReviewWeekday = 5
+/** Fed one card a day in card-number order (catching up from #1), never by the post schedule. */
+export const serialNetworks = ['x']
 
 /** Networks we can publish quote cards to. Enabled when all env keys exist. */
 export const postNetworks = [

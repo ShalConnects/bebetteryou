@@ -19,13 +19,16 @@ function isWeekReviewSlug(slug) {
 }
 
 /** Public single-quote cards, oldest `n` first. */
-function shortableQuotes(quotes) {
+export function shortableQuotes(quotes) {
   return (quotes || [])
     .filter((q) => q?.slug && isQuotePublic(q) && !isWeekReviewSlug(q.slug))
     .sort((a, b) => (Number(a.n) || 0) - (Number(b.n) || 0))
 }
 
-const notOnYoutube = (quotes, postsBySlug = {}) => shortableQuotes(quotes).filter((q) => !postsBySlug[q.slug]?.youtube?.ok)
+/** Public cards not yet ok on `network`, oldest `n` first — a network's catch-up queue. */
+export const notOnNetwork = (quotes, postsBySlug = {}, network) =>
+  shortableQuotes(quotes).filter((q) => !postsBySlug[q.slug]?.[network]?.ok)
+const notOnYoutube = (quotes, postsBySlug) => notOnNetwork(quotes, postsBySlug, 'youtube')
 
 /** Public single-quote cards not yet ok on YouTube, oldest `n` first. */
 export function pickNextQuoteForYoutubeShort(quotes, postsBySlug = {}) {
