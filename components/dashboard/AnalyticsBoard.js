@@ -90,6 +90,24 @@ export default async function AnalyticsBoard({ range }) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
+        <BarList
+          title="Amazon clicks by book"
+          rows={data.books}
+          metric="bookClicks"
+          unit="clicks"
+          empty="No book clicks yet."
+        />
+        <BarList
+          title="Amazon clicks by page"
+          rows={data.bookPages}
+          metric="bookClicks"
+          unit="clicks"
+          empty="No book clicks yet."
+          href={(row) => row.key}
+        />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-2">
         <BarList title="Countries" rows={data.countries} metric="visitors" empty="No country data yet." />
         <BarList title="Devices" rows={data.devices} metric="visitors" empty="No device data yet." />
       </div>

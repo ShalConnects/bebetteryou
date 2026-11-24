@@ -14,6 +14,8 @@ export const analyticsEvents = {
   planCompleted: 'plan_completed',
   itemSaved: 'item_saved',
   itemShared: 'item_shared',
+  /** Outbound "View on Amazon" click — slug is the book, path the page it was on. */
+  bookClick: 'book_click',
 }
 
 export const analyticsEventNames = Object.values(analyticsEvents)

@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import { bookCover, bookRel, bookUrl } from '@/config/books'
+import { trackBookClick } from '@/libs/analytics-client'
 
 /** Books grid tile — cover face-out, blurb as the takeaway, price/action last. */
 export default function BookTile({ book }) {
@@ -8,7 +11,14 @@ export default function BookTile({ book }) {
   const cover = bookCover(book)
 
   return (
-    <a href={href} target="_blank" rel={bookRel} className="tile group flex gap-5">
+    <a
+      id={book.slug}
+      href={href}
+      target="_blank"
+      rel={bookRel}
+      onClick={() => trackBookClick(book.slug)}
+      className="tile group flex scroll-mt-24 gap-5"
+    >
       {cover ? (
         <span className="tilt-cover relative block aspect-[2/3] w-28 shrink-0 md:w-32">
           <Image src={cover} alt={`${book.title} cover`} fill sizes="128px" className="object-cover" />

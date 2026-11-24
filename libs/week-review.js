@@ -1,6 +1,7 @@
 import { getSiteUrl } from '@/libs/site-url'
 import { shuffle } from '@/libs/sample'
 import { listPostedQuoteSlugs } from '@/libs/social/post-store'
+import { relatedBooksFor } from '@/libs/related'
 
 /** Collage networks for week-in-review (one JPG of all cards). */
 export const WEEK_COLLAGE_NETWORKS = ['facebook', 'bluesky', 'telegram', 'pinterest']
@@ -90,7 +91,13 @@ export function weekCaption(quotes, range) {
   const from = range.start.toISOString().slice(0, 10)
   const to = range.end.toISOString().slice(0, 10)
   const nums = quotes.map((q) => `#${q.n}`).join(' · ')
-  return `Week in review (${from} → ${to})\n\n${nums}\n\n${getSiteUrl()}/quotes`
+  return `Week in review (${from} → ${to})\n\n${nums}\n\n${getSiteUrl()}/quotes${weekBookLine(quotes, range)}`
+}
+
+/** "This week's read" — one book matched to the week's tags, stable for the week. */
+export function weekBookLine(quotes, range) {
+  const [book] = relatedBooksFor([...new Set(quotes.flatMap((q) => q.tags || []))], [], seedFromKey(range.weekKey))
+  return book ? `\n\nThis week's read: ${book.title} by ${book.author} → ${getSiteUrl()}/books#${book.slug}` : ''
 }
 
 export function publicRange(range) {

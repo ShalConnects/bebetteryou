@@ -91,6 +91,11 @@ export function trackDownload(slug) {
   track(analyticsEvents.download, { slug })
 }
 
+/** "View on Amazon" — the only signal we get before Amazon's own report. */
+export function trackBookClick(slug) {
+  track(analyticsEvents.bookClick, { slug })
+}
+
 export function trackShare(slug, target) {
   track(analyticsEvents.share, { slug, target })
 }

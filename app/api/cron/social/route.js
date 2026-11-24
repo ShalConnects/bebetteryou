@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { runDueSocialSchedules } from '@/libs/social/run-due-schedules'
 import { runDailyYoutubeShort } from '@/libs/social/run-daily-youtube-short'
 import { runDailySerial } from '@/libs/social/run-daily-serial'
+import { runBookPin } from '@/libs/social/book-pin'
 import { renewThreadsToken } from '@/libs/social/providers/threads'
 import { runNewsletterCronPipeline } from '@/libs/newsletter-cron'
 import { kickNewsletterSendQueue, processNewsletterSendQueue } from '@/libs/newsletter-send-job'
@@ -22,6 +23,7 @@ import { runRay } from '@/libs/ray/run'
  * Single daily Vercel Cron (Hobby: 1 job):
  * 0) weekly Threads token renewal → 1) due social → 2) quote email → 3) backlog YouTube Short
  * 3b) one card a day to X, lowest number first (X is never fed by the schedule)
+ * 3c) Sundays: one book-of-the-week pin on Pinterest
  * 4) Fridays: week in review, as its own run (Threads thread + Short need the time)
  * 4b) Ray videos, as their own run: collect from Higgsfield, post the day's, send the next
  * 5) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
@@ -107,6 +109,7 @@ async function handleGet(req) {
     const newsletter = await step('Newsletter', runNewsletterCronPipeline)
     const youtubeShort = await step('Daily YouTube Short', runDailyYoutubeShort)
     const serial = await step('Daily serial (X)', runDailySerial)
+    const bookPin = await step('Sunday book pin', runBookPin)
 
     // Separate invocation so 100 outreach sends get a fresh time budget.
     const outreachCron = outreachCronEnabled()
@@ -117,6 +120,7 @@ async function handleGet(req) {
       ...schedules,
       youtubeShort,
       serial,
+      bookPin,
       newsletter,
       threadsToken,
       weekReviewQueued,

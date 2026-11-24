@@ -29,7 +29,7 @@ export function dayKeys(days, now = Date.now()) {
 }
 
 function emptyRow(key, label) {
-  return { key, label, visitors: new Set(), pageviews: 0, downloads: 0, shares: 0 }
+  return { key, label, visitors: new Set(), pageviews: 0, downloads: 0, shares: 0, bookClicks: 0 }
 }
 
 function addEvent(row, event) {
@@ -37,6 +37,7 @@ function addEvent(row, event) {
   if (event.name === analyticsEvents.pageview) row.pageviews += 1
   else if (event.name === analyticsEvents.download) row.downloads += 1
   else if (event.name === analyticsEvents.share) row.shares += 1
+  else if (event.name === analyticsEvents.bookClick) row.bookClicks += 1
 }
 
 function settle(row) {
@@ -166,6 +167,9 @@ export function summarize(events = [], { days = 30, now = Date.now() } = {}) {
     pages: rank(pageRows, 'pageviews'),
     quotes: rank(quoteRows, 'downloads'),
     shareTargets: rank(shareRows, 'shares'),
+    /** Amazon clicks: which books, and which pages sent them. */
+    books: rank(group(inRange, (event) => (event.name === analyticsEvents.bookClick ? event.slug || '' : '')), 'bookClicks'),
+    bookPages: rank(group(inRange, (event) => (event.name === analyticsEvents.bookClick ? event.path || '' : '')), 'bookClicks'),
     countries: rank(group(inRange, (event) => event.country || '', countryLabel), 'visitors'),
     devices: rank(group(inRange, (event) => event.device || ''), 'visitors'),
   }
