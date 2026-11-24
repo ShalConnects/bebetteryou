@@ -7,14 +7,19 @@ function enc(v) {
   )
 }
 
-/** OAuth 1.0a Authorization header for X API. */
+/**
+ * OAuth 1.0a Authorization header for X API. `oauth_*` entries in params (oauth_callback,
+ * oauth_verifier) go in the header; other params are only signed. No token while signing in.
+ */
 export function oauth1Header(method, url, params, { consumerKey, consumerSecret, token, tokenSecret }) {
+  const extra = Object.fromEntries(Object.entries(params).filter(([k]) => k.startsWith('oauth_')))
   const oauth = {
+    ...extra,
     oauth_consumer_key: consumerKey,
     oauth_nonce: crypto.randomBytes(16).toString('hex'),
     oauth_signature_method: 'HMAC-SHA1',
     oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-    oauth_token: token,
+    ...(token ? { oauth_token: token } : {}),
     oauth_version: '1.0',
   }
   const merged = { ...params, ...oauth }

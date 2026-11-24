@@ -197,8 +197,17 @@ export async function listIntegrationStatus() {
           accessSecret: stored?.extras?.accessSecret || process.env.X_ACCESS_SECRET,
         }
         row.ready = Boolean(keys.apiKey && keys.apiSecret && keys.accessToken && keys.accessSecret)
-        row.detail = row.ready ? '' : 'Not configured'
+        row.connectable = Boolean(keys.apiKey && keys.apiSecret)
+        row.reconnect = row.ready
+        row.detail = stored?.extras?.username
+          ? `Posting as @${stored.extras.username}`
+          : row.ready
+            ? ''
+            : row.connectable
+              ? 'Use Connect X while signed in to the account that should post'
+              : 'Not configured'
       }
+      row.connectHref = row.connectable ? '/api/social/x/callback' : null
       row.fields = [
         { key: 'apiKey', label: 'API key', secret: true, env: 'X_API_KEY' },
         { key: 'apiSecret', label: 'API secret', secret: true, env: 'X_API_SECRET' },

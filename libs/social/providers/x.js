@@ -7,20 +7,17 @@ function trimCaption(text, max = 280) {
   return `${s.slice(0, max - 1)}…`
 }
 
+/** v2 media upload (v1.1 was retired). JSON body, so only the oauth_* fields are signed. */
 async function uploadMedia(buffer, keys) {
-  const url = 'https://upload.x.com/1.1/media/upload.json'
-  const params = { media_data: buffer.toString('base64') }
+  const url = 'https://api.x.com/2/media/upload'
   const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      Authorization: oauth1Header('POST', url, params, keys),
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams(params),
+    headers: { Authorization: oauth1Header('POST', url, {}, keys), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ media: buffer.toString('base64'), media_category: 'tweet_image' }),
   })
   const json = await res.json().catch(() => ({}))
-  if (!res.ok) throw new Error(json.errors?.[0]?.message || 'X media upload failed')
-  return json.media_id_string
+  if (!res.ok || !json.data?.id) throw new Error(json.detail || json.title || json.errors?.[0]?.message || 'X media upload failed')
+  return json.data.id
 }
 
 async function createTweet(text, mediaId, keys) {
