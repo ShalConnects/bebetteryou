@@ -4,7 +4,6 @@
 import { analyticsEvents } from '@/config/analytics'
 import { summarize } from '@/libs/analytics'
 import { bookKey, pickBookForPin } from '@/libs/social/book-pin'
-import { weekBookLine } from '@/libs/week-review'
 
 jest.mock('@/libs/social', () => ({ readyNetworks: jest.fn() }))
 
@@ -22,6 +21,10 @@ test('book pins: once all are up, the one pinned longest ago repeats', () => {
 })
 
 test("week review caption names one book, stable for the week", () => {
+  // Other suites in this worker chdir away, and data/books is resolved from cwd at load.
+  process.chdir(require('path').join(__dirname, '../..'))
+  jest.resetModules()
+  const { weekBookLine } = require('@/libs/week-review')
   const quotes = [{ n: 1, tags: ['Mindset'] }, { n: 2, tags: ['Growth'] }]
   const line = weekBookLine(quotes, { weekKey: '2026-11-27' })
   expect(line).toMatch(/This week's read: .+ by .+ → .+\/books#[a-z-]+$/)

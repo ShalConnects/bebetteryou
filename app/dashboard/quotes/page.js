@@ -3,6 +3,7 @@ import ScheduleBoard from '@/components/dashboard/ScheduleBoard'
 import ScheduleCalendar from '@/components/dashboard/ScheduleCalendar'
 import QuoteManager from '@/components/dashboard/QuoteManager'
 import RayBoard from '@/components/dashboard/RayBoard'
+import BulkAdd from '@/components/dashboard/BulkAdd'
 import WeekReview from '@/components/dashboard/WeekReview'
 import QuoteForm from '@/components/site/QuoteForm'
 import { DashPage, DashPanel } from '@/components/dashboard/ui'
@@ -19,6 +20,16 @@ import { rayBoard } from '@/libs/ray/plan'
 export const metadata = { title: 'Content' }
 
 /** Each tab fetches only what it renders. */
+/** Tag catalog, tagged examples and existing texts: what tag suggestions and duplicate checks need. */
+async function laneProps(quotes) {
+  const withText = quotes.filter((q) => q.text)
+  return {
+    tagCatalog: await readTags(),
+    trainingQuotes: withText.filter((q) => q.tags?.length).map(({ text, tags }) => ({ text, tags })),
+    catalog: withText.map(({ n, slug, text }) => ({ n, slug, text })),
+  }
+}
+
 const tabs = {
   async schedules(quotes) {
     const schedules = await listAllSchedules({ limit: 100 })
@@ -57,19 +68,23 @@ const tabs = {
     )
   },
   async new(quotes, params) {
-    const [tags, themeOptions] = await Promise.all([readTags(), scriptureThemeOptions()])
-    const withText = quotes.filter((q) => q.text)
+    const [lane, themeOptions] = await Promise.all([laneProps(quotes), scriptureThemeOptions()])
     return (
       <DashPanel>
         <QuoteForm
+          {...lane}
           nextN={nextQuoteN(quotes)}
-          tagOptions={tagNames(tags)}
-          tagCatalog={tags}
-          trainingQuotes={withText.filter((q) => q.tags?.length).map(({ text, tags: t }) => ({ text, tags: t }))}
+          tagOptions={tagNames(lane.tagCatalog)}
           themeOptions={themeOptions}
-          catalog={withText.map(({ n, slug, text }) => ({ n, slug, text }))}
           postDate={params.date}
         />
+      </DashPanel>
+    )
+  },
+  async bulk(quotes) {
+    return (
+      <DashPanel description="Paste many quotes, one per line. Review the cleaned text, author and tag, then create them as drafts.">
+        <BulkAdd {...await laneProps(quotes)} />
       </DashPanel>
     )
   },

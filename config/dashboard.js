@@ -38,6 +38,7 @@ export const contentTabs = sections('/dashboard/quotes', [
   ['schedules', 'Calendar'],
   ['cards', 'Cards'],
   ['new', 'New quote'],
+  ['bulk', 'Bulk add'],
   ['week', 'Week review'],
   ['ray', 'Ray videos'],
 ])

@@ -87,3 +87,44 @@ export function normalizeAuthor(raw) {
 export function quoteLinesOverflowMessage(lines) {
   return `Fits ${maxLines} lines on the card — shorten the text (${lines}/${maxLines}).`
 }
+
+/** Letters only — catches the same quote with different punctuation or spacing. */
+const looseKey = (text) => quoteFingerprint(text).replace(/[^a-z]/g, '')
+
+/**
+ * One pasted line → `{ text, author }`: drops list numbers and wrapping quotes, moves a trailing
+ * "— Name" / "- Name" / "By Name" into the author, fixes missing spaces and sentence capitals.
+ */
+export function cleanQuoteLine(raw) {
+  let text = String(raw ?? '').replace(/^\s*\d+[.)\t]\s*/, '').replace(/\s+/g, ' ').trim()
+  let author = ''
+  const credit = text.match(/\s*(?:[—–-]|,?\s+by)\s*([A-Z][\w.'’]*(?:\s+[A-Z][\w.'’]*){0,3})\s*$/i)
+  if (credit && /^[A-Z]/.test(credit[1]) && credit.index > 0) {
+    author = credit[1]
+    text = text.slice(0, credit.index)
+  }
+  text = text
+    .replace(/^["“”']+|["“”']+$/g, '')
+    .replace(/([.!?;,])(?=[A-Za-z])/g, '$1 ')
+    .replace(/(^|(?<!\.\.)[.!?]\s+)([a-z])/g, (m, p, c) => p + c.toUpperCase())
+    .replace(/\.{2}$/, '.')
+    .replace(/\s+([,.!?;])/g, '$1')
+    .trim()
+  return { text, author }
+}
+
+/** Paste box → rows, each flagged when it is already on the site or repeated earlier in the paste. */
+export function parseBulkQuotes(raw, catalog = []) {
+  const onSite = new Map(catalog.filter((q) => q?.text).map((q) => [looseKey(q.text), q.n]))
+  const seen = new Set()
+  return String(raw ?? '')
+    .split('\n')
+    .map(cleanQuoteLine)
+    .filter((row) => row.text)
+    .map((row) => {
+      const key = looseKey(row.text)
+      const repeat = seen.has(key)
+      seen.add(key)
+      return { ...row, onSite: onSite.get(key) ?? null, repeat }
+    })
+}
