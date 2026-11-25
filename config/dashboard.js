@@ -58,10 +58,19 @@ export const settingsTabs = [
 /** Requested tab, else the fallback — unknown ids never blank a page. */
 export const pickTab = (tabs, id, fallback = tabs[0].id) => (tabs.some((t) => t.id === id) ? id : fallback)
 
-export function filterQuotes(quotes, { q = '', tag = '' } = {}) {
+/** Cards filter: anything not draft/scheduled is live on the site. */
+export const quoteStatuses = [
+  ['draft', 'Draft'],
+  ['scheduled', 'Scheduled'],
+  ['posted', 'Posted'],
+]
+export const quoteStatus = (quote) => (['draft', 'scheduled'].includes(quote.status) ? quote.status : 'posted')
+
+export function filterQuotes(quotes, { q = '', tag = '', status = '' } = {}) {
   const needle = q.trim().toLowerCase()
   return quotes.filter((quote) => {
     if (tag && !quote.tags?.includes(tag)) return false
+    if (status && quoteStatus(quote) !== status) return false
     if (!needle) return true
     const hay = [quote.text, quote.author, String(quote.n), quote.slug].filter(Boolean).join(' ').toLowerCase()
     return hay.includes(needle)

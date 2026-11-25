@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { quoteCard } from '@/config/quote-card'
-import { filterQuotes } from '@/config/dashboard'
+import { filterQuotes, quoteStatuses } from '@/config/dashboard'
 import { Badge } from '@/components/ui/badge'
 import { Sheet } from '@/components/ui/sheet'
 import { clampQuoteInput, quoteLinesOverflowMessage, quoteMetrics } from '@/libs/quote-text'
@@ -29,6 +29,19 @@ function formFromQuote(quote) {
   }
 }
 
+/** One filter row: "All" plus `[value, label]` options. */
+function Chips({ value, onChange, options }) {
+  return (
+    <div className="flex flex-wrap gap-3">
+      {[['', 'All'], ...options].map(([v, label]) => (
+        <button key={v || 'all'} type="button" onClick={() => onChange(v)} className={value === v ? 'tag-active' : 'tag'}>
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export default function QuoteManager({
   quotes: initial,
   tagOptions = [],
@@ -40,6 +53,7 @@ export default function QuoteManager({
   const [items, setItems] = useState(initial)
   const [q, setQ] = useState('')
   const [tag, setTag] = useState(initialTag)
+  const [status, setStatus] = useState('')
   const [slug, setSlug] = useState(initialSlug)
   const [form, setForm] = useState(() => {
     if (!initialSlug) return null
@@ -53,7 +67,7 @@ export default function QuoteManager({
     form?.tags || []
   )
 
-  const filtered = useMemo(() => filterQuotes(items, { q, tag }), [items, q, tag])
+  const filtered = useMemo(() => filterQuotes(items, { q, tag, status }), [items, q, tag, status])
   const current = items.find((x) => x.slug === slug)
   const chars = form ? quoteMetrics(form.text).chars : 0
   const lines = preview?.lines
@@ -166,21 +180,8 @@ export default function QuoteManager({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={() => setTag('')} className={tag ? 'tag' : 'tag-active'}>
-          All
-        </button>
-        {tagOptions.map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setTag(t)}
-            className={tag === t ? 'tag-active' : 'tag'}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+      <Chips value={tag} onChange={setTag} options={tagOptions.map((t) => [t, t])} />
+      <Chips value={status} onChange={setStatus} options={quoteStatuses} />
 
       {!filtered.length ? (
         <p className="text-sm text-quiet">No quotes match.</p>
