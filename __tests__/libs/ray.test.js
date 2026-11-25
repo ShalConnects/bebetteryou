@@ -59,6 +59,9 @@ describe('Ray pipeline', () => {
   const now = new Date('2026-11-24T15:00:00Z') // Tue, after the day's run
   const write = (file, data) => fs.writeFileSync(path.join(dir, 'data', file), JSON.stringify(data))
 
+  const home = process.cwd()
+  afterEach(() => process.chdir(home))
+
   beforeEach(() => {
     dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bby-ray-'))
     process.chdir(dir)
