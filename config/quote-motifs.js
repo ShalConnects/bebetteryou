@@ -1,11 +1,12 @@
 /** Tag → motif id. First matching tag in this order wins. */
-export const motifPriority = ['Motivation', 'Mindset', 'Growth', 'Love', 'Yourself']
+export const motifPriority = ['Motivation', 'Mindset', 'Growth', 'Love', 'Relationships', 'Yourself']
 
 export const motifByTag = {
   Motivation: 'spark',
   Mindset: 'lens',
   Growth: 'sprout',
   Love: 'heart',
+  Relationships: 'heart',
   Yourself: 'figure',
 }
 
