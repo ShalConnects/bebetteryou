@@ -12,6 +12,7 @@ import { changeLabel } from '@/libs/analytics'
 import { coveredDays, manageQuotesHref } from '@/libs/dashboard-ops'
 import { readQuotes } from '@/libs/quotes-store'
 import { emptyPostDays } from '@/libs/social/post-slot'
+import { postDaysLabel } from '@/config/social'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import AttentionStrip from '@/components/dashboard/AttentionStrip'
@@ -87,7 +88,7 @@ export default async function Dashboard({ searchParams }) {
             </DashPanel>
             <DashPanel
               title="Next 7 days"
-              description="Cards go out Mon, Wed, Thu and Sat at 8 pm Bangladesh time."
+              description={`Cards go out ${postDaysLabel} at 8 pm Bangladesh time.`}
               action={
                 <Button asChild variant="outline" size="sm">
                   <Link href={manageQuotesHref({ section: 'schedules' })}>Calendar</Link>

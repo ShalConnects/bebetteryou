@@ -1,9 +1,16 @@
-/** Card days, as UTC weekdays of the 8 pm slot (0 = Sun): Mon, Wed, Thu, Sat. Friday is the week review. */
-export const postWeekdays = [1, 3, 4, 6]
+/** Card days, as UTC weekdays of the 8 pm slot (0 = Sun): every day but Friday, the week review. */
+export const postWeekdays = [0, 1, 2, 3, 4, 6]
+/** "Sun, Mon, Tue, Wed, Thu and Sat" — for dashboard copy. */
+export const postDaysLabel = postWeekdays
+  .map((d) => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d])
+  .join(', ')
+  .replace(/, (\w+)$/, ' and $1')
 /** UTC weekday the week in review auto-publishes (Friday), at the same 8 pm run. */
 export const weekReviewWeekday = 5
-/** Fed one card a day in card-number order (catching up from #1), never by the post schedule. */
+/** Fed in card-number order (catching up from #1), never by the post schedule. */
 export const serialNetworks = ['x']
+/** Serial posts per day: 2 while behind; once caught up, only the day's new card is left. */
+export const serialPerDay = 2
 
 /** Networks we can publish quote cards to. Enabled when all env keys exist. */
 export const postNetworks = [

@@ -24,11 +24,11 @@ describe('post slot', () => {
     expect(() => runAtFromPostDate('2026-02-31', before)).toThrow(/Pick a date/)
   })
 
-  it('lists empty card days (Mon, Wed, Thu, Sat) whose slot is still ahead', () => {
+  it('lists empty card days (every day but Friday) whose slot is still ahead', () => {
     const mon = new Date('2026-11-23T10:00:00.000Z')
-    expect(emptyPostDays([], 7, mon)).toEqual(['2026-11-23', '2026-11-25', '2026-11-26', '2026-11-28'])
+    expect(emptyPostDays([], 7, mon)).toEqual(['2026-11-23', '2026-11-24', '2026-11-25', '2026-11-26', '2026-11-28', '2026-11-29'])
     const taken = [{ status: 'pending', runAt: '2026-11-25T14:00:00.000Z' }, { status: 'done', runAt: '2026-11-26T14:00:00.000Z' }]
-    expect(emptyPostDays(taken, 7, mon)).toEqual(['2026-11-23', '2026-11-26', '2026-11-28'])
+    expect(emptyPostDays(taken, 7, mon)).toEqual(['2026-11-23', '2026-11-24', '2026-11-26', '2026-11-28', '2026-11-29'])
     expect(emptyPostDays([], 1, new Date('2026-11-23T15:00:00.000Z'))).toEqual([])
   })
 })

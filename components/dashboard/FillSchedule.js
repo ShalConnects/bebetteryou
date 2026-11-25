@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from '@/components/dashboard/toast'
 import { plural } from '@/libs/dashboard-ops'
 
-/** Puts saved drafts on the empty card days (Mon, Wed, Thu, Sat) of the next two weeks. */
+/** Puts saved drafts on the empty card days (`postWeekdays`) of the next two weeks. */
 export default function FillSchedule() {
   const router = useRouter()
   const [busy, setBusy] = useState(false)

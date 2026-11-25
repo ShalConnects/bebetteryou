@@ -16,6 +16,7 @@ import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { readTags, tagNames } from '@/libs/tags-store'
 import { fridayWeekRange, pickWeekReviewQuotes, publicRange } from '@/libs/week-review'
 import { rayBoard } from '@/libs/ray/plan'
+import { postDaysLabel } from '@/config/social'
 
 export const metadata = { title: 'Content' }
 
@@ -38,7 +39,7 @@ const tabs = {
       <>
         <DashPanel
           title="Next 14 days"
-          description="Cards go out Mon, Wed, Thu and Sat at 8 pm Bangladesh time (14:00 UTC cron)."
+          description={`Cards go out ${postDaysLabel} at 8 pm Bangladesh time (14:00 UTC cron).`}
           action={<FillSchedule />}
         >
           <ScheduleCalendar schedules={schedules} quotes={quotes} postsBySlug={postsBySlug} />
