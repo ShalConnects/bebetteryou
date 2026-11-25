@@ -29,7 +29,7 @@ export default function ScheduleCalendar({ schedules = [], quotes = [], postsByS
         const [variant, text] = first
           ? slotBadges[first.status] || ['muted', first.status]
           : review
-            ? ['default', 'Week review (auto)']
+            ? ['default', 'Week review']
             : ['muted', 'Empty']
         return (
           <li key={key}>
