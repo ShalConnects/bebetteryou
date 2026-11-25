@@ -2,10 +2,12 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { adminDay, adminDays, manageQuotesHref, slotBadges, slotDay, slotStatus } from '@/libs/dashboard-ops'
 import { cn } from '@/libs/cn'
+import { weekReviewWeekday } from '@/config/social'
 
 /**
  * One post slot per day (20:00 Bangladesh). Overdue rows sit on the next run day, since that's
- * when they'll actually go out; an empty day links to New quote with that date picked.
+ * when they'll actually go out; an empty day links to New quote with that date picked, and an
+ * empty Friday is the automatic week review.
  */
 export default function ScheduleCalendar({ schedules = [], quotes = [], postsBySlug, days = 14 }) {
   const now = Date.now()
@@ -23,11 +25,18 @@ export default function ScheduleCalendar({ schedules = [], quotes = [], postsByS
         const rows = byDay[key] || []
         const [first] = rows
         const quote = first && cover[first.slug]
-        const [variant, text] = first ? slotBadges[first.status] || ['muted', first.status] : ['muted', 'Empty']
+        const review = !first && new Date(`${key}T12:00:00Z`).getUTCDay() === weekReviewWeekday
+        const [variant, text] = first
+          ? slotBadges[first.status] || ['muted', first.status]
+          : review
+            ? ['default', 'Week review (auto)']
+            : ['muted', 'Empty']
         return (
           <li key={key}>
             <Link
-              href={manageQuotesHref(first ? { quote: first.slug, section: 'cards' } : { section: 'new', date: key })}
+              href={manageQuotesHref(
+                first ? { quote: first.slug, section: 'cards' } : review ? { section: 'week' } : { section: 'new', date: key }
+              )}
               className={cn(
                 'flex h-full flex-col gap-2 rounded-lg border border-border bg-card p-2 transition-colors hover:border-primary/50',
                 key === today && 'ring-1 ring-primary/60'
