@@ -70,7 +70,7 @@ export async function previewScripture({ tradition, slug, tags, n, translationId
 }
 
 export async function upsertScripture(body) {
-  const { tradition, theme, ref, text, url, index, kjvRef, kjvText, kjvUrl } = body || {}
+  const { tradition, theme, index } = body || {}
   if (!traditionIds.has(tradition) || tradition === 'none') throw new Error('Invalid tradition')
   const { themeIds } = await lanes()
   if (!themeIds.has(theme)) throw new Error('Invalid theme')
@@ -80,7 +80,7 @@ export async function upsertScripture(body) {
   const entries = themeEntries(data[tradition][theme])
   const i = Number(index)
   const prev = Number.isInteger(i) && i >= 0 && i < entries.length ? entries[i] : null
-  const entry = normalizeEntry({ ref, text, url, kjvRef, kjvText, kjvUrl }, prev)
+  const entry = normalizeEntry(body, prev)
   if (Number.isInteger(i) && i >= 0 && i < entries.length) entries[i] = entry
   else entries.push(entry)
   data[tradition][theme] = entries

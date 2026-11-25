@@ -39,6 +39,11 @@ describe('manage-scripture validation', () => {
     ).rejects.toThrow('Reference and text required')
   })
 
+  it('keeps provenance: translation, original text and the verified tick', async () => {
+    await upsertScripture({ tradition: 'secular', theme: 'self-worth', ref: 'A', text: 'T', translation: 'George Long', verified: true })
+    expect(catalog.secular['self-worth'].at(-1)).toMatchObject({ translation: 'George Long', verified: true })
+  })
+
   it('appends and removes by index', async () => {
     await upsertScripture({ tradition: 'secular', theme: 'self-worth', ref: 'A', text: 'First' })
     await upsertScripture({ tradition: 'secular', theme: 'self-worth', ref: 'B', text: 'Second' })
