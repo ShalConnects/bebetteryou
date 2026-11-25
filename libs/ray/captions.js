@@ -68,8 +68,8 @@ const ts = (x) => `0:${String(Math.floor(x / 60)).padStart(2, '0')}:${(x % 60).t
 export function buildAss({ width: W, height: H, duration, hook, timed }) {
   const { font, highlight, mark, hookSeconds } = ray.captions
   const size = Math.round(W * 0.105)
-  const style = (name, px, outline, align, marginV) =>
-    `Style: ${name},${font},${px},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,${outline},${Math.max(2, Math.round(px / 20))},${align},${Math.round(W / 12)},${Math.round(W / 12)},${marginV},1`
+  const style = (name, px, outline, align, marginV, colour = '&H00FFFFFF') =>
+    `Style: ${name},${font},${px},${colour},&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,0,0,1,${outline},${Math.max(2, Math.round(px / 20))},${align},${Math.round(W / 12)},${Math.round(W / 12)},${marginV},1`
   const line = (st, a, b, text) => `Dialogue: 0,${ts(a)},${ts(b)},${st},,0,0,0,,${text}`
   const events = [line('Mark', 0, duration, mark)]
   if (hook) {
@@ -104,7 +104,7 @@ WrapStyle: 2
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 ${style('Cap', size, Math.max(3, Math.round(size / 12)), 2, Math.round(H * 0.27))}
-${style('Hook', Math.round(size * 0.85), Math.max(3, Math.round(size / 11)), 2, Math.round(H * 0.37))}
+${style('Hook', Math.round(size * 0.85), Math.max(3, Math.round(size / 11)), 2, Math.round(H * 0.37), highlight.replace('&H', '&H00').slice(0, -1))}
 ${style('Mark', Math.round(size * 0.38), 2, 8, Math.round(H * 0.05))}
 
 [Events]

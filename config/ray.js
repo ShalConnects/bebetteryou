@@ -22,8 +22,8 @@ export const ray = {
     'sits on a park bench under trees in late afternoon light',
     'stands in a small cluttered workshop with warm lamp light',
   ],
-  /** Burned-in captions: highlight is ASS BGR (&H00E5FF& = yellow). */
-  captions: { font: 'BBY Caption', highlight: '&H00E5FF&', mark: 'bebetteryou.online', hookSeconds: 2 },
+  /** Burned-in captions. `highlight` (lit word + hook) is ASS &HBBGGRR& — brand green #34D399. */
+  captions: { font: 'BBY Caption', highlight: '&H99D334&', mark: 'bebetteryou.online', hookSeconds: 2 },
   aiNote: 'Ray is an AI character.',
 }
 

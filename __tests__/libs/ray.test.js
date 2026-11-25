@@ -50,7 +50,8 @@ describe('Ray captions', () => {
     expect(ass).toContain('WHOSE DREAM\\NARE YOU\\NWATCHING?')
     expect(ass).toContain('bebetteryou.online')
     expect(ass.match(/,Cap,/g)).toHaveLength(2)
-    expect(ass).toContain('\\c&H00E5FF&')
+    expect(ass).toContain('\\c&H99D334&')
+    expect(ass).toMatch(/Style: Hook,[^,]+,\d+,&H0099D334,/)
   })
 })
 
