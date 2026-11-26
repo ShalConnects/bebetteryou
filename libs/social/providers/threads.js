@@ -69,9 +69,11 @@ async function waitForContainer(id, token, { attempts = 20, ms = 1500 } = {}) {
   throw new Error('Threads media timed out before publish')
 }
 
-export async function postThreads({ imageUrl, caption, replyToId }) {
-  if (!imageUrl || /localhost|127\.0\.0\.1/i.test(imageUrl)) {
-    throw new Error('Threads needs a public image URL (set SITE_URL to your live domain)')
+/** Threads post with an image (imageUrl) or a video (videoUrl). */
+export async function postThreads({ imageUrl, videoUrl, caption, replyToId }) {
+  const url = videoUrl || imageUrl
+  if (!url || /localhost|127\.0\.0\.1/i.test(url)) {
+    throw new Error('Threads needs a public media URL (set SITE_URL to your live domain)')
   }
 
   const { token, userId } = await resolveThreadsKeys()
@@ -79,8 +81,7 @@ export async function postThreads({ imageUrl, caption, replyToId }) {
 
   const text = clipThreadsText(caption)
   const payload = {
-    media_type: 'IMAGE',
-    image_url: imageUrl,
+    ...(videoUrl ? { media_type: 'VIDEO', video_url: videoUrl } : { media_type: 'IMAGE', image_url: imageUrl }),
     text,
     access_token: token,
   }
@@ -96,7 +97,7 @@ export async function postThreads({ imageUrl, caption, replyToId }) {
     throw new Error(created.error?.message || 'Threads media create failed')
   }
 
-  await waitForContainer(created.id, token)
+  await waitForContainer(created.id, token, videoUrl ? { attempts: 60, ms: 3000 } : undefined)
 
   const publish = await fetch(`${GRAPH}/${userId}/threads_publish`, {
     method: 'POST',

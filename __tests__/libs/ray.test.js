@@ -84,7 +84,7 @@ describe('Ray pipeline', () => {
     const board = await rayBoard(now)
     expect(board.items.map((i) => i.slug)).toEqual(['bby-41', 'bby-43', 'bby-44', 'bby-45'])
     expect(board.items[0]).toMatchObject({ hook: 'WHO DECIDES YOUR DAY?', status: 'draft' })
-    expect(board.cost).toBeCloseTo(1.18)
+    expect(board.cost).toBeCloseTo(0.94)
   })
 
   test('approving inside the lead time sends it; later slots wait; sent rows lock', async () => {
@@ -92,8 +92,8 @@ describe('Ray pipeline', () => {
     const { rayComing, rayDueToday } = await import('@/libs/ray/plan')
     const { submitGeneration } = await import('@/libs/higgsfield')
     const sent = await saveRayScript({ slug: 'bby-41', hook: 'h', script: 'Say this.', approve: true }, now)
-    expect(sent).toMatchObject({ status: 'generating', requestId: 'req-1', costUsd: 1.18, results: [] })
-    expect(submitGeneration.mock.calls[0][1]).toMatchObject({ duration: 10, resolution: '480p', aspect_ratio: '9:16' })
+    expect(sent).toMatchObject({ status: 'generating', requestId: 'req-1', costUsd: 0.94, results: [] })
+    expect(submitGeneration.mock.calls[0][1]).toMatchObject({ duration: 8, resolution: '480p', aspect_ratio: '9:16' })
 
     const later = await saveRayScript({ slug: 'bby-45', hook: '', script: 'Later.', approve: true }, now)
     expect(later.status).toBe('approved')

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from '@/components/dashboard/toast'
+import { ray } from '@/config/ray'
 
 const field = 'w-full border border-line bg-ink px-3 py-2 text-sm text-paper outline-none focus:border-paper/40'
 const tone = { draft: 'muted', approved: 'default', generating: 'warn', ready: 'default', posted: 'default', failed: 'danger' }
@@ -56,11 +57,11 @@ function RayItem({ item }) {
         value={row.script}
         disabled={locked}
         onChange={(e) => setRow({ ...row, script: e.target.value })}
-        placeholder="What Ray says (about 25 words for 10 seconds)"
+        placeholder={`What Ray says (about ${ray.words} words for ${ray.seconds} seconds)`}
         className={`${field} resize-none`}
       />
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`text-xs ${words(row.script) > 28 ? 'text-red-400' : 'text-muted-foreground'}`}>
+        <span className={`text-xs ${words(row.script) > ray.words + 2 ? 'text-red-400' : 'text-muted-foreground'}`}>
           {words(row.script)} words
         </span>
         {!locked ? (

@@ -4,6 +4,7 @@ import { readPosts } from '@/libs/social/post-store'
 import { claimDueSchedules, finishSchedule } from '@/libs/social/schedule-store'
 import { publishQuote } from '@/libs/quotes-store'
 import { logError } from '@/libs/logger'
+import { ray as rayConfig } from '@/config/ray'
 import { rayComing } from '@/libs/ray/plan'
 import { serialNetworks } from '@/config/social'
 
@@ -20,11 +21,11 @@ export async function runDueSocialSchedules({ now = new Date(), limit = 5 } = {}
       await publishQuote(job.slug)
 
       const posts = await readPosts(job.slug)
-      // A Ray video takes this card's YouTube Short slot; the image Short goes out later from the backlog.
+      // A Ray video takes this card's slot on its networks; the image Short goes out later from the backlog.
       // Serial networks (X) get this card from their own one-a-day queue, in number order.
       const ray = await rayComing(job.slug)
       const requested = (Array.isArray(job.networks) ? job.networks : []).filter(
-        (n) => !(ray && n === 'youtube') && !serialNetworks.includes(n)
+        (n) => !(ray && rayConfig.networks.includes(n)) && !serialNetworks.includes(n)
       )
       const toPost = networksNeedingPost(requested, posts)
       const skipped = requested

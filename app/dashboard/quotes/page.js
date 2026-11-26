@@ -100,7 +100,7 @@ const tabs = {
   },
   async ray() {
     return (
-      <DashPanel description="Ray talks through the Mon, Wed and Sat cards. Approve a script and it goes to Higgsfield up to two days ahead; the finished video posts to YouTube Shorts and Instagram Reels at 8 pm in place of that card's Short.">
+      <DashPanel description="Ray talks through the Mon, Wed and Sat cards. Approve a script and it goes to Higgsfield up to two days ahead; the finished video posts at 8 pm to YouTube Shorts, Instagram Reels, Facebook, Threads and Pinterest in place of that card's post there.">
         <RayBoard {...await rayBoard()} />
       </DashPanel>
     )

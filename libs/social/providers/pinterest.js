@@ -32,9 +32,32 @@ export function pinterestTitle(quote) {
   return clipPinText(quoteOneLine(quote?.text) || `Quote #${quote?.n || ''}`, 100)
 }
 
-/** Pinterest pin via API v5. Uploads the JPEG (works on localhost). */
-export async function postPinterest({ caption, imageBuffer, quote, title, link: linkOverride, altText }) {
-  if (!imageBuffer?.length) throw new Error('Image file missing')
+/** Register, upload and wait for a video; returns its media_id. */
+async function uploadPinVideo(token, video) {
+  const api = (path, init = {}) =>
+    fetch(`${pinterestApiBase()}/v5/media${path}`, {
+      ...init,
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    }).then((r) => r.json())
+  const { media_id, upload_url, upload_parameters, message } = await api('', { method: 'POST', body: JSON.stringify({ media_type: 'video' }) })
+  if (!media_id) throw new Error(message || 'Pinterest video register failed')
+  const form = new FormData()
+  for (const [k, v] of Object.entries(upload_parameters || {})) form.append(k, v)
+  form.append('file', new Blob([video], { type: 'video/mp4' }), 'video.mp4')
+  const up = await fetch(upload_url, { method: 'POST', body: form })
+  if (!up.ok) throw new Error(`Pinterest video upload failed (${up.status})`)
+  for (let i = 0; i < 40; i++) {
+    const { status } = await api(`/${media_id}`)
+    if (status === 'succeeded') return media_id
+    if (status === 'failed') throw new Error('Pinterest video processing failed')
+    await new Promise((r) => setTimeout(r, 3000))
+  }
+  throw new Error('Pinterest video timed out')
+}
+
+/** Pinterest pin via API v5: a JPEG (imageBuffer) or an MP4 (video + public coverUrl). */
+export async function postPinterest({ caption, imageBuffer, video, coverUrl, quote, title, link: linkOverride, altText }) {
+  if (!imageBuffer?.length && !video?.length) throw new Error('Image file missing')
   const { token, boardId } = await resolvePinterestKeys()
   if (!boardId) throw new Error('Pinterest board id missing — save it under Integrations')
   if (!token) {
@@ -56,11 +79,9 @@ export async function postPinterest({ caption, imageBuffer, quote, title, link: 
       description: clipPinText(caption, 800),
       alt_text: clipPinText(altText || quoteAlt(quote || {}), 500),
       link,
-      media_source: {
-        source_type: 'image_base64',
-        content_type: 'image/jpeg',
-        data: imageBuffer.toString('base64'),
-      },
+      media_source: video
+        ? { source_type: 'video_id', media_id: await uploadPinVideo(token, video), cover_image_url: coverUrl }
+        : { source_type: 'image_base64', content_type: 'image/jpeg', data: imageBuffer.toString('base64') },
     }),
   })
   const posted = await res.json().catch(() => ({}))

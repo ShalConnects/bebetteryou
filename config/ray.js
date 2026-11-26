@@ -5,7 +5,11 @@ export const ray = {
   portrait: '/ray/ray.jpg',
   /** UTC weekdays of the 8 pm slot (0 = Sun): Mon, Wed, Sat. Must be card days. */
   weekdays: [1, 3, 6],
-  seconds: 10,
+  seconds: 8,
+  /** Spoken words that fit `seconds` (Ray talks about 2.5 words a second). */
+  words: 20,
+  /** Where each finished video posts. These networks skip the card's own image post that day. */
+  networks: ['youtube', 'instagram', 'facebook', 'threads', 'pinterest'],
   resolution: '480p',
   /** Higgsfield's price for this model at 480p, USD per output second. */
   usdPerSecond: 0.1177,
