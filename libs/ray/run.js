@@ -8,6 +8,7 @@ import { quoteCaption, readyNetworks } from '@/libs/social'
 import { recordPost } from '@/libs/social/post-store'
 import { postFacebook } from '@/libs/social/providers/facebook'
 import { postInstagramReel } from '@/libs/social/providers/instagram'
+import { postLinkedIn } from '@/libs/social/providers/linkedin'
 import { postPinterest } from '@/libs/social/providers/pinterest'
 import { postThreads } from '@/libs/social/providers/threads'
 import { postYouTube } from '@/libs/social/providers/youtube'
@@ -89,6 +90,7 @@ const POSTERS = {
   instagram: ({ caption, videoUrl }) => postInstagramReel({ videoUrl, caption }),
   facebook: ({ caption, videoUrl }) => postFacebook({ videoUrl, caption }),
   threads: ({ caption, videoUrl }) => postThreads({ videoUrl, caption }),
+  linkedin: async ({ caption, videoUrl }) => postLinkedIn({ caption, video: await fetchBuffer(videoUrl) }),
   pinterest: async ({ quote, caption, videoUrl, posterUrl }) =>
     postPinterest({ quote, caption, video: await fetchBuffer(videoUrl), coverUrl: posterUrl }),
 }

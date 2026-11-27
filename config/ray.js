@@ -9,7 +9,7 @@ export const ray = {
   /** Spoken words that fit `seconds` (Ray talks about 2.5 words a second). */
   words: 20,
   /** Where each finished video posts. These networks skip the card's own image post that day. */
-  networks: ['youtube', 'instagram', 'facebook', 'threads', 'pinterest'],
+  networks: ['youtube', 'instagram', 'facebook', 'threads', 'pinterest', 'linkedin'],
   resolution: '480p',
   /** Higgsfield's price for this model at 480p, USD per output second. */
   usdPerSecond: 0.1177,
