@@ -45,7 +45,13 @@ export async function readyNetworks() {
   }))
 }
 
+/** Trend cards lead with the topic and add its hashtag; others are captioned as usual. */
 export async function quoteCaption(quote, networkId) {
+  const caption = await cardCaption(quote, networkId)
+  return quote.trend ? `Trending today: ${quote.trend.topic}\n\n${caption} #${quote.trend.hashtag}` : caption
+}
+
+async function cardCaption(quote, networkId) {
   const body = quoteOneLine(quote.text) || `Quote #${quote.n}`
   const credit = quote.author?.trim()
   const head = credit ? `${body}\n\n— ${credit}` : body
@@ -125,6 +131,12 @@ function localImagePath(src) {
 export async function postQuote(slug, networkIds) {
   const quote = (await readQuotes()).find((q) => q.slug === slug)
   if (!quote) throw new Error('Quote not found')
+  return postCard(quote, networkIds)
+}
+
+/** Post any card-shaped `{ slug, text, author, tags, src }` (a quote or a trend card); logs under its slug. */
+export async function postCard(quote, networkIds) {
+  const { slug } = quote
 
   const statusList = await readyNetworks()
   const status = Object.fromEntries(statusList.map((n) => [n.id, n]))

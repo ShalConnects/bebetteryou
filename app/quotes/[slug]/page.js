@@ -7,7 +7,7 @@ import { appConfig, getUrl } from '@/config/app'
 import QuoteAside from '@/components/site/QuoteAside'
 import QuoteDetailMedia from '@/components/site/QuoteDetailMedia'
 import { Page } from '@/components/site/ui'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 
 export async function generateStaticParams() {
   return (await listQuotes()).map(({ slug }) => ({ slug }))
@@ -27,6 +27,8 @@ export async function generateMetadata({ params }) {
 
 export default async function QuotePage({ params }) {
   const { slug } = await params
+  /** Trend cards live on /trends, under their date. */
+  if (slug.startsWith('trend-')) redirect(`/trends#${slug.slice(6)}`)
   const quote = await getQuote(slug)
   if (!quote) notFound()
   const { prev, next } = await neighbors(quote.slug)

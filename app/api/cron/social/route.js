@@ -18,14 +18,16 @@ import { cronAuthorized, kickCron } from '@/libs/secret'
 import { weekReviewWeekday } from '@/config/social'
 import { publishWeekReview } from '@/libs/week-review-publish'
 import { runRay } from '@/libs/ray/run'
+import { draftTrend, postTrend } from '@/libs/trends/run'
 
 /**
- * Single daily Vercel Cron (Hobby: 1 job):
+ * Daily Vercel Cron (plus the 17:00 UTC trend post):
  * 0) weekly Threads token renewal → 1) due social → 2) quote email → 3) backlog YouTube Short
  * 3b) one card a day to X, lowest number first (X is never fed by the schedule)
  * 3c) Sundays: one book-of-the-week pin on Pinterest
  * 4) Fridays: week in review, as its own run (Threads thread + Short need the time)
  * 4b) Ray videos, as their own run: collect from Higgsfield, post the day's, send the next
+ * 4c) today's trend card is drafted here; the second cron (17:00 UTC, `?trend=1`) posts it once approved
  * 5) optional ShalConnects outreach (SHALCONNECTS_OUTREACH_CRON=1) via kicked follow-up.
  * Also: `?emailOnly=1`, `?queue=1`, `?shalOutreach=1` / `?outreachOnly=1`.
  */
@@ -56,6 +58,10 @@ async function handleGet(req) {
 
     if (url.searchParams.get('weekReview') === '1') {
       return NextResponse.json({ ok: true, weekReview: await step('Week review', publishWeekReview) })
+    }
+
+    if (url.searchParams.get('trend') === '1') {
+      return NextResponse.json({ ok: true, trend: await step('Trend post', postTrend) })
     }
 
     if (url.searchParams.get('ray') === '1') {
@@ -110,6 +116,7 @@ async function handleGet(req) {
     const youtubeShort = await step('Daily YouTube Short', runDailyYoutubeShort)
     const serial = await step('Daily serial (X)', runDailySerial)
     const bookPin = await step('Sunday book pin', runBookPin)
+    const trend = await step('Trend draft', draftTrend)
 
     // Separate invocation so 100 outreach sends get a fresh time budget.
     const outreachCron = outreachCronEnabled()
@@ -121,6 +128,7 @@ async function handleGet(req) {
       youtubeShort,
       serial,
       bookPin,
+      trend,
       newsletter,
       threadsToken,
       weekReviewQueued,

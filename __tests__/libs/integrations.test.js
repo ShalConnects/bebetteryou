@@ -79,7 +79,7 @@ describe('integrations credentials', () => {
   it('falls back to env for telegram', async () => {
     process.env.TELEGRAM_BOT_TOKEN = 't'
     process.env.TELEGRAM_CHAT_ID = 'c'
-    await expect(resolveTelegramKeys()).resolves.toEqual({ token: 't', chatId: 'c' })
+    await expect(resolveTelegramKeys()).resolves.toEqual({ token: 't', chatId: 'c', alertChatId: '' })
   })
 })
 

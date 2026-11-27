@@ -41,6 +41,7 @@ export const contentTabs = sections('/dashboard/quotes', [
   ['bulk', 'Bulk add'],
   ['week', 'Week review'],
   ['ray', 'Ray videos'],
+  ['trend', 'Trend'],
 ])
 
 export const audienceTabs = sections('/dashboard/subscribers', [

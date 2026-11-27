@@ -112,7 +112,7 @@ function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, cir
   ctx.fillStyle = color
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
-  ctx.fillText(`#${n}`, w - padX, y)
+  ctx.fillText(typeof n === 'number' ? `#${n}` : String(n), w - padX, y)
 }
 
 function drawMeta(ctx, w, h, sectionH, footerH, site, author, meta) {

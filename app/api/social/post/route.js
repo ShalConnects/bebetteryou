@@ -19,6 +19,8 @@ import { publishQuote, readQuotes } from '@/libs/quotes-store'
 import { logError, logInfo } from '@/libs/logger'
 import { previewWeekReview, publishWeekReview } from '@/libs/week-review-publish'
 import { repostRay, saveRayScript } from '@/libs/ray/run'
+import { updateTrend } from '@/libs/trends/run'
+import { linkTelegramAlerts } from '@/libs/social/providers/telegram'
 
 /** Post / preview / schedule / week-review / integrations — one Hobby function. */
 export const maxDuration = 300
@@ -134,6 +136,15 @@ export async function POST(req) {
   if (body?.ray === true) {
     try {
       return NextResponse.json({ ray: await (body.repost ? repostRay(body.slug) : saveRayScript(body)) })
+    } catch (err) {
+      return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })
+    }
+  }
+
+  /** Trend card: save an edit, approve or skip; or link Telegram alerts. */
+  if (body?.trend === true) {
+    try {
+      return NextResponse.json({ trend: await (body.action === 'link' ? linkTelegramAlerts() : updateTrend(body)) })
     } catch (err) {
       return NextResponse.json({ error: err.message || 'Save failed' }, { status: 400 })
     }

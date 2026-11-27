@@ -7,7 +7,7 @@ import { mergePostRecord } from './post-log'
 
 const dataFile = path.join(process.cwd(), 'data/social-posts.json')
 /** Posts logged under a made-up key, not a quote slug: week reviews, verse Shorts, Ray videos, book pins. */
-export const derivedSlug = /^(week|verse|ray|book)-/
+export const derivedSlug = /^(week|verse|ray|book|trend)-/
 
 function readLocal() {
   try {

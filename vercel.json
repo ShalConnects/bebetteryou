@@ -1,10 +1,16 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
   "crons": [
     {
       "path": "/api/cron/social",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/social?trend=1",
+      "schedule": "0 17 * * *"
     }
   ]
 }

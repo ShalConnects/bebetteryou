@@ -59,6 +59,7 @@ export async function getSitemapEntries() {
   const paths = [
     '',
     '/quotes',
+    '/trends',
     ...(practice ? ['/practice', '/practice/saved'] : []),
     ...(blog ? ['/blog'] : []),
     ...(books ? ['/books'] : []),

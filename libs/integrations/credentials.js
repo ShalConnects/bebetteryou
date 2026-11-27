@@ -100,6 +100,8 @@ export async function resolveTelegramKeys() {
   return {
     token: stored?.accessToken || process.env.TELEGRAM_BOT_TOKEN || '',
     chatId: stored?.extras?.chatId || process.env.TELEGRAM_CHAT_ID || '',
+    /** Your own chat with the bot, for dashboard alerts (linked from the Trend tab). */
+    alertChatId: stored?.extras?.alertChatId || '',
   }
 }
 

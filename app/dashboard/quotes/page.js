@@ -3,6 +3,7 @@ import ScheduleBoard from '@/components/dashboard/ScheduleBoard'
 import ScheduleCalendar from '@/components/dashboard/ScheduleCalendar'
 import QuoteManager from '@/components/dashboard/QuoteManager'
 import RayBoard from '@/components/dashboard/RayBoard'
+import TrendBoard from '@/components/dashboard/TrendBoard'
 import BulkAdd from '@/components/dashboard/BulkAdd'
 import WeekReview from '@/components/dashboard/WeekReview'
 import QuoteForm from '@/components/site/QuoteForm'
@@ -16,6 +17,8 @@ import { nextQuoteN, readQuotes } from '@/libs/quotes-store'
 import { readTags, tagNames } from '@/libs/tags-store'
 import { fridayWeekRange, pickWeekReviewQuotes, publicRange } from '@/libs/week-review'
 import { rayBoard } from '@/libs/ray/plan'
+import { readTrends } from '@/libs/trends/store'
+import { resolveTelegramKeys } from '@/libs/integrations/credentials'
 import { postDaysLabel } from '@/config/social'
 
 export const metadata = { title: 'Content' }
@@ -102,6 +105,13 @@ const tabs = {
     return (
       <DashPanel description="Ray talks through the Mon, Wed and Sat cards. Approve a script and it goes to Higgsfield up to two days ahead; the finished video posts at 8 pm to YouTube Shorts, Instagram Reels, Facebook, Threads, Pinterest and LinkedIn in place of that card's post there.">
         <RayBoard {...await rayBoard()} />
+      </DashPanel>
+    )
+  },
+  async trend() {
+    return (
+      <DashPanel description="At 8 pm Bangladesh time a card is drafted from today's US trends (Google, X and Bluesky take turns). Approve it by 11 pm and it posts everywhere; skipped or unapproved days post nothing. Fridays are skipped.">
+        <TrendBoard rows={(await readTrends()).slice(0, 14)} today={new Date().toISOString().slice(0, 10)} alerts={Boolean((await resolveTelegramKeys()).alertChatId)} />
       </DashPanel>
     )
   },

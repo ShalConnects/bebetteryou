@@ -1,4 +1,5 @@
 import { resolveTelegramKeys } from '@/libs/integrations/credentials'
+import { saveIntegration } from '@/libs/integrations/store'
 
 /** Telegram channel post via Bot API. Uploads the JPEG (works on localhost). */
 const API = 'https://api.telegram.org'
@@ -35,11 +36,13 @@ function messageUrl(chat, messageId) {
   return null
 }
 
-/** Post quote JPEG + caption to a Telegram channel (bot must be channel admin). */
-export async function postTelegram({ caption, imageBuffer }) {
+/** Post quote JPEG + caption to the Telegram channel (bot must be channel admin), or to your alert chat with `alert`. */
+export async function postTelegram({ caption, imageBuffer, alert = false }) {
   if (!imageBuffer?.length) throw new Error('Image file missing')
-  const { token, chatId } = await resolveTelegramKeys()
-  if (!hasTelegramKeys({ token, chatId })) throw new Error('Telegram not configured')
+  const keys = await resolveTelegramKeys()
+  const { token } = keys
+  const chatId = alert ? keys.alertChatId : keys.chatId
+  if (!hasTelegramKeys({ token, chatId })) throw new Error(alert ? 'Telegram alerts not linked' : 'Telegram not configured')
 
   const form = new FormData()
   form.append('chat_id', chatId)
@@ -60,4 +63,15 @@ export async function postTelegram({ caption, imageBuffer }) {
     id: String(msg.message_id),
     url: messageUrl(msg.chat, msg.message_id),
   }
+}
+
+/** Link alerts to the last person who messaged the bot privately (send it "hi" first). */
+export async function linkTelegramAlerts() {
+  const { token } = await resolveTelegramKeys()
+  if (!token) throw new Error('Telegram not configured')
+  const data = await fetch(`${API}/bot${token}/getUpdates`).then((r) => r.json())
+  const chat = (data.result || []).map((u) => u.message?.chat).filter((c) => c?.type === 'private').at(-1)
+  if (!chat) throw new Error('Send your bot a message in Telegram first, then try again')
+  await saveIntegration('telegram', { extras: { alertChatId: String(chat.id) } })
+  return { name: chat.first_name || chat.username || 'you' }
 }
