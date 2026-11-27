@@ -44,31 +44,35 @@ export async function draftTrend(now = new Date(), { force = false } = {}) {
   const tags = tagNames(tagRows)
   const tried = []
   for (const source of sourceOrder(date)) {
+    let list
     try {
-      const pick = await pickAndWrite(await readers[source](), tags)
-      tried.push(`${source}: ${pick ? 'picked' : 'nothing safe'}`)
-      if (!pick) continue
-      const image = await renderQuoteCard({ n: trends.label, text: pick.text, author: trends.author, tags: [pick.tag] })
-      const row = await saveTrend(date, {
-        source,
-        topic: pick.topic,
-        hashtag: pick.hashtag.replace(/[^\w]/g, ''),
-        text: pick.text,
-        tags: [pick.tag],
-        theme: tagRows.find((t) => t.name === pick.tag)?.theme || '',
-        src: await saveQuoteImage(`trend-${date}.jpg`, image),
-        status: 'draft',
-        error: '',
-      })
-      await postTelegram({
-        alert: true,
-        imageBuffer: image,
-        caption: `Trend draft (${source}: ${row.topic})\n\n"${row.text}"\n\nApprove by 11 pm: ${getSiteUrl()}/dashboard/quotes?section=trend`,
-      }).catch(() => {})
-      return { ...row, tried }
+      list = await readers[source]()
     } catch (err) {
       tried.push(`${source}: ${err.message}`)
+      continue
     }
+    // An AI failure (key, credit) stops here: the next source would hit the same error.
+    const pick = await pickAndWrite(list, tags)
+    tried.push(`${source}: ${pick ? 'picked' : 'nothing safe'}`)
+    if (!pick) continue
+    const image = await renderQuoteCard({ n: trends.label, text: pick.text, author: trends.author, tags: [pick.tag] })
+    const row = await saveTrend(date, {
+      source,
+      topic: pick.topic,
+      hashtag: pick.hashtag.replace(/[^\w]/g, ''),
+      text: pick.text,
+      tags: [pick.tag],
+      theme: tagRows.find((t) => t.name === pick.tag)?.theme || '',
+      src: await saveQuoteImage(`trend-${date}.jpg`, image),
+      status: 'draft',
+      error: '',
+    })
+    await postTelegram({
+      alert: true,
+      imageBuffer: image,
+      caption: `Trend draft (${source}: ${row.topic})\n\n"${row.text}"\n\nApprove by 11 pm: ${getSiteUrl()}/dashboard/quotes?section=trend`,
+    }).catch(() => {})
+    return { ...row, tried }
   }
   return { skipped: true, reason: 'nothing safe', tried }
 }
