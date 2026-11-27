@@ -66,6 +66,21 @@ function TrendItem({ item, today }) {
 
 export default function TrendBoard({ rows, today, alerts }) {
   const [linked, setLinked] = useState(alerts)
+  const [items, setItems] = useState(rows)
+  const [drafting, setDrafting] = useState(false)
+
+  async function draft() {
+    setDrafting(true)
+    try {
+      const row = await send({ action: 'draft' })
+      if (row.skipped) throw new Error(`No draft: ${row.reason}${row.tried ? ` (${row.tried.join('; ')})` : ''}`)
+      setItems([row, ...items])
+    } catch (err) {
+      toast(err.message)
+    } finally {
+      setDrafting(false)
+    }
+  }
 
   async function link() {
     try {
@@ -82,9 +97,14 @@ export default function TrendBoard({ rows, today, alerts }) {
         {linked ? 'Telegram alerts are on: each draft is sent to you at 8 pm. ' : 'Message your Telegram bot once, then '}
         <button type="button" onClick={link} className="underline">{linked ? 'Relink' : 'link Telegram alerts'}</button>
       </p>
-      {rows.length ? (
+      {items[0]?.date !== today ? (
+        <Button size="sm" variant="outline" disabled={drafting} onClick={draft}>
+          {drafting ? 'Reading trends…' : 'Draft now'}
+        </Button>
+      ) : null}
+      {items.length ? (
         <ul className="space-y-3">
-          {rows.map((row) => (
+          {items.map((row) => (
             <TrendItem key={row.date} item={row} today={today} />
           ))}
         </ul>

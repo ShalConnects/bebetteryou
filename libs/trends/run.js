@@ -35,10 +35,10 @@ async function pickAndWrite(list, tags) {
   return out.pick && out.text && tags.includes(out.tag) ? out : null
 }
 
-/** 8 pm run: draft today's trend card from the source whose turn it is, falling back to the next. */
-export async function draftTrend(now = new Date()) {
+/** 8 pm run: draft today's trend card from the source whose turn it is, falling back to the next. `force` drafts on a Friday too. */
+export async function draftTrend(now = new Date(), { force = false } = {}) {
   const date = dayOf(now)
-  if (now.getUTCDay() === trends.skipWeekday) return { skipped: true, reason: 'friday' }
+  if (!force && now.getUTCDay() === trends.skipWeekday) return { skipped: true, reason: 'friday' }
   if ((await readTrends({ date })).length) return { skipped: true, reason: 'already drafted' }
   const tagRows = await readTags()
   const tags = tagNames(tagRows)
