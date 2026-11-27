@@ -18,18 +18,20 @@ function RayItem({ item }) {
   const [busy, setBusy] = useState(false)
   const locked = ['generating', 'ready', 'posted'].includes(row.status)
 
-  async function save(approve) {
+  const missing = row.status === 'posted' && ray.networks.some((n) => !row.results?.some((r) => r.id === n && r.ok))
+
+  async function save(approve, repost = false) {
     setBusy(true)
     try {
       const res = await fetch('/api/social/post', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ray: true, slug: row.slug, hook: row.hook, script: row.script, approve }),
+        body: JSON.stringify({ ray: true, slug: row.slug, hook: row.hook, script: row.script, approve, repost }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Save failed')
       setRow({ ...row, ...data.ray })
-      toast(approve ? (data.ray.status === 'generating' ? 'Approved and sent to Higgsfield' : 'Approved') : 'Saved')
+      toast(repost ? 'Posted to the rest' : approve ? (data.ray.status === 'generating' ? 'Approved and sent to Higgsfield' : 'Approved') : 'Saved')
     } catch (err) {
       toast(err.message)
     } finally {
@@ -74,6 +76,11 @@ function RayItem({ item }) {
             </Button>
           </>
         ) : null}
+        {missing ? (
+          <Button size="sm" variant="outline" disabled={busy} onClick={() => save(false, true)}>
+            {busy ? 'Posting…' : 'Post to the rest'}
+          </Button>
+        ) : null}
         {row.videoUrl ? (
           <a href={row.videoUrl} target="_blank" rel="noreferrer" className="text-xs underline">
             Watch video
@@ -81,7 +88,7 @@ function RayItem({ item }) {
         ) : null}
         {row.results?.filter((r) => r.url).map((r) => (
           <a key={r.id} href={r.url} target="_blank" rel="noreferrer" className="text-xs underline">
-            {r.id === 'youtube' ? 'YouTube' : 'Instagram'}
+            {r.id === 'youtube' ? 'YouTube' : r.id[0].toUpperCase() + r.id.slice(1)}
           </a>
         ))}
       </div>

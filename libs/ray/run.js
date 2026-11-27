@@ -124,6 +124,14 @@ async function postDue(rows, quotes, now) {
   }
 }
 
+/** Post a finished video now to the networks in `ray.networks` it has not reached yet. */
+export async function repostRay(slug, now = new Date()) {
+  const row = (await readRays({ slug }))[slug]
+  if (!row?.videoUrl) throw new Error('No finished video for this card yet')
+  await postDue({ [slug]: { ...row, status: 'ready', postAt: now } }, await readQuotes(), now)
+  return (await readRays({ slug }))[slug]
+}
+
 /** Cron: collect finished videos, post the ones due, then send the next approved scripts. */
 export async function runRay(now = new Date()) {
   if (!process.env.HF_CREDENTIALS) return { skipped: true, reason: 'HF_CREDENTIALS missing' }
