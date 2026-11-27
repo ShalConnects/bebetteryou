@@ -28,7 +28,7 @@ async function pickAndWrite(list, tags) {
   if (!list.length) return null
   const lines = list.slice(0, 20).map((t, i) => `${i + 1}. ${t.topic}${t.context ? ` — ${t.context}` : ''}`)
   const out = await askJson({
-    model: trends.model,
+    models: trends.models,
     system: `You write original, short motivational quotes for a quote-card brand, inspired by what people are talking about today.\n${trendRules}\nNever reuse a famous quote. Reply with JSON only.`,
     prompt: `Today's US trends:\n${lines.join('\n')}\n\nPick the one trend that is safe and gives the best uplifting angle, or none.\nTags: ${tags.join(', ')}\nReply {"pick": number or null, "topic": "short plain name", "hashtag": "OneWordOrCamelCase", "text": "quote, 8-22 words", "tag": "one of the tags"}`,
   })

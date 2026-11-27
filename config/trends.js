@@ -15,7 +15,8 @@ export const trends = {
   author: 'BeBetterYou',
   /** Card corner label in place of a card number. */
   label: 'TRENDING',
-  model: 'claude-haiku-4-5-20251001',
+  /** Gemini (free tier) is used when GEMINI_API_KEY is set, else Anthropic. */
+  models: { gemini: 'gemini-flash-latest', anthropic: 'claude-haiku-4-5-20251001' },
 }
 
 export const trendRules = `Skip anything about: death, illness, crime, violence, disasters, accidents, war, politics or government, a named real person, a company, brand, product or game, a sports match, injury or result, religion, money or markets, or anything sad or divisive.
