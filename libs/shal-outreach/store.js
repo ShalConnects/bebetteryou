@@ -603,8 +603,8 @@ export async function resubscribeContact(email) {
 }
 
 const HEALTH_WINDOW = 200
-/** Providers start throttling or suspending senders past a few % bounces + complaints. */
-export const MAX_BAD_RATE = 0.05
+/** Emergency brake only: Sal chose to keep sending through normal list bounces (Resend may still throttle). */
+export const MAX_BAD_RATE = 0.3
 
 /**
  * Bounced or complained share of the last 200 sends since the last pre-clean. The daily cron
