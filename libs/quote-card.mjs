@@ -89,7 +89,7 @@ function drawBackdrop(ctx, w, h, layers, { grainOpacity, bgOverlay, bgOverlayCol
   }
 }
 
-/** Top bar: Be-in-circle (left) + #n (right), vertically centered in sectionH. */
+/** Top bar: Be-in-circle (left) + #n or a text label such as a trend hashtag (right, at half size), vertically centered in sectionH. */
 function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, circle, circleScale }) {
   const y = sectionH / 2
   const diameter = size * circleScale
@@ -108,11 +108,12 @@ function drawTopChrome(ctx, n, w, sectionH, padX, mark, { size, font, color, cir
   ctx.drawImage(mark, cx - size / 2, y - size / 2, size, size)
   ctx.restore()
 
-  ctx.font = `${size}px ${font}`
+  const numbered = typeof n === 'number'
+  ctx.font = `${numbered ? size : Math.round(size / 2)}px ${font}`
   ctx.fillStyle = color
   ctx.textAlign = 'right'
   ctx.textBaseline = 'middle'
-  ctx.fillText(typeof n === 'number' ? `#${n}` : String(n), w - padX, y)
+  ctx.fillText(numbered ? `#${n}` : String(n), w - padX, y)
 }
 
 function drawMeta(ctx, w, h, sectionH, footerH, site, author, meta) {
