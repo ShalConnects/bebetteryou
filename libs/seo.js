@@ -6,6 +6,8 @@ import { quotesHref } from '@/libs/quotes-url'
 import { quoteOneLine } from '@/libs/quote-text'
 import { listPosts } from '@/libs/blog'
 import { postHref } from '@/libs/blog-url'
+import { readTrends } from '@/libs/trends/store'
+import { trendPath } from '@/libs/trends/url'
 
 export { sitePitch }
 
@@ -99,7 +101,13 @@ export async function getSitemapEntries() {
         priority: 0.7,
       }))
     : []
-  return [...staticEntries, ...tagEntries, ...quoteEntries, ...postEntries]
+  const trendEntries = (await readTrends({ status: 'posted' })).map((row) => ({
+    url: `${base}${trendPath(row)}`,
+    lastModified: new Date(`${row.date}T17:00:00Z`),
+    changeFrequency: 'yearly',
+    priority: 0.5,
+  }))
+  return [...staticEntries, ...tagEntries, ...quoteEntries, ...trendEntries, ...postEntries]
 }
 
 /** Who we are + sitelinks search box. Rendered once, on the homepage. */

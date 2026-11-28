@@ -27,8 +27,8 @@ export async function generateMetadata({ params }) {
 
 export default async function QuotePage({ params }) {
   const { slug } = await params
-  /** Trend cards live on /trends, under their date. */
-  if (slug.startsWith('trend-')) redirect(`/trends#${slug.slice(6)}`)
+  /** Trend cards have their own pages under /trends. */
+  if (slug.startsWith('trend-')) redirect(`/trends/${slug.slice(6)}`)
   const quote = await getQuote(slug)
   if (!quote) notFound()
   const { prev, next } = await neighbors(quote.slug)

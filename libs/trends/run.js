@@ -9,13 +9,14 @@ import { readTags, tagNames } from '@/libs/tags-store'
 import { getSiteUrl } from '@/libs/site-url'
 import { readers, sourceOrder } from './sources'
 import { readTrends, saveTrend } from './store'
+import { cardLabel, trendPath, trendSlug } from './url'
 
 const dayOf = (now) => now.toISOString().slice(0, 10)
 const pastPostHour = (date, now) => now >= new Date(`${date}T${String(trends.postHourUtc).padStart(2, '0')}:00:00Z`)
 
 /** The card-shaped object the social posters take. */
 export const trendCard = (row) => ({
-  slug: `trend-${row.date}`,
+  slug: `trend-${trendSlug(row)}`,
   text: row.text,
   author: trends.author,
   tags: row.tags,
@@ -30,7 +31,11 @@ async function pickAndWrite(list, tags) {
   const out = await askJson({
     models: trends.models,
     system: `You write original, short motivational quotes for a quote-card brand, inspired by what people are talking about today.\n${trendRules}\nNever reuse a famous quote. Reply with JSON only.`,
-    prompt: `Today's US trends:\n${lines.join('\n')}\n\nPick the one trend that is safe and gives the best uplifting angle, or none.\nTags: ${tags.join(', ')}\nReply {"pick": number or null, "topic": "short plain name", "hashtag": "OneWordOrCamelCase", "text": "quote, 8-22 words", "tag": "one of the tags"}`,
+    prompt: `Today's US trends:\n${lines.join('\n')}\n\nPick the one trend that is safe and gives the best uplifting angle, or none.
+Write one quote that clearly belongs to that trend: a reader who saw the news today should get the link at once. Use a concrete image from the trend, a twist or contrast, 8-16 words, plain words. No clichés ("embrace", "journey", "cherish", "joy of the season", "true warmth"), no brand or person names.
+Example for Black Friday: "The best things you'll hold this season were never on sale."
+Tags: ${tags.join(', ')}
+Reply {"pick": number or null, "topic": "short plain name", "hashtag": "CamelCase, at most 16 letters", "text": "the quote", "tag": "the tag that fits the quote best"}`,
   })
   return out.pick && out.text && tags.includes(out.tag) ? out : null
 }
@@ -55,11 +60,12 @@ export async function draftTrend(now = new Date(), { force = false } = {}) {
     const pick = await pickAndWrite(list, tags)
     tried.push(`${source}: ${pick ? 'picked' : 'nothing safe'}`)
     if (!pick) continue
-    const image = await renderQuoteCard({ n: trends.label, text: pick.text, author: trends.author, tags: [pick.tag] })
+    const hashtag = pick.hashtag.replace(/[^\w]/g, '')
+    const image = await renderQuoteCard({ n: cardLabel({ hashtag }), text: pick.text, author: trends.author, tags: [pick.tag] })
     const row = await saveTrend(date, {
       source,
       topic: pick.topic,
-      hashtag: pick.hashtag.replace(/[^\w]/g, ''),
+      hashtag,
       text: pick.text,
       tags: [pick.tag],
       theme: tagRows.find((t) => t.name === pick.tag)?.theme || '',
@@ -70,7 +76,7 @@ export async function draftTrend(now = new Date(), { force = false } = {}) {
     await postTelegram({
       alert: true,
       imageBuffer: image,
-      caption: `Trend draft (${source}: ${row.topic})\n\n"${row.text}"\n\nApprove by 11 pm: ${getSiteUrl()}/dashboard/quotes?section=trend`,
+      caption: `Trend draft (${source}: ${row.topic}, ${getSiteUrl()}${trendPath(row)})\n\n"${row.text}"\n\nApprove by 11 pm: ${getSiteUrl()}/dashboard/quotes?section=trend`,
     }).catch(() => {})
     return { ...row, tried }
   }
@@ -81,7 +87,7 @@ export async function draftTrend(now = new Date(), { force = false } = {}) {
 async function publish(row) {
   const results = await postCard(trendCard(row))
   try {
-    revalidatePath('/trends')
+    revalidatePath('/trends', 'layout')
   } catch {}
   return saveTrend(row.date, {
     results,
@@ -103,9 +109,10 @@ export async function updateTrend({ date, text, action }, now = new Date()) {
   if (row.status === 'posted') throw new Error('Already posted')
   if (date !== dayOf(now)) throw new Error('That trend has passed')
   let patch = { status: { approve: 'approved', skip: 'skipped' }[action] || row.status }
-  if (text?.trim() && text.trim() !== row.text) {
-    const image = await renderQuoteCard({ n: trends.label, text: text.trim(), author: trends.author, tags: row.tags })
-    patch = { ...patch, text: text.trim(), src: await saveQuoteImage(`trend-${date}-${Date.now()}.jpg`, image) }
+  if (action === 'save' || (text?.trim() && text.trim() !== row.text)) {
+    const next = text?.trim() || row.text
+    const image = await renderQuoteCard({ n: cardLabel(row), text: next, author: trends.author, tags: row.tags })
+    patch = { ...patch, text: next, src: await saveQuoteImage(`trend-${date}-${Date.now()}.jpg`, image) }
   }
   const saved = await saveTrend(date, patch)
   return action === 'approve' && pastPostHour(date, now) ? publish(saved) : saved

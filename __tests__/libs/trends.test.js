@@ -36,6 +36,14 @@ describe('Trend cards', () => {
     delete process.env.VERCEL
   })
 
+  test('trend URL carries the topic and date; long hashtags fall back to TRENDING', async () => {
+    const { trendPath, dateFromSlug, cardLabel } = await import('@/libs/trends/url')
+    expect(trendPath({ hashtag: 'BlackFriday', date: '2026-11-28' })).toBe('/trends/black-friday-2026-11-28')
+    expect(dateFromSlug('black-friday-2026-11-28')).toBe('2026-11-28')
+    expect(cardLabel({ hashtag: 'BlackFriday' })).toBe('#BlackFriday')
+    expect(cardLabel({ hashtag: 'ThanksgivingDayParade' })).toBe('TRENDING')
+  })
+
   test('sources take turns by date and the rest follow as fallbacks', () => {
     const { sourceOrder } = jest.requireActual('@/libs/trends/sources')
     const days = ['2026-11-28', '2026-11-29', '2026-11-30'].map((d) => sourceOrder(d)[0])
@@ -67,7 +75,7 @@ describe('Trend cards', () => {
     expect(await postTrend(new Date('2026-11-28T17:00:00Z'))).toEqual({ skipped: true })
     const late = await updateTrend({ date: '2026-11-28', action: 'approve' }, new Date('2026-11-28T17:30:00Z'))
     expect(late.status).toBe('posted')
-    expect(postCard).toHaveBeenCalledWith(expect.objectContaining({ slug: 'trend-2026-11-28', trend: { topic: 'First snow', hashtag: 'FirstSnow' } }))
+    expect(postCard).toHaveBeenCalledWith(expect.objectContaining({ slug: 'trend-first-snow-2026-11-28', trend: { topic: 'First snow', hashtag: 'FirstSnow' } }))
     await expect(updateTrend({ date: '2026-11-28', action: 'skip' })).rejects.toThrow(/Already posted/)
   })
 })
